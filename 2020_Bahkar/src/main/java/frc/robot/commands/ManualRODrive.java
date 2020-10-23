@@ -7,15 +7,24 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.SwerveDrive;
 
-public class ManualDrive extends CommandBase {
+public class ManualRODrive extends CommandBase {
+
+  private SwerveDrive drivetrain;
+  private Joystick input;
+
   /**
    * Creates a new ManualDrive.
    */
-  public ManualDrive() {
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+  public ManualRODrive(SwerveDrive drivetrain, Joystick input) {
+    addRequirements(drivetrain);
+    this.drivetrain = drivetrain;
+    this.input = input;
+    }
 
   // Called when the command is initially scheduled.
   @Override
@@ -25,6 +34,7 @@ public class ManualDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    drivetrain.drive(input.getX(Hand.kRight), input.getY(Hand.kRight), input.getX(Hand.kLeft));
   }
 
   // Called once the command ends or is interrupted.

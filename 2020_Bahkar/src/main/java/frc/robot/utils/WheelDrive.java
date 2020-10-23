@@ -1,24 +1,33 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+package frc.robot.utils;
 
-package frc.robot.subsystems;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import frc.robot.Constants;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+public class WheelDrive {
 
-public class WheelDrive extends SubsystemBase {
-  /**
-   * Creates a new WheelDrive.
-   */
-  public WheelDrive() {
+  private TalonFX angleMotor;
+  private TalonFX speedMotor;
 
+  private Constants C;
+
+  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor) {
+    this.angleMotor = angleMotor;
+    this.speedMotor = speedMotor;
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void drive(double speed, double angle) {
+    speed *= C.DRIVE_METERS_PER_ROTATION / 60;
+    speedMotor.set(ControlMode.Velocity, speed);
+
+    double position = 360 % (angleMotor.getSelectedSensorPosition() / C.ANGLE_RATIO);
+    double rotationsIn = (360 / (angleMotor.getSelectedSensorPosition() / C.ANGLE_RATIO)) - position;
+
+    double SetAngle;
+    if ((position - angle) < 180.0) SetAngle = (angle + (rotationsIn * 360));
+    else SetAngle = ((angle + (rotationsIn *360)) + 180);
+
+    SetAngle *= C.ANGLE_GEARING * C.FALCON_ENCODER_TICKS;
+    angleMotor.set(ControlMode.Position, SetAngle);
   }
 }

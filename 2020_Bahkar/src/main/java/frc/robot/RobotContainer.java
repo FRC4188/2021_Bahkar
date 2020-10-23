@@ -8,8 +8,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.ManualRODrive;
+import frc.robot.subsystems.SwerveDrive;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -18,12 +20,21 @@ import edu.wpi.first.wpilibj2.command.Command;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+  private SwerveDrive drivetrain = new SwerveDrive();
+
+  Joystick pilot = new Joystick(0);
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Configure the button bindings
+    setDefaultCommands();
     configureButtonBindings();
+  }
+
+  private void setDefaultCommands() {
+    drivetrain.setDefaultCommand(new ManualRODrive(drivetrain, pilot));
   }
 
   /**
