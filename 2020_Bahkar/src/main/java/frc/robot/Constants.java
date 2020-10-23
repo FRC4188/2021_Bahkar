@@ -16,4 +16,9 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public final double A_LENGTH = 0.59055; // Axel length in meters
+    public final double A_WIDTH = 0.48895; // Axel length in meters
+    public final double A_CROSSLENGTH = Math.sqrt(Math.pow(A_LENGTH, 2) + Math.pow(A_WIDTH, 2)); // Axel crosslength in meters
+
 }

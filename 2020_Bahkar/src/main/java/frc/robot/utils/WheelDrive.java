@@ -8,16 +8,12 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
-public class Drivetrain extends SubsystemBase {
-
-  private Constants C;
-
+public class WheelDrive extends SubsystemBase {
   /**
-   * Creates a new Drivetrain.
+   * Creates a new WheelDrive.
    */
-  public Drivetrain() {
+  public WheelDrive() {
 
   }
 
@@ -25,5 +21,4 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
-
 }
