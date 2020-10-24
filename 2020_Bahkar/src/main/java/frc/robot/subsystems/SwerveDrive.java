@@ -9,14 +9,13 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import edu.wpi.first.wpilibj.controller.PIDController;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.WheelDrive;
 
 public class SwerveDrive extends SubsystemBase {
-
-  private Constants C;
 
   // device initialization
   private final TalonFX LFAngleMotor = new TalonFX(1);
@@ -27,16 +26,12 @@ public class SwerveDrive extends SubsystemBase {
   private final TalonFX LRSpeedMotor = new TalonFX(6);
   private final TalonFX RRAngleMotor = new TalonFX(7);
   private final TalonFX RRSpeedMotor = new TalonFX(8);
+  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
-  private final WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor);
-  private final WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor);
-  private final WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor);
-  private final WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor);
-
-  private final PIDController LFAnglePID = new PIDController(C.DRIVEkP, C.DRIVEkI, C.DRIVEkD);
-  private final PIDController RFAnglePID = new PIDController(C.DRIVEkP, C.DRIVEkI, C.DRIVEkD);
-  private final PIDController LRAnglePID = new PIDController(C.DRIVEkP, C.DRIVEkI, C.DRIVEkD);
-  private final PIDController RRAnglePID = new PIDController(C.DRIVEkP, C.DRIVEkI, C.DRIVEkD);
+  WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor);
+  WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor);
+  WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor);
+  WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor);
 
   /**
    * Creates a new SwerveDrive.
@@ -62,14 +57,19 @@ public class SwerveDrive extends SubsystemBase {
 
     PIDConfig(LFAngleMotor);
     PIDConfig(LFSpeedMotor);
+    LFSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
     PIDConfig(RFAngleMotor);
     PIDConfig(RFSpeedMotor);
+    RFSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
     PIDConfig(LRAngleMotor);
     PIDConfig(LRSpeedMotor);
+    LRSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
     PIDConfig(RRAngleMotor);
     PIDConfig(RRSpeedMotor);
+    RRSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
 
     resetEncoders();
+    resetGyro();
   }
 
   public void resetEncoders() {
@@ -83,17 +83,21 @@ public class SwerveDrive extends SubsystemBase {
     RRSpeedMotor.setSelectedSensorPosition(0);
   }
 
+  public void resetGyro() {
+    gyro.reset();
+  }
+
   public void PIDConfig(TalonFX motor) {
-    motor.config_kP(0, C.DRIVEkP, 10);
-    motor.config_kI(0, C.DRIVEkI, 10);
-    motor.config_kD(0, C.DRIVEkD, 10);
+    motor.config_kP(0, Constants.DRIVEkP, 10);
+    motor.config_kI(0, Constants.DRIVEkI, 10);
+    motor.config_kD(0, Constants.DRIVEkD, 10);
   }
   
   public void drive(double x1,double  y1,double x2) {
-    double a = x1 - x2 * (C.A_LENGTH / C.A_CROSSLENGTH);
-    double b = x1 - x2 * (C.A_LENGTH / C.A_CROSSLENGTH);
-    double c = y1 - x2 * (C.A_CROSSLENGTH / C.A_CROSSLENGTH);
-    double d = y1 - x2 * (C.A_CROSSLENGTH / C.A_CROSSLENGTH);
+    double a = x1 - x2 * (Constants.A_LENGTH / Constants.A_CROSSLENGTH);
+    double b = x1 - x2 * (Constants.A_LENGTH / Constants.A_CROSSLENGTH);
+    double c = y1 - x2 * (Constants.A_CROSSLENGTH / Constants.A_CROSSLENGTH);
+    double d = y1 - x2 * (Constants.A_CROSSLENGTH / Constants.A_CROSSLENGTH);
 
     double RightRearVel = Math.sqrt(Math.pow(a, 2) + Math.pow(d, 2));
     double LeftRearVel = Math.sqrt(Math.pow(a, 2) + Math.pow(c, 2));
@@ -109,5 +113,17 @@ public class SwerveDrive extends SubsystemBase {
     RightFront.drive(RightFrontVel, RightFrontAngle);
     LeftRear.drive(LeftRearVel, LeftRearAngle);
     RightRear.drive(RightRearVel, RightRearAngle);
+  }
+
+  public void FODrive(double x1, double  y1, double angle) {
+    angle = ((angle - getGyro()) / 180.0) - 1.0;
+    double x = Math.cos(Math.atan(y1 / x1) + Math.toRadians(getGyro()));
+    double y = Math.sin(Math.atan(y1 / x1) + Math.toRadians(getGyro()));
+
+    drive(x, y, angle);
+  }
+  
+  public double getGyro() {
+    return gyro.getAngle();
   }
 }

@@ -8,10 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.ManualRODrive;
+import frc.robot.commands.drive.ManualFODrive;
+import frc.robot.commands.drive.ManualRODrive;
+import frc.robot.commands.drive.ResetGyro;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.utils.CspController;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -23,7 +25,7 @@ public class RobotContainer {
 
   private SwerveDrive drivetrain = new SwerveDrive();
 
-  Joystick pilot = new Joystick(0);
+  CspController pilot = new CspController(0);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -34,7 +36,7 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new ManualRODrive(drivetrain, pilot));
+    drivetrain.setDefaultCommand(new ManualFODrive(drivetrain, pilot));
   }
 
   /**
@@ -44,6 +46,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    pilot.getBackButtonObj().whenPressed(new ResetGyro(drivetrain));
   }
 
 

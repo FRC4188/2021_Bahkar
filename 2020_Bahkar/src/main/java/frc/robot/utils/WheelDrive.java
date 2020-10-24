@@ -9,25 +9,25 @@ public class WheelDrive {
   private TalonFX angleMotor;
   private TalonFX speedMotor;
 
-  private Constants C;
-
   public WheelDrive(TalonFX angleMotor, TalonFX speedMotor) {
     this.angleMotor = angleMotor;
     this.speedMotor = speedMotor;
   }
 
   public void drive(double speed, double angle) {
-    speed *= C.DRIVE_METERS_PER_ROTATION / 60;
+    speed *= (Constants.DRIVE_METERS_PER_ROTATION / 60) * Constants.DRIVE_MAX_VELOCITY;
     speedMotor.set(ControlMode.Velocity, speed);
 
-    double position = 360 % (angleMotor.getSelectedSensorPosition() / C.ANGLE_RATIO);
-    double rotationsIn = (360 / (angleMotor.getSelectedSensorPosition() / C.ANGLE_RATIO)) - position;
+    double position = 360 % (angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO);
+    double rotationsIn = (360 / (angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO)) - position;
 
     double SetAngle;
-    if ((position - angle) < 180.0) SetAngle = (angle + (rotationsIn * 360));
-    else SetAngle = ((angle + (rotationsIn *360)) + 180);
+    if ((position - angle) <= 180 && (position - angle) >= -180) SetAngle = (rotationsIn * 360) + angle;
+    else if ((position - angle) > 180) SetAngle = ((rotationsIn + 1) * 360) + angle;
+    else if ((position - angle) < -180) SetAngle = ((rotationsIn - 1) * 360) + angle;
+    else SetAngle = 0;
 
-    SetAngle *= C.ANGLE_GEARING * C.FALCON_ENCODER_TICKS;
+    SetAngle *= Constants.ANGLE_GEARING * Constants.FALCON_ENCODER_TICKS;
     angleMotor.set(ControlMode.Position, SetAngle);
   }
 }

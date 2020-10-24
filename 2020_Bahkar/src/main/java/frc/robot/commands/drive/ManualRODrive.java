@@ -5,22 +5,22 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.utils.CspController;
 
 public class ManualRODrive extends CommandBase {
 
   private SwerveDrive drivetrain;
-  private Joystick input;
+  private CspController input;
 
   /**
    * Creates a new ManualDrive.
    */
-  public ManualRODrive(SwerveDrive drivetrain, Joystick input) {
+  public ManualRODrive(SwerveDrive drivetrain, CspController input) {
     addRequirements(drivetrain);
     this.drivetrain = drivetrain;
     this.input = input;
