@@ -9,10 +9,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.KinematicControlDrive.KinematicManualDrive;
+import frc.robot.commands.KinematicControlDrive.ResetGyro;
 import frc.robot.commands.drive.ManualFODrive;
 import frc.robot.commands.drive.ManualRODrive;
-import frc.robot.commands.drive.ResetGyro;
+//import frc.robot.commands.drive.ResetGyro;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.CspController;
 
 /**
@@ -23,7 +26,7 @@ import frc.robot.utils.CspController;
  */
 public class RobotContainer {
 
-  private SwerveDrive drivetrain = new SwerveDrive();
+  private Drivetrain drivetrain = new Drivetrain();
 
   CspController pilot = new CspController(0);
 
@@ -36,7 +39,7 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new ManualFODrive(drivetrain, pilot));
+    drivetrain.setDefaultCommand(new KinematicManualDrive(drivetrain, pilot));
   }
 
   /**
