@@ -9,8 +9,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -36,7 +34,8 @@ public class Drivetrain extends SubsystemBase {
   private final TalonFX LRSpeedMotor = new TalonFX(6);
   private final TalonFX RRAngleMotor = new TalonFX(7);
   private final TalonFX RRSpeedMotor = new TalonFX(8);
-  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+
+  private Sensors sensors;
 
   //Initialize WheelDrive objects
   WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor);
@@ -56,7 +55,7 @@ public class Drivetrain extends SubsystemBase {
   );
 
   //Initialize a ChassisSpeeds object and start it with default values
-  ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(getGyro()));
+  ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
 
   //Initialize a list of module states and assign the kinematic results to them
   SwerveModuleState[]  moduleStates = kinematics.toSwerveModuleStates(speeds);
@@ -69,15 +68,16 @@ public class Drivetrain extends SubsystemBase {
 
   //Create initial odometry
   SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
-  Rotation2d.fromDegrees(getGyro()), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
+  new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
 
   //Store odometry as a position on the field.
-  Pose2d Position = odometry.update(Rotation2d.fromDegrees(getGyro()), frontLeft, frontRight, backLeft, backRight);
+  Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
   /**
    * Creates a new Drivetrain.
    */
-  public Drivetrain() {
+  public Drivetrain(Sensors sensors) {
+    this.sensors = sensors;
     configSensors();
   }
 
@@ -118,7 +118,6 @@ public class Drivetrain extends SubsystemBase {
 
     //Call reset methods.
     resetEncoders();
-    resetGyro();
   }
   
   /**
@@ -134,14 +133,6 @@ public class Drivetrain extends SubsystemBase {
     LRSpeedMotor.setSelectedSensorPosition(0);
     RRAngleMotor.setSelectedSensorPosition(0);
     RRSpeedMotor.setSelectedSensorPosition(0);
-  }
-
-  /**
-   * Method to reset gyro to 0.
-   */
-  public void resetGyro() {
-    //Reset the gyro.
-    gyro.reset();
   }
 
   /**
@@ -177,7 +168,7 @@ public class Drivetrain extends SubsystemBase {
     double Rotation = (pilot.getX(Hand.kLeft)) * Constants.DRIVE_MAX_RADIANS;
 
     //Get a chassis speed and rotation from input.
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, Rotation, Rotation2d.fromDegrees(getGyro()));
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, Rotation, Rotation2d.fromDegrees(sensors.getGyro()));
 
     //Fill the module states list with the new module states
     moduleStates = kinematics.toSwerveModuleStates(speeds);
@@ -200,7 +191,7 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateOdometry() {
     //Update odometry and assign it to the Position variable.
-    Position = odometry.update(Rotation2d.fromDegrees(getGyro()), frontLeft, frontRight, backLeft, backRight);
+    Position = odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), frontLeft, frontRight, backLeft, backRight);
   }
 
   /**
@@ -216,15 +207,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Rear Angle temp.", getRearLeftAngleTemp());
     SmartDashboard.putNumber("Right Rear Drive temp.", getRearRightDriveTemp());
     SmartDashboard.putNumber("Right Rear Angle temp.", getRearRightAngleTemp());
-  }
-
-  /**
-   * Method to get Gyro position
-   * @return Gyro angle in degrees as a double
-   */
-  public double getGyro() {
-    // get the angle from the gyro object
-    return gyro.getAngle();
   }
 
   public double getFrontLeftDriveTemp() {

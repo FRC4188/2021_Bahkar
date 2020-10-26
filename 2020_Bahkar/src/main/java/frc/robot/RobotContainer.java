@@ -11,11 +11,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.KinematicControlDrive.KinematicManualDrive;
 import frc.robot.commands.KinematicControlDrive.ResetGyro;
-import frc.robot.commands.drive.ManualFODrive;
-import frc.robot.commands.drive.ManualRODrive;
-//import frc.robot.commands.drive.ResetGyro;
-import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Sensors;
 import frc.robot.utils.CspController;
 
 /**
@@ -26,7 +23,8 @@ import frc.robot.utils.CspController;
  */
 public class RobotContainer {
 
-  private Drivetrain drivetrain = new Drivetrain();
+  private Sensors sensors = new Sensors();
+  private Drivetrain drivetrain = new Drivetrain(sensors);
 
   CspController pilot = new CspController(0);
 

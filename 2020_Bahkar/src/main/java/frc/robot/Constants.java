@@ -48,4 +48,8 @@ public final class Constants {
     public static final double STARTING_X = 0.0; //Starting X position of the robot.
     public static final double STARTING_Y = 0.0; //Starting Y position of the robot.
 
+    public static final double GOAL_HEIGHT = 8.1875; //Height of the goal from the ground in feet.
+    public static final double THREE_POINT_DEPTH = 2 + (5.25/12.0); //Depth of the 3 point goal inside the 2 point goal in feet.
+
+    public static final double TURRET_LIMELIGHT_HEIGHT = 1.0; //Height fromt the ground of the limelight in feet.
 }
