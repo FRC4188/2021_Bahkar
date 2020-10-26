@@ -9,10 +9,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.KinematicControlDrive.KinematicManualDrive;
-import frc.robot.commands.KinematicControlDrive.ResetGyro;
+import frc.robot.commands.drive.KinematicManualDrive;
+import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.turret.FollowTarget;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
+import frc.robot.subsystems.Turret;
 import frc.robot.utils.CspController;
 
 /**
@@ -25,6 +27,7 @@ public class RobotContainer {
 
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
+  private Turret turret = new Turret(sensors);
 
   CspController pilot = new CspController(0);
 
@@ -47,7 +50,8 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    pilot.getBackButtonObj().whenPressed(new ResetGyro(drivetrain));
+    pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
+    pilot.getRbButtonObj().whileHeld(new FollowTarget(turret));
   }
 
 

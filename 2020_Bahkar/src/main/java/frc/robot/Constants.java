@@ -50,6 +50,21 @@ public final class Constants {
 
     public static final double GOAL_HEIGHT = 8.1875; //Height of the goal from the ground in feet.
     public static final double THREE_POINT_DEPTH = 2 + (5.25/12.0); //Depth of the 3 point goal inside the 2 point goal in feet.
+    public static final double PORT_SIDE_LENGTH = 2.5 / (2 * Math.sin(60)); //Side length of the port in feet.
+    public static final double OFFSET_LIMIT = Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2)); //Limit for the skew against the 3-point goal where any farther would make the ball hit the wall.
 
     public static final double TURRET_LIMELIGHT_HEIGHT = 1.0; //Height fromt the ground of the limelight in feet.
+
+    public static final double TURRET_MAX_VELOCITY = 11000; // rpm
+    public static final double TURRET_MAX_ACCELERATION = 22000; // rpm / sec
+    public static final double TURRET_kP = 4e-5;
+    public static final double TURRET_kI = 1e-6;
+    public static final double TURRET_kD = 0;
+    public static final double TURRET_kF = 1.0 / TURRET_MAX_VELOCITY;
+    public static final double TURRET_kI_ZONE = 0;
+    public static final double TURRET_GEAR_RATIO = 300; // angular velocity will be divided by this amount
+    public static final double TURRET_ENCODER_TO_DEGREES = 360.0 / TURRET_GEAR_RATIO; // degrees
+    public static final double TURRET_RAMP_RATE = 0.5; // seconds
+    public static final double TURRET_MAX_ANG = 370;
+    public static final double TURRET_MIN_ANG = -10;
 }

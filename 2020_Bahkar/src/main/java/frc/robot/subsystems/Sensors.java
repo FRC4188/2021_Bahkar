@@ -132,7 +132,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getDistance() {
-    return (Constants.GOAL_HEIGHT - Constants.TURRET_LIMELIGHT_HEIGHT) / (Math.cos(Math.toRadians(getTurretVerticleAngle())));
+    return (Constants.GOAL_HEIGHT - Constants.TURRET_LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
   }
 
   public double getTurretOffset() {
@@ -140,7 +140,11 @@ public class Sensors extends SubsystemBase {
     double b = getDistance();
     double c = getTurretSkew();
 
-    return Math.toDegrees(Math.asin((a * Math.sin(Math.toRadians(180-c)) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - (2 * a * b * Math.cos(Math.toRadians(180 - c)))))));
+
+    double offset =  Math.toDegrees(Math.asin((a * Math.sin(Math.toRadians(180-c))) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - (2 * a * b * Math.cos(Math.toRadians(180 - c))))));
+    double check = c - offset;
+    if (check <= Constants.OFFSET_LIMIT) return offset;
+    else return 0.0;
   }
 
   public double getChassisTY() {
