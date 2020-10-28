@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -18,6 +19,9 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
+import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.CspController;
@@ -73,7 +77,11 @@ public class Drivetrain extends SubsystemBase {
   //Store odometry as a position on the field.
   Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
-  final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.DRIVE_k)
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.DRIVEkS, Constants.DRIVEkV);
+
+  CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
+
+  TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -186,6 +194,26 @@ public class Drivetrain extends SubsystemBase {
     RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
     LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
     RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
+
+    odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
+  }
+
+  public void setChassisSpeeds(ChassisSpeeds speeds) {
+    this.speeds = speeds;
+
+    moduleStates = kinematics.toSwerveModuleStates(speeds);
+
+    frontLeft = moduleStates[0];
+    frontRight = moduleStates[1];
+    backLeft = moduleStates[2];
+    backRight = moduleStates[3];
+
+    LeftFront.convertedDrive(frontLeft.speedMetersPerSecond, frontLeft.angle.getDegrees());
+    RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
+    LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
+    RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
+
+    odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
   }
 
   /**
@@ -209,6 +237,30 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Rear Angle temp.", getRearLeftAngleTemp());
     SmartDashboard.putNumber("Right Rear Drive temp.", getRearRightDriveTemp());
     SmartDashboard.putNumber("Right Rear Angle temp.", getRearRightAngleTemp());
+  }
+
+  public SwerveDriveKinematics getKinematics() {
+    return kinematics;
+  }
+
+  public SwerveDriveOdometry getOdometry() {
+    return odometry;
+  }
+
+  public SimpleMotorFeedforward getFeedforward() {
+    return feedforward;
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return speeds;
+  }
+
+  public SwerveModuleState[] getModuleStates() {
+    return moduleStates;
+  }
+
+  public Pose2d getPose() {
+    return odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
   }
 
   public double getFrontLeftDriveTemp() {

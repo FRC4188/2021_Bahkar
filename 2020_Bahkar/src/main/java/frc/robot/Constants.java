@@ -35,11 +35,15 @@ public final class Constants {
 
     public static final double DRIVE_MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
     public static final double DRIVE_MAX_VELOCITY = 12.0; //Maximum velocity allowed in the drivetrain in meters per second.
+    public static final double DRIVE_MAX_ACCEL = 8.0;
+    public static final double DRIVE_MAX_CACCEL = 8.0;
     public static final double DRIVE_MAX_RADIANS = Math.PI; //Maximum rotation per second in radians.
     public static final double DRIVE_RAMP = 1.0; //Ramp rate of drivetrain motor power.
     public static final double DRIVEkP = 1.0; //P value for drivetrain pid loop.
     public static final double DRIVEkI = 0.0; //I value for the drivetrain pid loop.
     public static final double DRIVEkD = 0.0; //D value for the drivetrain pid loop.
+    public static final double DRIVEkS = 0.0;
+    public static final double DRIVEkV = 0.0;
 
     public static final double ANGLEkP = 1.0; //P value for the angle motor pid loop.
     public static final double ANGLEkI = 0.0; //I value for the angle motor pid loop.
