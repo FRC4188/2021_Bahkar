@@ -73,6 +73,8 @@ public class Drivetrain extends SubsystemBase {
   //Store odometry as a position on the field.
   Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
+  final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.DRIVE_k)
+
   /**
    * Creates a new Drivetrain.
    */
