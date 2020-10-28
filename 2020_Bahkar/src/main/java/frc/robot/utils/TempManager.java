@@ -3,17 +3,20 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Turret;
 
 public class TempManager {
 
     Drivetrain drivetrain;
+    Turret turret;
 
-    public TempManager(Drivetrain drivetrain) {
+    public TempManager(Drivetrain drivetrain, Turret turret) {
         this.drivetrain = drivetrain;
+        this.turret = turret;
     }
 
     public void run() {
-        StringBuilder sb = new StringBuilder();
+        private StringBuilder sb = new StringBuilder();
 
         if (drivetrain.getFrontLeftDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("FLDrive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
         if (drivetrain.getFrontLeftAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("FLAngle: " + drivetrain.getFrontLeftAngleTemp() + ", ");

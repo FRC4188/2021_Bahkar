@@ -42,46 +42,46 @@ public class Drivetrain extends SubsystemBase {
   private Sensors sensors;
 
   //Initialize WheelDrive objects
-  WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor);
-  WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor);
-  WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor);
-  WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor);
+  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor);
+  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor);
+  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor);
+  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor);
 
   //Put together swerve module positions relative to the center of the robot.
-  Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
-  Translation2d FrontRightLocation = new Translation2d((Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
-  Translation2d BackLeftLocation = new Translation2d(-(Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
-  Translation2d BackRightLocation = new Translation2d(-(Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
+  private Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
+  private Translation2d FrontRightLocation = new Translation2d((Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
+  private Translation2d BackLeftLocation = new Translation2d(-(Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
+  private Translation2d BackRightLocation = new Translation2d(-(Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
 
   //Create a kinematics withe the swerve module positions
-  SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
     FrontLeftLocation, FrontRightLocation, BackLeftLocation, BackRightLocation
   );
 
   //Initialize a ChassisSpeeds object and start it with default values
-  ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
+  private ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
 
   //Initialize a list of module states and assign the kinematic results to them
-  SwerveModuleState[]  moduleStates = kinematics.toSwerveModuleStates(speeds);
+  private SwerveModuleState[]  moduleStates = kinematics.toSwerveModuleStates(speeds);
 
   //Assign module states to modules
-  SwerveModuleState frontLeft = moduleStates[0];
-  SwerveModuleState frontRight = moduleStates[1];
-  SwerveModuleState backLeft = moduleStates[2];
-  SwerveModuleState backRight = moduleStates[3];
+  private SwerveModuleState frontLeft = moduleStates[0];
+  private SwerveModuleState frontRight = moduleStates[1];
+  private SwerveModuleState backLeft = moduleStates[2];
+  private SwerveModuleState backRight = moduleStates[3];
 
   //Create initial odometry
-  SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
+  private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
   new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
 
   //Store odometry as a position on the field.
-  Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
+  private Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
-  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.DRIVEkS, Constants.DRIVEkV);
+  private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.DRIVEkS, Constants.DRIVEkV);
 
-  CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
 
-  TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.

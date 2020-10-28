@@ -103,6 +103,10 @@ public class Turret extends SubsystemBase {
       return turretEncoder.getVelocity() * Constants.TURRET_ENCODER_TO_DEGREES / 60.0;
   }
 
+  public double getTemperature() {
+    return turret.
+  }
+
   /**
    * Sets the isTracking variable (for SmartDashboard purposes).
    */
