@@ -263,6 +263,10 @@ public class Drivetrain extends SubsystemBase {
     return odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
   }
 
+  public TrajectoryConfig getConfig() {
+    return trajectoryConfig;
+  }
+
   public double getFrontLeftDriveTemp() {
     return LFSpeedMotor.getTemperature();
   }

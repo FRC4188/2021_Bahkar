@@ -17,10 +17,14 @@ package frc.robot;
  */
 public final class Constants {
 
+    public static final double ROBOT_MIN_VOLTS = 6.0;
+    public static final double ROBOT_MID_VOLTS = 8.0;
+
     public static final double A_LENGTH = 0.59055; // Axel length in meters
     public static final double A_WIDTH = 0.48895; // Axel length in meters
     public static final double A_CROSSLENGTH = Math.sqrt(Math.pow(A_LENGTH, 2) + Math.pow(A_WIDTH, 2)); // Axel crosslength in meters
 
+    public static final double FIVEFIFTY_MAX_TEMP = 50.0;
     public static final double FALCON_ENCODER_TICKS = 2048; //Counts per rotation of the Falcon 500 motor.
     public static final double FALCON_MAX_TEMP = 50.0; //Max temperature of Falcon 500 in degrees celsius.
     

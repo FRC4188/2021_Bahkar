@@ -104,7 +104,7 @@ public class Turret extends SubsystemBase {
   }
 
   public double getTemperature() {
-    return turret.
+    return turretMotor.getMotorTemperature();
   }
 
   /**

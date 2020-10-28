@@ -16,7 +16,7 @@ public class TempManager {
     }
 
     public void run() {
-        private StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         if (drivetrain.getFrontLeftDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("FLDrive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
         if (drivetrain.getFrontLeftAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("FLAngle: " + drivetrain.getFrontLeftAngleTemp() + ", ");
@@ -26,6 +26,7 @@ public class TempManager {
         if (drivetrain.getRearLeftAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("RLAngle: " + drivetrain.getRearLeftAngleTemp() + ", ");
         if (drivetrain.getRearRightDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("RRDrive: " + drivetrain.getRearRightDriveTemp() + ", ");
         if (drivetrain.getRearRightAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("RRAngle: " + drivetrain.getRearRightAngleTemp() + ", ");
+        if (turret.getTemperature() > Constants.FIVEFIFTY_MAX_TEMP) sb.append("Turret: " + turret.getTemperature());
 
         SmartDashboard.putString("Temp Warnings", sb.toString());
     }
