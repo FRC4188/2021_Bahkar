@@ -229,7 +229,10 @@ public class Drivetrain extends SubsystemBase {
    * Method to update the odometry of the robot.
    */
   private void updateOdometry() {
-    //Update odometry and assign it to the Position variable.
+    frontLeft = LeftFront.updateModuleState(frontLeft);
+    frontRight = RightFront.updateModuleState(frontRight);
+    backLeft = LeftRear.updateModuleState(backLeft);
+    backRight = RightRear.updateModuleState(backRight);
     Position = odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), frontLeft, frontRight, backLeft, backRight);
   }
 
