@@ -18,6 +18,5 @@ public class BrownoutProtection {
     }
 
     public void run() {
-
     }
 }

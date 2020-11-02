@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Drivetrain;
-import java.lang.Runtime;
 
 public class FollowTrajectory extends CommandBase {
   RamseteController controller = new RamseteController();

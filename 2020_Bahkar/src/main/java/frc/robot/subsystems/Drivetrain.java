@@ -9,6 +9,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -21,7 +23,6 @@ import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
-import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.CspController;
@@ -82,6 +83,10 @@ public class Drivetrain extends SubsystemBase {
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
 
   private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
+
+  private SlewRateLimiter speedLimiter = new SlewRateLimiter(1.0);
+  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(1.0);
+  private SlewRateLimiter rotLimiter = new SlewRateLimiter(1.0);
 
   /**
    * Creates a new Drivetrain.
@@ -176,6 +181,10 @@ public class Drivetrain extends SubsystemBase {
     double Speed = (pilot.getY(Hand.kRight)) * Constants.DRIVE_MAX_VELOCITY;
     double Strafe = (pilot.getX(Hand.kRight)) * Constants.DRIVE_MAX_VELOCITY;
     double Rotation = (pilot.getX(Hand.kLeft)) * Constants.DRIVE_MAX_RADIANS;
+
+    Speed = speedLimiter.calculate(Speed);
+    Strafe = strafeLimiter.calculate(Strafe);
+    Rotation = rotLimiter.calculate(Rotation);
 
     //Get a chassis speed and rotation from input.
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, Rotation, Rotation2d.fromDegrees(sensors.getGyro()));

@@ -54,6 +54,7 @@ public class WheelDrive {
     speed *= Constants.DRIVE_COUNTS_PER_METER / 10;
     speedMotor.set(ControlMode.Velocity, speed);
 
+    /*
     //Find position of wheel in current rotation.
     double position = 360 % (angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO);
     //Find number of rotations taken so far.
@@ -67,6 +68,29 @@ public class WheelDrive {
     else if ((position - angle) > 180) SetAngle = ((rotationsIn + 1) * 360) + angle;
     else if ((position - angle) < -180) SetAngle = ((rotationsIn - 1) * 360) + angle;
     else SetAngle = 0;
+    */
+
+    double currentAngle = angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO;
+
+    double position = 360 % currentAngle;
+    double rotIn = (currentAngle - position) / 360;
+
+    position = (position > 180) ? (-360 + position) : position;
+    position = (position < -180) ? (360 + position) : position;
+
+    double diff = position - angle;
+
+    double SetAngle;
+
+    if (diff < 90) {
+      SetAngle = diff + (rotIn * 360);
+    } else if (position < -90) {
+      SetAngle = diff + ((rotIn - 1) * 360);
+    } else if (position > 90) {
+      SetAngle = diff + ((rotIn + 1) * 360);
+    } else {
+      SetAngle = 0;
+    }
 
     //Convert angle to encoder ticks and set the motor to that position.
     SetAngle *= Constants.ANGLE_RATIO;

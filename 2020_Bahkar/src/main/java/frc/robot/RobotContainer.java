@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.autogroups.OneMeterTestGroup;
-import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.KinematicManualDrive;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.turret.FollowTarget;

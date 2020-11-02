@@ -101,7 +101,12 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getTurretSkew() {
-    return TlimelightTable.getEntry("ts").getDouble(0.0);
+    double rawVal = TlimelightTable.getEntry("ts").getDouble(0.0);
+
+    rawVal *= -4;
+    rawVal = (rawVal > 180) ? (180-rawVal) : rawVal;
+
+    return rawVal;
   }
 
   public boolean getTurretHasTarget() {
@@ -156,8 +161,12 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getChassisSkew() {
-    return ClimelightTable.getEntry("ts").getDouble(0.0);
-  }
+    double rawVal =  ClimelightTable.getEntry("ts").getDouble(0.0);
+
+    rawVal *= -4;
+    rawVal = (rawVal > 180) ? (180-rawVal) : rawVal;
+
+    return rawVal;  }
 
   public boolean getChassisHasTarget() {
     boolean HasTarget = (ClimelightTable.getEntry("tv").getDouble(0.0) == 1.0) ? true : false;
@@ -184,11 +193,5 @@ public class Sensors extends SubsystemBase {
 
   public double getChassisHorizontalAngle() {
     return getChassisXYAngle()[0];
-  }
-
-  public void resetGyroInMatch() {
-    if (getChassisHasTarget()) {
-      GyroAdjust = gyro.getAngle() - (-getChassisSkew() + getChassisHorizontalAngle());
-    }
   }
 }
