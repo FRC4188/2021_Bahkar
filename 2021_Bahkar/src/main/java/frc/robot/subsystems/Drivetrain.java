@@ -180,7 +180,13 @@ public class Drivetrain extends SubsystemBase {
     //Convert controller input to M/S and Rad/S
     double Speed = (pilot.getY(Hand.kRight)) * Constants.DRIVE_MAX_VELOCITY;
     double Strafe = (pilot.getX(Hand.kRight)) * Constants.DRIVE_MAX_VELOCITY;
-    double Rotation = (pilot.getX(Hand.kLeft)) * Constants.DRIVE_MAX_RADIANS;
+
+    double leftY = pilot.getY(Hand.kLeft);
+    double leftX = pilot.getX(Hand.kRight);
+
+    double Rotation = (leftY != 0.0) ? (Math.toDegrees(Math.atan(leftX / leftY))) :
+        ((leftX == 0.0) ? (odometry.getPoseMeters().getRotation().getDegrees()) : 
+        ((leftX > 0.0) ? (90.0) : (270.0)));
 
     Speed = speedLimiter.calculate(Speed);
     Strafe = strafeLimiter.calculate(Strafe);
@@ -189,22 +195,7 @@ public class Drivetrain extends SubsystemBase {
     //Get a chassis speed and rotation from input.
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, Rotation, Rotation2d.fromDegrees(sensors.getGyro()));
 
-    //Fill the module states list with the new module states
-    moduleStates = kinematics.toSwerveModuleStates(speeds);
-
-    //Assign members of the module states list to variables
-    frontLeft = moduleStates[0];
-    frontRight = moduleStates[1];
-    backLeft = moduleStates[2];
-    backRight = moduleStates[3];
-
-    //Using the WheelDrive objects, power the motors with the correct instructions.
-    LeftFront.convertedDrive(frontLeft.speedMetersPerSecond, frontLeft.angle.getDegrees());
-    RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
-    LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
-    RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
-
-    odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
+    setChassisSpeeds(speeds);
   }
 
   public void setChassisSpeeds(ChassisSpeeds speeds) {
@@ -221,8 +212,6 @@ public class Drivetrain extends SubsystemBase {
     RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
     LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
     RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
-
-    odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
   }
 
   /**

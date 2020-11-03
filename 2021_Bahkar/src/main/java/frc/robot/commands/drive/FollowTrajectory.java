@@ -31,6 +31,7 @@ public class FollowTrajectory extends CommandBase {
    */
   public FollowTrajectory(Drivetrain drivetrain, Sensors sensors, Trajectory trajectory) {
     addRequirements(drivetrain);
+
     this.drivetrain = drivetrain;
     this.sensors = sensors;
     this.trajectory = trajectory;
@@ -59,7 +60,7 @@ public class FollowTrajectory extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (interrupted) drivetrain.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, Rotation2d.fromDegrees(sensors.getGyro())));
+    if (!interrupted) drivetrain.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, Rotation2d.fromDegrees(sensors.getGyro())));
   }
 
   // Returns true when the command should end.

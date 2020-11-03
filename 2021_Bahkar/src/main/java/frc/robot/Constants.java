@@ -62,6 +62,7 @@ public final class Constants {
     public static final double OFFSET_LIMIT = Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2)); //Limit for the skew against the 3-point goal where any farther would make the ball hit the wall.
 
     public static final double TURRET_LIMELIGHT_HEIGHT = 1.0; //Height fromt the ground of the limelight in feet.
+    public static final double TURRET_MOUNTING_ANGLE = 0.0;
 
     public static final double TURRET_MAX_VELOCITY = 11000; // rpm
     public static final double TURRET_MAX_ACCELERATION = 22000; // rpm / sec

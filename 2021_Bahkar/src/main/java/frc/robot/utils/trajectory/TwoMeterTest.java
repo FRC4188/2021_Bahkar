@@ -18,8 +18,8 @@ public class TwoMeterTest {
 
         var interiorWaypoints = new ArrayList<Translation2d>();
 
-        var end = new Pose2d(2.0, 0.0,
-        Rotation2d.fromDegrees(90.0));
+        var end = new Pose2d(0.0, 2.0,
+        Rotation2d.fromDegrees(0.0));
 
         var trajectory = TrajectoryGenerator.generateTrajectory(
             start,

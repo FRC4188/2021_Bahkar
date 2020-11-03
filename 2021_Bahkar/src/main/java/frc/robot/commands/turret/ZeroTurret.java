@@ -10,19 +10,15 @@ package frc.robot.commands.turret;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Turret;
 
-public class FollowTarget extends CommandBase {
+public class ZeroTurret extends CommandBase {
+
   Turret turret;
 
-  boolean cont;
-
   /**
-   * Creates a new FollowTarget.
+   * Creates a new ZeroTurret.
    */
-  public FollowTarget(Turret turret, boolean cont) {
-    addRequirements(turret);
-
+  public ZeroTurret(Turret turret) {
     this.turret = turret;
-    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -33,18 +29,17 @@ public class FollowTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.trackTarget(cont);
+    turret.resetEncoders();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    turret.trackTarget(false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

@@ -119,17 +119,24 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getTurretCenterAngle() {
-    return Math.toDegrees(Math.atan(getTurretTY() / getTurretTX()));
+    double x = getTurretTX();
+    double y = getTurretTY();
+
+    return Math.toDegrees(
+      ((y != 0) ? (Math.atan(x / y)) : 
+      ((x == 0.0) ? (0.0) :
+      ((x > 0.0) ? (90.0) : (170.0)
+      ))));
   }
 
   public double[] getTurretXYAngle() {
-    double ratio = (getTurretCenterOff() + (0.164*getTurretCenterOff() + 0.102)) / getTurretCenterOff();
+    double ratio = (getTurretCenterOff() + (0.164 * getTurretCenterOff() + 0.102)) / getTurretCenterOff();
     double[] XY = {(getTurretTX() * ratio), (getTurretTY() * ratio)};
     return XY;
   }
 
   public double getTurretVerticleAngle() {
-    return getTurretXYAngle()[1];
+    return getTurretXYAngle()[1] + Constants.TURRET_MOUNTING_ANGLE;
   }
 
   public double getTurretHorizontalAngle() {
@@ -178,8 +185,14 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getChassisCenterAngle() {
-    return Math.toDegrees(Math.atan(getChassisTY() / getChassisTX()));
-  }
+    double x = getChassisTX();
+    double y = getChassisTY();
+
+    return Math.toDegrees(
+      ((y != 0) ? (Math.atan(x / y)) : 
+      ((x == 0.0) ? (0.0) :
+      ((x > 0.0) ? (90.0) : (170.0)
+      ))));  }
 
   public double[] getChassisXYAngle() {
     double ratio = (getChassisCenterOff() + (0.164*getChassisCenterOff() + 0.102)) / getChassisCenterOff();

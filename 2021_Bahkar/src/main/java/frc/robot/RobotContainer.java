@@ -11,16 +11,22 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.autogroups.OneMeterTestGroup;
+import frc.robot.commands.autogroups.TestCurveGroup;
 import frc.robot.commands.drive.KinematicManualDrive;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.turret.FollowTarget;
+import frc.robot.commands.turret.TurretToOneEighty;
+import frc.robot.commands.turret.TurretToZero;
+import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Turret;
 import frc.robot.utils.BrownoutProtection;
+import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
+import frc.robot.utils.trajectory.CurveTest;
 import frc.robot.utils.trajectory.TwoMeterTest;
 
 /**
@@ -39,6 +45,8 @@ public class RobotContainer {
   private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
 
   CspController pilot = new CspController(0);
+  CspController copilot = new CspController(1);
+  ButtonBox bBox = new ButtonBox(2);
 
   TwoMeterTest tmt = new TwoMeterTest(drivetrain.getConfig());
   
@@ -75,11 +83,18 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
-    pilot.getRbButtonObj().whileHeld(new FollowTarget(turret));
+    pilot.getRbButtonObj().whileHeld(new FollowTarget(turret, true));
+    pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
+
+    copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
+
+    bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
+    bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
   }
 
   private void putChooser() {
     autoChooser.addOption("One meter test.", new OneMeterTestGroup(drivetrain, sensors));
+    autoChooser.addOption("Test Curve", new TestCurveGroup(drivetrain, sensors));
   }
 
   /**
