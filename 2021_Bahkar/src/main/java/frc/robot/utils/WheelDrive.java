@@ -31,9 +31,9 @@ public class WheelDrive {
     speedMotor.set(ControlMode.Velocity, speed);
 
     //Find how for through the current rotation the wheel is.
-    double position = 360 % (angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO);
+    double position = 360 % ((angleMotor.getSelectedSensorPosition() / Constants.CANCODER_TICKS) * 360);
     //Find how many rotations the wheel has completed 
-    double rotationsIn = ((angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO) - position) / 360;
+    double rotationsIn = (((angleMotor.getSelectedSensorPosition() / Constants.CANCODER_TICKS) * 360) - position) / 360;
 
     //Create an empty value for the real position to set the motor to.
     double SetAngle;
@@ -44,7 +44,7 @@ public class WheelDrive {
     else SetAngle = 0;
 
     //Convert position in degrees to position in ticks and set the motor to that position.
-    SetAngle *= Constants.ANGLE_RATIO;
+    SetAngle *= Constants.CANCODER_TICKS/360;
     angleMotor.set(ControlMode.Position, SetAngle);
   }
 

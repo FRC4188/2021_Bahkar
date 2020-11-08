@@ -7,9 +7,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -33,11 +35,14 @@ public class Drivetrain extends SubsystemBase {
   // device initialization
   private final TalonFX LFAngleMotor = new TalonFX(1);
   private final TalonFX LFSpeedMotor = new TalonFX(2);
+
   private final TalonFX RFAngleMotor = new TalonFX(3);
   private final TalonFX RFSpeedMotor = new TalonFX(4);
+
   private final TalonFX LRAngleMotor = new TalonFX(5);
   private final TalonFX LRSpeedMotor = new TalonFX(6);
-  private final TalonFX RRAngleMotor = new TalonFX(7);
+
+  private final TalonFX RRAngleMotor = new TalonFX(9);
   private final TalonFX RRSpeedMotor = new TalonFX(8);
 
   private Sensors sensors;
@@ -108,13 +113,13 @@ public class Drivetrain extends SubsystemBase {
    */
   private void configSensors() {
     //Select sensor for motors (integrated sensor).
-    LFAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    LFAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     LFSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    RFAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    RFAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     RFSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    LRAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    LRAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     LRSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    RRAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    RRAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     RRSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     //Call PIDConfig method for each motor and set ramp rates.

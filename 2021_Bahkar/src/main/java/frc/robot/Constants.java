@@ -27,6 +27,7 @@ public final class Constants {
     public static final double FIVEFIFTY_MAX_TEMP = 50.0;
     public static final double FALCON_ENCODER_TICKS = 2048; //Counts per rotation of the Falcon 500 motor.
     public static final double FALCON_MAX_TEMP = 50.0; //Max temperature of Falcon 500 in degrees celsius.
+    public static final double CANCODER_TICKS = 4096;
     
     public static final double DRIVE_GEARING = 0.0; //Gear ratio of the drive motor.
     public static final double WHEEL_DIAMETER = 4.0; //Diameter of the drive wheels.

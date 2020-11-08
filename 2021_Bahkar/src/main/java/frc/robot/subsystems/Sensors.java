@@ -64,7 +64,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getGyro() {
-    return gyro.getAngle() + GyroAdjust;
+    return -gyro.getAngle() + GyroAdjust;
   }
 
   /**
