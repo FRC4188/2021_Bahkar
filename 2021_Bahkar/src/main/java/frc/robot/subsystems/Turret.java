@@ -43,16 +43,16 @@ public class Turret extends SubsystemBase {
   * Configures gains for Spark closed loop controller.
   */
   private void controllerInit() {
-    pid.setP(Constants.TURRET_kP);
-    pid.setI(Constants.TURRET_kI);
-    pid.setD(Constants.TURRET_kD);
-    pid.setIZone(Constants.TURRET_kI_ZONE);
-    pid.setFF(Constants.TURRET_kF);
+    pid.setP(4e-5);
+    pid.setI(1e-6);
+    pid.setD(0);
+    pid.setIZone(0.0);
+    pid.setFF(1.0 / Constants.TURRET_MAX_VELOCITY);
     pid.setOutputRange(-1.0, 1.0);
     pid.setSmartMotionMaxVelocity(Constants.TURRET_MAX_VELOCITY, 0);
     pid.setSmartMotionMaxAccel(Constants.TURRET_MAX_ACCELERATION, 0);
-    turretMotor.setClosedLoopRampRate(0);
-    turretMotor.setOpenLoopRampRate(Constants.TURRET_RAMP_RATE);
+    turretMotor.setClosedLoopRampRate(0.0);
+    turretMotor.setOpenLoopRampRate(0.5);
     turretMotor.setIdleMode(IdleMode.kBrake);
   }
 

@@ -10,7 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.autogroups.OneMeterTestGroup;
+import frc.robot.commands.autogroups.TwoMeterTestGroup;
+import frc.robot.commands.autogroups.RotationTestGroup;
+import frc.robot.commands.autogroups.SpontaneousToShoot;
 import frc.robot.commands.autogroups.TestCurveGroup;
 import frc.robot.commands.drive.KinematicManualDrive;
 import frc.robot.commands.sensors.ResetGyro;
@@ -26,8 +28,6 @@ import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
-import frc.robot.utils.trajectory.CurveTest;
-import frc.robot.utils.trajectory.TwoMeterTest;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -47,8 +47,6 @@ public class RobotContainer {
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
   ButtonBox bBox = new ButtonBox(2);
-
-  TwoMeterTest tmt = new TwoMeterTest(drivetrain.getConfig());
   
   // auto chooser initialization
   private final SendableChooser<CspSequentialCommandGroup> autoChooser =
@@ -90,11 +88,13 @@ public class RobotContainer {
 
     bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
+    bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));
   }
 
   private void putChooser() {
-    autoChooser.addOption("One meter test.", new OneMeterTestGroup(drivetrain, sensors));
+    autoChooser.addOption("Two meter test.", new TwoMeterTestGroup(drivetrain, sensors));
     autoChooser.addOption("Test Curve", new TestCurveGroup(drivetrain, sensors));
+    autoChooser.addOption("Rotation Test", new RotationTestGroup(drivetrain, sensors));
   }
 
   /**

@@ -7,14 +7,9 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-
-import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -83,98 +78,32 @@ public class Drivetrain extends SubsystemBase {
   //Store odometry as a position on the field.
   private Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
-  private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.DRIVEkS, Constants.DRIVEkV);
-
+  //Create a configuration for trajectories.
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
-
   private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
 
-  private SlewRateLimiter speedLimiter = new SlewRateLimiter(1.0);
-  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(1.0);
-  private SlewRateLimiter rotLimiter = new SlewRateLimiter(1.0);
+  //Initialize slew limiters.
+  private SlewRateLimiter speedLimiter = new SlewRateLimiter(2.0);
+  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(2.0);
+  private SlewRateLimiter rotLimiter = new SlewRateLimiter(0.005);
+
+  private ChassisSpeeds angleComponent = new ChassisSpeeds(0.0, 0.0, 0.0);
 
   /**
    * Creates a new Drivetrain.
    */
   public Drivetrain(Sensors sensors) {
     this.sensors = sensors;
-    configSensors();
   }
 
+  /**
+   * This method will be called once every scheduler run.
+   */
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    //update odometry and shuffleboard ever scheduler run.
     updateOdometry();
     updateShuffleboard();
-  }
-
-  /**
-   * Set properties of the motors.
-   */
-  private void configSensors() {
-    //Select sensor for motors (integrated sensor).
-    LFAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    LFSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    RFAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    RFSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    LRAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    LRSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    RRAngleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    RRSpeedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-
-    //Call PIDConfig method for each motor and set ramp rates.
-    DrivePIDConfig(LFAngleMotor);
-    AnglePIDConfig(LFSpeedMotor);
-    LFSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
-    DrivePIDConfig(RFAngleMotor);
-    AnglePIDConfig(RFSpeedMotor);
-    RFSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
-    DrivePIDConfig(LRAngleMotor);
-    AnglePIDConfig(LRSpeedMotor);
-    LRSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
-    DrivePIDConfig(RRAngleMotor);
-    AnglePIDConfig(RRSpeedMotor);
-    RRSpeedMotor.configClosedloopRamp(Constants.DRIVE_RAMP);
-
-    //Call reset methods.
-    resetEncoders();
-  }
-  
-  /**
-   * Reset all encoders to position 0.
-   */
-  public void resetEncoders() {
-    //Set encoder positions to 0
-    LFAngleMotor.setSelectedSensorPosition(0);
-    LFSpeedMotor.setSelectedSensorPosition(0);
-    RFAngleMotor.setSelectedSensorPosition(0);
-    RFSpeedMotor.setSelectedSensorPosition(0);
-    LRAngleMotor.setSelectedSensorPosition(0);
-    LRSpeedMotor.setSelectedSensorPosition(0);
-    RRAngleMotor.setSelectedSensorPosition(0);
-    RRSpeedMotor.setSelectedSensorPosition(0);
-  }
-
-  /**
-   * Method to set P, I, and D terms for drive motor closed loop control.
-   * @param motor Motor which is being configured.
-   */
-  public void DrivePIDConfig(TalonFX motor) {
-    //Assign the values.
-    motor.config_kP(0, Constants.DRIVEkP, 10);
-    motor.config_kI(0, Constants.DRIVEkI, 10);
-    motor.config_kD(0, Constants.DRIVEkD, 10);
-  }
-
-  /**
-   * Set P, I, and D terms for Angle motor.
-   * @param motor Motor which is being configured.
-   */
-  public void AnglePIDConfig(TalonFX motor) {
-    //Assign the values.
-    motor.config_kP(0, Constants.ANGLEkP, 10);
-    motor.config_kI(0, Constants.ANGLEkI, 10);
-    motor.config_kD(0, Constants.ANGLEkD, 10);
   }
 
   /**
@@ -183,36 +112,65 @@ public class Drivetrain extends SubsystemBase {
    */
   public void drive (CspController pilot) {
     //Convert controller input to M/S and Rad/S
-    double Speed = (pilot.getY(Hand.kRight)) * Constants.DRIVE_MAX_VELOCITY;
-    double Strafe = (pilot.getX(Hand.kRight)) * Constants.DRIVE_MAX_VELOCITY;
+    double Speed = (pilot.getY(Hand.kLeft)) * Constants.DRIVE_MAX_VELOCITY;
+    double Strafe = (pilot.getX(Hand.kLeft)) * Constants.DRIVE_MAX_VELOCITY;
 
-    double leftY = pilot.getY(Hand.kLeft);
-    double leftX = pilot.getX(Hand.kRight);
+    double rightY = pilot.getY(Hand.kRight);
+    double rightX = pilot.getX(Hand.kRight);
 
-    double Rotation = (leftY != 0.0) ? (Math.toDegrees(Math.atan(leftX / leftY))) :
-        ((leftX == 0.0) ? (odometry.getPoseMeters().getRotation().getDegrees()) : 
-        ((leftX > 0.0) ? (90.0) : (270.0)));
+    double Rotation = (rightY != 0.0) ? (Math.toDegrees(Math.atan(rightX / rightY))) :
+        ((rightX == 0.0) ? (odometry.getPoseMeters().getRotation().getDegrees()) : 
+        ((rightX > 0.0) ? (90.0) : (270.0)));
 
-    Speed = speedLimiter.calculate(Speed);
-    Strafe = strafeLimiter.calculate(Strafe);
-    Rotation = rotLimiter.calculate(Rotation);
+    boolean fineControl = pilot.getBumper(Hand.kLeft);
+
+    Speed = speedLimiter.calculate((fineControl) ? Speed/2 : Speed);
+    Strafe = strafeLimiter.calculate((fineControl) ? Strafe/2 : Strafe);
+    Rotation = rotLimiter.calculate((fineControl) ? Rotation/2 : Rotation);
 
     //Get a chassis speed and rotation from input.
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, Rotation, Rotation2d.fromDegrees(sensors.getGyro()));
 
+    //Set the Chassis speeds after processing input.
     setChassisSpeeds(speeds);
   }
 
+  /**
+   * Takes a ChassisSpeeds object and converts to to module states, then sets the modules to their states.
+   * @param speeds The ChassisSpeeds object.
+   */
   public void setChassisSpeeds(ChassisSpeeds speeds) {
-    this.speeds = speeds;
-
+    //get an array of module states from the ChassisSpeeds.
     moduleStates = kinematics.toSwerveModuleStates(speeds);
 
+    //Seperate the elements of the array.
     frontLeft = moduleStates[0];
     frontRight = moduleStates[1];
     backLeft = moduleStates[2];
     backRight = moduleStates[3];
 
+    //Set the modules in the WheelDrive objects to the kinematic results.
+    LeftFront.convertedDrive(frontLeft.speedMetersPerSecond, frontLeft.angle.getDegrees());
+    RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
+    LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
+    RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
+  }
+
+  public void customAngleChassisSpeed(ChassisSpeeds speeds, double angle) {
+    angleComponent = ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, Math.PI, Rotation2d.fromDegrees(angle));
+
+    speeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, angleComponent.omegaRadiansPerSecond);
+
+    //get an array of module states from the ChassisSpeeds.
+    moduleStates = kinematics.toSwerveModuleStates(speeds);
+
+    //Seperate the elements of the array.
+    frontLeft = moduleStates[0];
+    frontRight = moduleStates[1];
+    backLeft = moduleStates[2];
+    backRight = moduleStates[3];
+
+    //Set the modules in the WheelDrive objects to the kinematic results.
     LeftFront.convertedDrive(frontLeft.speedMetersPerSecond, frontLeft.angle.getDegrees());
     RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
     LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
@@ -223,10 +181,13 @@ public class Drivetrain extends SubsystemBase {
    * Method to update the odometry of the robot.
    */
   private void updateOdometry() {
+    //get the module state from each motor
     frontLeft = LeftFront.updateModuleState(frontLeft);
     frontRight = RightFront.updateModuleState(frontRight);
     backLeft = LeftRear.updateModuleState(backLeft);
     backRight = RightRear.updateModuleState(backRight);
+
+    //update odometry using the new module states.
     Position = odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), frontLeft, frontRight, backLeft, backRight);
   }
 
@@ -245,30 +206,50 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Right Rear Angle temp.", getRearRightAngleTemp());
   }
 
+  /**
+   * The object for converting motion to individual motor states.
+   * @return The Kinematics object.
+   */
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }
 
+  /**
+   * The object for locating the robot on the field.
+   * @return the Odometry object
+   */
   public SwerveDriveOdometry getOdometry() {
     return odometry;
   }
 
-  public SimpleMotorFeedforward getFeedforward() {
-    return feedforward;
-  }
-
+  /**
+   * The object for converting a series of inputs to a single motion.
+   * @return the ChassisSpeeds object.
+   */
   public ChassisSpeeds getChassisSpeeds() {
     return speeds;
   }
 
+  /**
+   * Get the current module states of the motors.
+   * @return SwerveModuleStates array.
+   */
   public SwerveModuleState[] getModuleStates() {
     return moduleStates;
   }
 
+  /**
+   * Get the current position of the robot.
+   * @return Pose2d position.
+   */
   public Pose2d getPose() {
-    return odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), moduleStates);
+    return Position;
   }
 
+  /**
+   * Get the Trajectory config object.
+   * @return TrajectoryConfig object.
+   */
   public TrajectoryConfig getConfig() {
     return trajectoryConfig;
   }

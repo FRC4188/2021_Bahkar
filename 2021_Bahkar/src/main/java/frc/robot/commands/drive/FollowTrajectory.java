@@ -7,6 +7,8 @@
 
 package frc.robot.commands.drive;
 
+import java.util.Iterator;
+
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
@@ -21,10 +23,15 @@ public class FollowTrajectory extends CommandBase {
   Drivetrain drivetrain;
   Sensors sensors;
   Trajectory trajectory;
+  Iterator<Double> angles = null;
+  Iterator<Double> times = null;
 
   long start;
   double time;
   double totalTime;
+
+  double refTime = 0.0;
+  double setAngle = 0.0;
 
   /**
    * Creates a new FollowTrajectory.
@@ -41,6 +48,21 @@ public class FollowTrajectory extends CommandBase {
     start = System.currentTimeMillis();
   }
 
+  public FollowTrajectory(Drivetrain drivetrain, Sensors sensors, Trajectory trajectory, Iterator<Double> angles, Iterator<Double> times) {
+    addRequirements(drivetrain);
+
+    this.drivetrain = drivetrain;
+    this.sensors = sensors;
+    this.trajectory = trajectory;
+
+    totalTime = trajectory.getTotalTimeSeconds();
+
+    start = System.currentTimeMillis();
+
+    this.angles = angles;
+    this.times = times;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -54,7 +76,21 @@ public class FollowTrajectory extends CommandBase {
     Trajectory.State goal = trajectory.sample(time);
     ChassisSpeeds adjustedSpeeds = controller.calculate(drivetrain.getPose(), goal);
 
-    drivetrain.setChassisSpeeds(adjustedSpeeds);
+    if (angles.getClass() == null) {
+      drivetrain.setChassisSpeeds(adjustedSpeeds);
+
+    } else {
+
+      if (refTime < time) {
+        refTime = times.next();
+        setAngle = angles.next();
+      }
+
+      drivetrain.customAngleChassisSpeed(
+        new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond, 0.0),
+        setAngle
+      );
+    }
   }
 
   // Called once the command ends or is interrupted.

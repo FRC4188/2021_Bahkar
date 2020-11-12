@@ -35,24 +35,13 @@ public final class Constants {
     public static final double DRIVE_ROTATIONS_PER_METER = DRIVE_GEARING / WHEEL_CIRCUMFRENCE; //Rotations per meter of the drive wheels.
     public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER *FALCON_ENCODER_TICKS; //Encoder ticks per meter of the drive wheels.
 
-    public static final double ANGLE_GEARING = 0.0; //Gear ratio of the turning motor.
-    public static final double ANGLE_RATIO = FALCON_ENCODER_TICKS * ANGLE_GEARING; //Encoder ticks in 360 degrees of turning.
+    public static final double ANGLE_RATIO = CANCODER_TICKS; //Encoder ticks in 360 degrees of turning.
 
     public static final double DRIVE_MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
     public static final double DRIVE_MAX_VELOCITY = 12.0; //Maximum velocity allowed in the drivetrain in meters per second.
     public static final double DRIVE_MAX_ACCEL = 8.0;
     public static final double DRIVE_MAX_CACCEL = 8.0;
     public static final double DRIVE_MAX_RADIANS = Math.PI; //Maximum rotation per second in radians.
-    public static final double DRIVE_RAMP = 1.0; //Ramp rate of drivetrain motor power.
-    public static final double DRIVEkP = 1.0; //P value for drivetrain pid loop.
-    public static final double DRIVEkI = 0.0; //I value for the drivetrain pid loop.
-    public static final double DRIVEkD = 0.0; //D value for the drivetrain pid loop.
-    public static final double DRIVEkS = 0.0;
-    public static final double DRIVEkV = 0.0;
-
-    public static final double ANGLEkP = 1.0; //P value for the angle motor pid loop.
-    public static final double ANGLEkI = 0.0; //I value for the angle motor pid loop.
-    public static final double ANGLEkD = 0.0; //D value for the angle motor pid loop.
 
     public static final double STARTING_X = 0.0; //Starting X position of the robot.
     public static final double STARTING_Y = 0.0; //Starting Y position of the robot.
@@ -67,14 +56,8 @@ public final class Constants {
 
     public static final double TURRET_MAX_VELOCITY = 11000; // rpm
     public static final double TURRET_MAX_ACCELERATION = 22000; // rpm / sec
-    public static final double TURRET_kP = 4e-5;
-    public static final double TURRET_kI = 1e-6;
-    public static final double TURRET_kD = 0;
-    public static final double TURRET_kF = 1.0 / TURRET_MAX_VELOCITY;
-    public static final double TURRET_kI_ZONE = 0;
     public static final double TURRET_GEAR_RATIO = 300; // angular velocity will be divided by this amount
     public static final double TURRET_ENCODER_TO_DEGREES = 360.0 / TURRET_GEAR_RATIO; // degrees
-    public static final double TURRET_RAMP_RATE = 0.5; // seconds
     public static final double TURRET_MAX_ANG = 370;
     public static final double TURRET_MIN_ANG = -10;
 }

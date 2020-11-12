@@ -11,20 +11,20 @@ import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
 import frc.robot.utils.CspSequentialCommandGroup;
-import frc.robot.utils.trajectory.TwoMeterTest;
+import frc.robot.utils.trajectory.RotationTest;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class OneMeterTestGroup extends CspSequentialCommandGroup {
+public class RotationTestGroup extends CspSequentialCommandGroup {
   /**
    * Creates a new OneMeterTestGroup.
    */
-  public OneMeterTestGroup(Drivetrain drivetrain, Sensors sensors) {
+  public RotationTestGroup(Drivetrain drivetrain, Sensors sensors) {
 
-    TwoMeterTest tmt = new TwoMeterTest(drivetrain.getConfig());
+    RotationTest rt = new RotationTest(drivetrain.getConfig());
 
     addCommands(
-      new FollowTrajectory(drivetrain, sensors, tmt.getTrajectory()
+      new FollowTrajectory(drivetrain, sensors, rt.getTrajectory(), rt.getAngles(), rt.getTimes()
       )
     );
   }

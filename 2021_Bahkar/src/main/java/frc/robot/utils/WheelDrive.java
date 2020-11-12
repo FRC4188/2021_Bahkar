@@ -1,10 +1,10 @@
 package frc.robot.utils;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 
@@ -18,34 +18,56 @@ public class WheelDrive {
     //Assign the motor objects.
     this.angleMotor = angleMotor;
     this.speedMotor = speedMotor;
+
+    configSensors();
+  }
+
+    /**
+   * Set properties of the motors.
+   */
+  private void configSensors() {
+    //Select sensor for motors (integrated sensor).
+    angleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    speedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+    //Call PIDConfig method for each motor and set ramp rates.
+    DrivePIDConfig(angleMotor);
+    AnglePIDConfig(speedMotor);
+    speedMotor.configClosedloopRamp(1.0);
+
+    //Call reset methods.
+    resetEncoders();
+  }
+  
+  /**
+   * Reset all encoders to position 0.
+   */
+  public void resetEncoders() {
+    //Set encoder positions to 0
+    angleMotor.setSelectedSensorPosition(0);
+    speedMotor.setSelectedSensorPosition(0);
   }
 
   /**
-   * Method to set SwerveModules based on speed input between -1 and 1 and angle input between 0 and 360.
-   * @param speed Speed of the wheel between -1 and 1.
-   * @param angle Angle for wheel to be turned to.
+   * Method to set P, I, and D terms for drive motor closed loop control.
+   * @param motor Motor which is being configured.
    */
-  public void drive(double speed, double angle) {
-    //Convert -1 to 1 input to an output in counts per 100ms and set the drive motor to that speed.
-    speed *= (Constants.DRIVE_COUNTS_PER_METER * Constants.DRIVE_MAX_VELOCITY) / 10;
-    speedMotor.set(ControlMode.Velocity, speed);
+  public void DrivePIDConfig(TalonFX motor) {
+    //Assign the values.
+    motor.config_kP(0, 1.0, 10);
+    motor.config_kI(0, 0.0, 10);
+    motor.config_kD(0, 0.0, 10);
+  }
 
-    //Find how for through the current rotation the wheel is.
-    double position = 360 % ((angleMotor.getSelectedSensorPosition() / Constants.CANCODER_TICKS) * 360);
-    //Find how many rotations the wheel has completed 
-    double rotationsIn = (((angleMotor.getSelectedSensorPosition() / Constants.CANCODER_TICKS) * 360) - position) / 360;
-
-    //Create an empty value for the real position to set the motor to.
-    double SetAngle;
-    //Decide which possible set position is closest to the current position and set the motor to that position.
-    if ((position - angle) <= 180 && (position - angle) >= -180) SetAngle = (rotationsIn * 360) + angle;
-    else if ((position - angle) > 180) SetAngle = ((rotationsIn + 1) * 360) + angle;
-    else if ((position - angle) < -180) SetAngle = ((rotationsIn - 1) * 360) + angle;
-    else SetAngle = 0;
-
-    //Convert position in degrees to position in ticks and set the motor to that position.
-    SetAngle *= Constants.CANCODER_TICKS/360;
-    angleMotor.set(ControlMode.Position, SetAngle);
+  /**
+   * Set P, I, and D terms for Angle motor.
+   * @param motor Motor which is being configured.
+   */
+  public void AnglePIDConfig(TalonFX motor) {
+    //Assign the values.
+    motor.config_kP(0, 1.0, 10);
+    motor.config_kI(0, 0.0, 10);
+    motor.config_kD(0, 0.0, 10);
   }
 
   /**
@@ -58,24 +80,22 @@ public class WheelDrive {
     speed *= Constants.DRIVE_COUNTS_PER_METER / 10;
     speedMotor.set(ControlMode.Velocity, speed);
 
+    //Find the current angle of the wheel.
     double currentAngle = angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO;
 
-    double position = 360 % currentAngle;
+    //Use the current angle to find the position in the current rotation (-180:180) and the number of rotations taken so far.
+    double position = (360 % (currentAngle + 180)) - 180;
     double rotIn = (currentAngle - position) / 360;
 
-    position = (position > 180) ? (-360 + position) : position;
-    position = (position < -180) ? (360 + position) : position;
-
-    double diff = position - angle;
-
+    //Find the closest equivelant set point.
+    double diff = Math.abs(position - angle);
     double SetAngle;
-
     if (diff < 90) {
-      SetAngle = diff + (rotIn * 360);
+      SetAngle = diff + (position + (rotIn * 360));
     } else if (position < -90) {
-      SetAngle = diff + ((rotIn - 1) * 360);
+      SetAngle = diff + (position + ((rotIn - 1) * 360));
     } else if (position > 90) {
-      SetAngle = diff + ((rotIn + 1) * 360);
+      SetAngle = diff + (position + ((rotIn + 1) * 360));
     } else {
       SetAngle = 0;
     }
