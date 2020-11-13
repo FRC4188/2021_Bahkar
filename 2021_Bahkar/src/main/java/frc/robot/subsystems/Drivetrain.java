@@ -8,6 +8,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -24,29 +26,34 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.CspController;
 import frc.robot.utils.WheelDrive;
+import frc.robot.utils.CspController.Scaling;
 
 public class Drivetrain extends SubsystemBase {
 
   // device initialization
   private final TalonFX LFAngleMotor = new TalonFX(1);
   private final TalonFX LFSpeedMotor = new TalonFX(2);
+  private final CANCoder LFangleEncoder = new CANCoder(21);
 
   private final TalonFX RFAngleMotor = new TalonFX(3);
   private final TalonFX RFSpeedMotor = new TalonFX(4);
+  private final CANCoder RFangleEncoder = new CANCoder(22);
 
   private final TalonFX LRAngleMotor = new TalonFX(5);
   private final TalonFX LRSpeedMotor = new TalonFX(6);
+  private final CANCoder LRangleEncoder = new CANCoder(23);
 
   private final TalonFX RRAngleMotor = new TalonFX(9);
   private final TalonFX RRSpeedMotor = new TalonFX(8);
+  private final CANCoder RRangleEncoder = new CANCoder(24);
 
   private Sensors sensors;
 
   //Initialize WheelDrive objects
-  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor);
-  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor);
-  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor);
-  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor);
+  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor, LFangleEncoder);
+  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor, RFangleEncoder);
+  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor, LRangleEncoder);
+  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder);
 
   //Put together swerve module positions relative to the center of the robot.
   private Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
@@ -112,11 +119,11 @@ public class Drivetrain extends SubsystemBase {
    */
   public void drive (CspController pilot) {
     //Convert controller input to M/S and Rad/S
-    double Speed = (pilot.getY(Hand.kLeft)) * Constants.DRIVE_MAX_VELOCITY;
-    double Strafe = (pilot.getX(Hand.kLeft)) * Constants.DRIVE_MAX_VELOCITY;
+    double Speed = (pilot.getY(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
+    double Strafe = (pilot.getX(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
 
-    double rightY = pilot.getY(Hand.kRight);
-    double rightX = pilot.getX(Hand.kRight);
+    double rightY = pilot.getY(Hand.kRight, Scaling.CUBED);
+    double rightX = pilot.getX(Hand.kRight, Scaling.CUBED);
 
     double Rotation = (rightY != 0.0) ? (Math.toDegrees(Math.atan(rightX / rightY))) :
         ((rightX == 0.0) ? (odometry.getPoseMeters().getRotation().getDegrees()) : 

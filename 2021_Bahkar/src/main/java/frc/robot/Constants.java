@@ -25,9 +25,9 @@ public final class Constants {
     public static final double A_CROSSLENGTH = Math.sqrt(Math.pow(A_LENGTH, 2) + Math.pow(A_WIDTH, 2)); // Axel crosslength in meters
 
     public static final double FIVEFIFTY_MAX_TEMP = 50.0;
-    public static final double FALCON_ENCODER_TICKS = 2048; //Counts per rotation of the Falcon 500 motor.
+    public static final double FALCON_ENCODER_TICKS = 2048; //Counts per revolution of the Falcon 500 motor.
     public static final double FALCON_MAX_TEMP = 50.0; //Max temperature of Falcon 500 in degrees celsius.
-    public static final double CANCODER_TICKS = 4096;
+    public static final double CANCODER_TICKS = 4096; //Counts per revolution of CANCoder.
     
     public static final double DRIVE_GEARING = 0.0; //Gear ratio of the drive motor.
     public static final double WHEEL_DIAMETER = 4.0; //Diameter of the drive wheels.
@@ -39,8 +39,8 @@ public final class Constants {
 
     public static final double DRIVE_MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
     public static final double DRIVE_MAX_VELOCITY = 12.0; //Maximum velocity allowed in the drivetrain in meters per second.
-    public static final double DRIVE_MAX_ACCEL = 8.0;
-    public static final double DRIVE_MAX_CACCEL = 8.0;
+    public static final double DRIVE_MAX_ACCEL = 8.0; //Maximum acceleration of the drivetrain in meters per second squared.
+    public static final double DRIVE_MAX_CACCEL = 8.0; //Maximum centripital acceleration of the robot in meters per second squared.
     public static final double DRIVE_MAX_RADIANS = Math.PI; //Maximum rotation per second in radians.
 
     public static final double STARTING_X = 0.0; //Starting X position of the robot.
@@ -52,12 +52,12 @@ public final class Constants {
     public static final double OFFSET_LIMIT = Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2)); //Limit for the skew against the 3-point goal where any farther would make the ball hit the wall.
 
     public static final double TURRET_LIMELIGHT_HEIGHT = 1.0; //Height fromt the ground of the limelight in feet.
-    public static final double TURRET_MOUNTING_ANGLE = 0.0;
+    public static final double TURRET_MOUNTING_ANGLE = 0.0; //Verticle angle which the limelight sits at on the turret
 
     public static final double TURRET_MAX_VELOCITY = 11000; // rpm
     public static final double TURRET_MAX_ACCELERATION = 22000; // rpm / sec
     public static final double TURRET_GEAR_RATIO = 300; // angular velocity will be divided by this amount
     public static final double TURRET_ENCODER_TO_DEGREES = 360.0 / TURRET_GEAR_RATIO; // degrees
-    public static final double TURRET_MAX_ANG = 370;
-    public static final double TURRET_MIN_ANG = -10;
+    public static final double TURRET_MAX_ANG = 370; //Farthest bound of the turret's roation in degrees.
+    public static final double TURRET_MIN_ANG = -10; //Other farthers bound of the turret's rotation in degrees.
 }

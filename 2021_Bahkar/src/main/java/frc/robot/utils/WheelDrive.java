@@ -3,7 +3,9 @@ package frc.robot.utils;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
@@ -13,8 +15,11 @@ public class WheelDrive {
   //Unassigned motor objects.
   private TalonFX angleMotor;
   private TalonFX speedMotor;
+  private CANCoder angleEncoder;
 
-  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor) {
+  private PIDController anglePID = new PIDController(1.0, 0.0, 0.0);
+
+  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor, CANCoder angleEncoder) {
     //Assign the motor objects.
     this.angleMotor = angleMotor;
     this.speedMotor = speedMotor;
@@ -27,12 +32,10 @@ public class WheelDrive {
    */
   private void configSensors() {
     //Select sensor for motors (integrated sensor).
-    angleMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     speedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     //Call PIDConfig method for each motor and set ramp rates.
     DrivePIDConfig(angleMotor);
-    AnglePIDConfig(speedMotor);
     speedMotor.configClosedloopRamp(1.0);
 
     //Call reset methods.
@@ -53,17 +56,6 @@ public class WheelDrive {
    * @param motor Motor which is being configured.
    */
   public void DrivePIDConfig(TalonFX motor) {
-    //Assign the values.
-    motor.config_kP(0, 1.0, 10);
-    motor.config_kI(0, 0.0, 10);
-    motor.config_kD(0, 0.0, 10);
-  }
-
-  /**
-   * Set P, I, and D terms for Angle motor.
-   * @param motor Motor which is being configured.
-   */
-  public void AnglePIDConfig(TalonFX motor) {
     //Assign the values.
     motor.config_kP(0, 1.0, 10);
     motor.config_kI(0, 0.0, 10);
@@ -102,7 +94,7 @@ public class WheelDrive {
 
     //Convert angle to encoder ticks and set the motor to that position.
     SetAngle *= Constants.ANGLE_RATIO;
-    angleMotor.set(ControlMode.Position, SetAngle);
+    angleMotor.set(ControlMode.PercentOutput ,anglePID.calculate(angleEncoder.getPosition(), SetAngle));
   }
 
   public SwerveModuleState updateModuleState(SwerveModuleState state) {
