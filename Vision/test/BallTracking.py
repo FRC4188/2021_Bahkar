@@ -4,7 +4,7 @@ import numpy as np
 cap = cv2.VideoCapture(0)
 
 def process(frame):
-    blur = cv2.blur(frame,(20,20))
+    blur = cv2.blur(frame,(50,50))
     
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
 

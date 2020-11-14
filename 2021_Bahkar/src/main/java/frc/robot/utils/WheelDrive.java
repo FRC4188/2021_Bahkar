@@ -35,7 +35,7 @@ public class WheelDrive {
     speedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     //Call PIDConfig method for each motor and set ramp rates.
-    DrivePIDConfig(angleMotor);
+    DrivePIDConfig(speedMotor);
     speedMotor.configClosedloopRamp(1.0);
 
     //Call reset methods.
@@ -73,27 +73,22 @@ public class WheelDrive {
     speedMotor.set(ControlMode.Velocity, speed);
 
     //Find the current angle of the wheel.
-    double currentAngle = angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO;
+    double currentAngle = angleMotor.getSelectedSensorPosition() / (Constants.CANCODER_TICKS * 360);
 
     //Use the current angle to find the position in the current rotation (-180:180) and the number of rotations taken so far.
-    double position = (360 % (currentAngle + 180)) - 180;
-    double rotIn = (currentAngle - position) / 360;
+    double position = ((currentAngle + 180) % 360) - 180;
 
     //Find the closest equivelant set point.
-    double diff = Math.abs(position - angle);
+    double diff = angle-position;
+
     double SetAngle;
-    if (diff < 90) {
-      SetAngle = diff + (position + (rotIn * 360));
-    } else if (position < -90) {
-      SetAngle = diff + (position + ((rotIn - 1) * 360));
-    } else if (position > 90) {
-      SetAngle = diff + (position + ((rotIn + 1) * 360));
-    } else {
-      SetAngle = 0;
-    }
+    
+    diff = (Math.abs(diff) <= 180.0) ? diff :
+           (diff > 180) ? (diff - 360.0) :
+           (diff + 360.0);
 
     //Convert angle to encoder ticks and set the motor to that position.
-    SetAngle *= Constants.ANGLE_RATIO;
+    SetAngle = (currentAngle + diff) * (Constants.ANGLE_RATIO / 360);
     angleMotor.set(ControlMode.PercentOutput ,anglePID.calculate(angleEncoder.getPosition(), SetAngle));
   }
 

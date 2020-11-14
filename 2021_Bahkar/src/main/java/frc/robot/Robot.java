@@ -103,8 +103,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    tempManager.run();
-    bop.run();
+    //tempManager.run();
+    //bop.run();
   }
 
   @Override

@@ -35,6 +35,7 @@ public class KinematicManualDrive extends CommandBase {
   @Override
   public void execute() {
     drivetrain.drive(pilot);
+    drivetrain.updateOdometry();
   }
 
   // Called once the command ends or is interrupted.

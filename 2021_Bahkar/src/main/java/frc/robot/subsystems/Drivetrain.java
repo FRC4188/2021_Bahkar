@@ -12,6 +12,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -69,6 +70,8 @@ public class Drivetrain extends SubsystemBase {
   //Initialize a ChassisSpeeds object and start it with default values
   private ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
 
+  private PIDController rotationPID = new PIDController(5e-1, 0.0, 0.0);
+
   //Initialize a list of module states and assign the kinematic results to them
   private SwerveModuleState[]  moduleStates = kinematics.toSwerveModuleStates(speeds);
 
@@ -109,7 +112,6 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     //update odometry and shuffleboard ever scheduler run.
-    updateOdometry();
     updateShuffleboard();
   }
 
@@ -122,8 +124,8 @@ public class Drivetrain extends SubsystemBase {
     double Speed = (pilot.getY(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
     double Strafe = (pilot.getX(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
 
-    double rightY = pilot.getY(Hand.kRight, Scaling.CUBED);
-    double rightX = pilot.getX(Hand.kRight, Scaling.CUBED);
+    double rightY = pilot.getY(Hand.kRight, Scaling.LINEAR);
+    double rightX = pilot.getX(Hand.kRight, Scaling.LINEAR);
 
     double Rotation = (rightY != 0.0) ? (Math.toDegrees(Math.atan(rightX / rightY))) :
         ((rightX == 0.0) ? (odometry.getPoseMeters().getRotation().getDegrees()) : 
@@ -134,9 +136,11 @@ public class Drivetrain extends SubsystemBase {
     Speed = speedLimiter.calculate((fineControl) ? Speed/2 : Speed);
     Strafe = strafeLimiter.calculate((fineControl) ? Strafe/2 : Strafe);
     Rotation = rotLimiter.calculate((fineControl) ? Rotation/2 : Rotation);
+    
+    double rotSpeed = rotationPID.calculate(sensors.getGyro(), Rotation);
 
     //Get a chassis speed and rotation from input.
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, Rotation, Rotation2d.fromDegrees(sensors.getGyro()));
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, rotSpeed, Rotation2d.fromDegrees(sensors.getGyro()));
 
     //Set the Chassis speeds after processing input.
     setChassisSpeeds(speeds);
@@ -187,7 +191,7 @@ public class Drivetrain extends SubsystemBase {
   /**
    * Method to update the odometry of the robot.
    */
-  private void updateOdometry() {
+  public void updateOdometry() {
     //get the module state from each motor
     frontLeft = LeftFront.updateModuleState(frontLeft);
     frontRight = RightFront.updateModuleState(frontRight);
