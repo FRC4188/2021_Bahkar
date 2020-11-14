@@ -24,15 +24,19 @@ public class WheelDrive {
     this.angleMotor = angleMotor;
     this.speedMotor = speedMotor;
 
-    configSensors();
+    configMotors();
   }
 
     /**
    * Set properties of the motors.
    */
-  private void configSensors() {
+  private void configMotors() {
+    speedMotor.configFactoryDefault();
+    angleMotor.configFactoryDefault();
+
     //Select sensor for motors (integrated sensor).
-    speedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    speedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    angleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
     //Call PIDConfig method for each motor and set ramp rates.
     DrivePIDConfig(speedMotor);
@@ -47,7 +51,7 @@ public class WheelDrive {
    */
   public void resetEncoders() {
     //Set encoder positions to 0
-    angleMotor.setSelectedSensorPosition(0);
+    angleEncoder.setPosition(0);
     speedMotor.setSelectedSensorPosition(0);
   }
 
@@ -69,21 +73,21 @@ public class WheelDrive {
   */
   public void convertedDrive(double speed, double angle) {
     //Convert M/S to ticks per 100ms and set motor to it.
-    speed *= Constants.DRIVE_COUNTS_PER_METER / 10;
+    speed *= Constants.DRIVE_COUNTS_PER_METER / 10.0;
     speedMotor.set(ControlMode.Velocity, speed);
 
     //Find the current angle of the wheel.
-    double currentAngle = angleMotor.getSelectedSensorPosition() / (Constants.CANCODER_TICKS * 360);
+    double currentAngle = angleMotor.getSelectedSensorPosition() / (Constants.CANCODER_TICKS * 360.0);
 
     //Use the current angle to find the position in the current rotation (-180:180) and the number of rotations taken so far.
-    double position = ((currentAngle + 180) % 360) - 180;
+    double position = ((currentAngle + 180.0) % 360.0) - 180.0;
 
     //Find the closest equivelant set point.
     double diff = angle-position;
 
     double SetAngle;
     
-    diff = (Math.abs(diff) <= 180.0) ? diff :
+    diff = (Math.abs(diff) <= 180.0) ? diff + 360.0:
            (diff > 180) ? (diff - 360.0) :
            (diff + 360.0);
 

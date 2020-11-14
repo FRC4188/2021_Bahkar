@@ -124,20 +124,26 @@ public class Drivetrain extends SubsystemBase {
     double Speed = (pilot.getY(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
     double Strafe = (pilot.getX(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
 
-    double rightY = pilot.getY(Hand.kRight, Scaling.LINEAR);
-    double rightX = pilot.getX(Hand.kRight, Scaling.LINEAR);
-
-    double Rotation = (rightY != 0.0) ? (Math.toDegrees(Math.atan(rightX / rightY))) :
-        ((rightX == 0.0) ? (odometry.getPoseMeters().getRotation().getDegrees()) : 
-        ((rightX > 0.0) ? (90.0) : (270.0)));
+    double Angle = pilot.getAngle(Hand.kRight);
 
     boolean fineControl = pilot.getBumper(Hand.kLeft);
 
     Speed = speedLimiter.calculate((fineControl) ? Speed/2 : Speed);
     Strafe = strafeLimiter.calculate((fineControl) ? Strafe/2 : Strafe);
-    Rotation = rotLimiter.calculate((fineControl) ? Rotation/2 : Rotation);
+    Angle = rotLimiter.calculate((fineControl) ? Angle/2 : Angle);
+
+    double currentAngle = sensors.getGyro();
+
+    //Use the current angle to find the position in the current rotation (-180:180) and the number of rotations taken so far.
+    double position = ((currentAngle + 180.0) % 360.0) - 180.0;
+
+    //Find the closest equivelant set point.
+    double diff = Angle-position;
+    diff = (Math.abs(Angle) <= 180.0) ? Angle + 360.0:
+           (diff > 180) ? (diff - 360.0) :
+           (diff + 360.0);
     
-    double rotSpeed = rotationPID.calculate(sensors.getGyro(), Rotation);
+    double rotSpeed = rotationPID.calculate(sensors.getGyro(), (currentAngle - diff));
 
     //Get a chassis speed and rotation from input.
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, rotSpeed, Rotation2d.fromDegrees(sensors.getGyro()));

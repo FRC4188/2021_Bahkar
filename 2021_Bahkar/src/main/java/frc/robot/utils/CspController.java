@@ -67,18 +67,18 @@ public class CspController extends XboxController {
      */
     @Override
     public double getY(Hand hand) {
-        return -1 * getOutput(super.getY(hand), Scaling.SQUARED);
+        return getOutput(super.getY(hand), Scaling.SQUARED);
     }
 
     /**
      * Returns the Y value of the joystick for a given hand and scaling.
      */
     public double getY(Hand hand, Scaling scale) {
-        return -1 * getOutput(super.getY(hand), scale);
+        return getOutput(super.getY(hand), scale);
     }
 
     /**
-     * Returns the Y value of the joystick for a given hand.
+     * Returns the X value of the joystick for a given hand.
      */
     @Override
     public double getX(Hand hand) {
@@ -86,12 +86,19 @@ public class CspController extends XboxController {
     }
 
     /**
-     * Returns the Y value of the joystick for a given hand and scaling.
+     * Returns the X value of the joystick for a given hand and scaling.
      */
     public double getX(Hand hand, Scaling scale) {
         return getOutput(super.getX(hand), scale);
     }
 
+    public double getAngle(Hand hand) {
+        double x = getX(hand, Scaling.LINEAR);
+        double y = -getY(hand, Scaling.LINEAR);
+
+        return Math.toDegrees((y > 0) ? (Math.atan2(x, y)) : 
+                (x > 0) ? (180 + Math.atan2(x, y)) : (-180.0 + Math.atan2(x, y)));
+    }
 
     /**
      * Returns the JoystickButton object for the A button.
