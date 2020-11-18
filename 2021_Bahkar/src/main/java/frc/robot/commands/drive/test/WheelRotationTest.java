@@ -5,44 +5,47 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.drive;
-
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+package frc.robot.commands.drive.test;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.utils.CspController;
 
-public class KinematicManualDrive extends CommandBase {
-
+public class WheelRotationTest extends CommandBase {
   Drivetrain drivetrain;
-  CspController pilot;
 
   /**
-   * Creates a new KinematicManualDrive.
+   * Creates a new WheelRotationTest.
    */
-  public KinematicManualDrive(Drivetrain drivetrain, CspController pilot) {
+  public WheelRotationTest(Drivetrain drivetrain) {
     addRequirements(drivetrain);
-
-    this.drivetrain = drivetrain;
-    this.pilot = pilot;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    drivetrain.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.drive(pilot);
-    drivetrain.updateOdometry();
+    try {
+      while(true) {
+        drivetrain.rawSet(90.0, 0.0);
+        Thread.sleep(1000);
+        drivetrain.rawSet(0.0, 0.0);
+        Thread.sleep(1000);
+      }
+    } catch(InterruptedException e) { 
+      Thread.currentThread().interrupt(); 
+      System.out.println("Interrupted exception in WheelRotationTest.java");
+   }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drivetrain.rawSet(0.0, 0.0);
   }
 
   // Returns true when the command should end.

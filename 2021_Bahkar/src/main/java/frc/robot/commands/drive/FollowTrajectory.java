@@ -81,14 +81,14 @@ public class FollowTrajectory extends CommandBase {
 
     } else {
 
+      //This stuff is WIP
       if (refTime < time) {
         refTime = times.next();
         setAngle = angles.next();
       }
 
-      drivetrain.customAngleChassisSpeed(
-        new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond, 0.0),
-        setAngle
+      drivetrain.setChassisSpeeds(
+        new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond, 0.0)
       );
     }
   }

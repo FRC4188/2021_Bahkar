@@ -3,11 +3,13 @@ package frc.robot.utils;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class WheelDrive {
@@ -52,6 +54,8 @@ public class WheelDrive {
   public void resetEncoders() {
     //Set encoder positions to 0
     angleEncoder.setPosition(0);
+    angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+
     speedMotor.setSelectedSensorPosition(0);
   }
 
@@ -66,48 +70,44 @@ public class WheelDrive {
     motor.config_kD(0, 0.0, 10);
   }
 
-  /**
-  * Method to set SwerveModules based on speed input of M/S and angle input between 0 and 360.
-  * @param speed Speed of the wheel in M/S.
-  * @param angle Angle for wheel to be turned to.
-  */
-  public void convertedDrive(double speed, double angle) {
+  public void convertedDrive(SwerveModuleState state) {
     //Convert M/S to ticks per 100ms and set motor to it.
-    speed *= Constants.DRIVE_COUNTS_PER_METER / 10.0;
-    speedMotor.set(ControlMode.Velocity, speed);
+     speedMotor.set(ControlMode.Velocity, state.speedMetersPerSecond * (Constants.DRIVE_COUNTS_PER_METER / 10.0));
 
     //Find the current angle of the wheel.
-    double currentAngle = angleMotor.getSelectedSensorPosition() / (Constants.CANCODER_TICKS * 360.0);
+    double currentAngle = angleEncoder.getAbsolutePosition();
 
-    //Use the current angle to find the position in the current rotation (-180:180) and the number of rotations taken so far.
-    double position = ((currentAngle + 180.0) % 360.0) - 180.0;
-
-    //Find the closest equivelant set point.
-    double diff = angle-position;
-
-    double SetAngle;
-    
-    diff = (Math.abs(diff) <= 180.0) ? diff + 360.0:
-           (diff > 180) ? (diff - 360.0) :
-           (diff + 360.0);
-
-    //Convert angle to encoder ticks and set the motor to that position.
-    SetAngle = (currentAngle + diff) * (Constants.ANGLE_RATIO / 360);
-    angleMotor.set(ControlMode.PercentOutput ,anglePID.calculate(angleEncoder.getPosition(), SetAngle));
+    angleMotor.set(ControlMode.PercentOutput ,anglePID.calculate(currentAngle, state.angle.getDegrees()));
   }
 
-  public SwerveModuleState updateModuleState(SwerveModuleState state) {
-    double Speed = speedMotor.getSelectedSensorVelocity() / (Constants.DRIVE_COUNTS_PER_METER / 10);
-    double Angle = angleMotor.getSelectedSensorPosition() / Constants.ANGLE_RATIO;
+  public SwerveModuleState updateModuleState() {
+    double speed = (speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.DRIVE_COUNTS_PER_METER;
+    double angle = angleEncoder.getAbsolutePosition();
 
-    double position = 360 % Angle;
+    return new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle)));
+  }
 
-    position = (position > 180) ? (-360 + position) : position;
-    position = (position < -180) ? (360 + position) : position;
+  public void setAngle(double angle) {
+    angleMotor.set(ControlMode.PercentOutput, anglePID.calculate(angleEncoder.getAbsolutePosition(), angle));
+  }
 
-    state.speedMetersPerSecond = Speed;
-    state.angle = Rotation2d.fromDegrees(Angle);
+  public void setVelocity(double speed) {
+    speedMotor.set(ControlMode.Velocity, ((speed * Constants.DRIVE_COUNTS_PER_METER) / 10.0));
+  }
 
-    return state;
+  public double getAbsoluteAngle() {
+    return angleEncoder.getAbsolutePosition();
+  }
+
+  public double getRelativeAngle() {
+    return angleEncoder.getPosition();
+  }
+
+  public double getRPM() {
+    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.FALCON_ENCODER_TICKS;
+  }
+
+  public double getMS() {
+    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.DRIVE_COUNTS_PER_METER;
   }
 }

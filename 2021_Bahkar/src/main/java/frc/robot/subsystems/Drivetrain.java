@@ -95,9 +95,7 @@ public class Drivetrain extends SubsystemBase {
   //Initialize slew limiters.
   private SlewRateLimiter speedLimiter = new SlewRateLimiter(2.0);
   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(2.0);
-  private SlewRateLimiter rotLimiter = new SlewRateLimiter(0.005);
-
-  private ChassisSpeeds angleComponent = new ChassisSpeeds(0.0, 0.0, 0.0);
+  private SlewRateLimiter rotLimiter = new SlewRateLimiter(180.0);
 
   /**
    * Creates a new Drivetrain.
@@ -125,28 +123,20 @@ public class Drivetrain extends SubsystemBase {
     double Strafe = (pilot.getX(Hand.kLeft, Scaling.CUBED)) * Constants.DRIVE_MAX_VELOCITY;
 
     double Angle = pilot.getAngle(Hand.kRight);
+    double Rotation = pilot.getX(Hand.kRight);
 
     boolean fineControl = pilot.getBumper(Hand.kLeft);
+    boolean fieldRelative = !pilot.getBumper(Hand.kRight);
 
-    Speed = speedLimiter.calculate((fineControl) ? Speed/2 : Speed);
-    Strafe = strafeLimiter.calculate((fineControl) ? Strafe/2 : Strafe);
-    Angle = rotLimiter.calculate((fineControl) ? Angle/2 : Angle);
-
-    double currentAngle = sensors.getGyro();
-
-    //Use the current angle to find the position in the current rotation (-180:180) and the number of rotations taken so far.
-    double position = ((currentAngle + 180.0) % 360.0) - 180.0;
-
-    //Find the closest equivelant set point.
-    double diff = Angle-position;
-    diff = (Math.abs(Angle) <= 180.0) ? Angle + 360.0:
-           (diff > 180) ? (diff - 360.0) :
-           (diff + 360.0);
-    
-    double rotSpeed = rotationPID.calculate(sensors.getGyro(), (currentAngle - diff));
+    Speed = speedLimiter.calculate((fineControl) ? Speed / 2.0 : Speed);
+    Strafe = strafeLimiter.calculate((fineControl) ? Strafe / 2.0 : Strafe);
+    Angle = rotLimiter.calculate(Angle);
+    Rotation = rotLimiter.calculate(Rotation * 180.0) / 180.0;
 
     //Get a chassis speed and rotation from input.
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(Speed, Strafe, rotSpeed, Rotation2d.fromDegrees(sensors.getGyro()));
+    speeds = (fieldRelative) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
+      Speed, Strafe, Rotation, sensors.getRotation2d())) :
+      (new ChassisSpeeds(Speed, Strafe, Rotation));
 
     //Set the Chassis speeds after processing input.
     setChassisSpeeds(speeds);
@@ -167,31 +157,22 @@ public class Drivetrain extends SubsystemBase {
     backRight = moduleStates[3];
 
     //Set the modules in the WheelDrive objects to the kinematic results.
-    LeftFront.convertedDrive(frontLeft.speedMetersPerSecond, frontLeft.angle.getDegrees());
-    RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
-    LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
-    RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
+    LeftFront.convertedDrive(frontLeft);
+    RightFront.convertedDrive(frontRight);
+    LeftRear.convertedDrive(backLeft);
+    RightRear.convertedDrive(backRight);
   }
 
-  public void customAngleChassisSpeed(ChassisSpeeds speeds, double angle) {
-    angleComponent = ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, Math.PI, Rotation2d.fromDegrees(angle));
+  public void rawSet(double angle, double velocity) {
+    LeftFront.setAngle(angle);
+    RightFront.setAngle(angle);
+    LeftRear.setAngle(angle);
+    RightRear.setAngle(angle);
 
-    speeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, angleComponent.omegaRadiansPerSecond);
-
-    //get an array of module states from the ChassisSpeeds.
-    moduleStates = kinematics.toSwerveModuleStates(speeds);
-
-    //Seperate the elements of the array.
-    frontLeft = moduleStates[0];
-    frontRight = moduleStates[1];
-    backLeft = moduleStates[2];
-    backRight = moduleStates[3];
-
-    //Set the modules in the WheelDrive objects to the kinematic results.
-    LeftFront.convertedDrive(frontLeft.speedMetersPerSecond, frontLeft.angle.getDegrees());
-    RightFront.convertedDrive(frontRight.speedMetersPerSecond, frontRight.angle.getDegrees());
-    LeftRear.convertedDrive(backLeft.speedMetersPerSecond,  backLeft.angle.getDegrees());
-    RightRear.convertedDrive(backRight.speedMetersPerSecond, backLeft.angle.getDegrees());
+    LeftFront.setVelocity(velocity);
+    RightFront.setVelocity(velocity);
+    LeftRear.setVelocity(velocity);
+    RightRear.setVelocity(velocity);
   }
 
   /**
@@ -199,13 +180,13 @@ public class Drivetrain extends SubsystemBase {
    */
   public void updateOdometry() {
     //get the module state from each motor
-    frontLeft = LeftFront.updateModuleState(frontLeft);
-    frontRight = RightFront.updateModuleState(frontRight);
-    backLeft = LeftRear.updateModuleState(backLeft);
-    backRight = RightRear.updateModuleState(backRight);
+    frontLeft = LeftFront.updateModuleState();
+    frontRight = RightFront.updateModuleState();
+    backLeft = LeftRear.updateModuleState();
+    backRight = RightRear.updateModuleState();
 
     //update odometry using the new module states.
-    Position = odometry.update(Rotation2d.fromDegrees(sensors.getGyro()), frontLeft, frontRight, backLeft, backRight);
+    Position = odometry.update(sensors.getRotation2d(), frontLeft, frontRight, backLeft, backRight);
   }
 
   /**
@@ -213,14 +194,32 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", Position.toString());
-    SmartDashboard.putNumber("Left Front Drive temp.", getFrontLeftDriveTemp());
-    SmartDashboard.putNumber("Left Front Angle temp.", getFrontLeftAngleTemp());
-    SmartDashboard.putNumber("Right Front Drive temp.", getFrontRightDriveTemp());
-    SmartDashboard.putNumber("Right Front Angle temp.", getFrontRightAngleTemp());
-    SmartDashboard.putNumber("Left Rear Drive temp.", getRearLeftDriveTemp());
-    SmartDashboard.putNumber("Left Rear Angle temp.", getRearLeftAngleTemp());
-    SmartDashboard.putNumber("Right Rear Drive temp.", getRearRightDriveTemp());
-    SmartDashboard.putNumber("Right Rear Angle temp.", getRearRightAngleTemp());
+
+    SmartDashboard.putNumber("Left Front Absolute Angle", LeftFront.getAbsoluteAngle());
+    SmartDashboard.putNumber("Right Front Absolute Angle", RightFront.getAbsoluteAngle());
+    SmartDashboard.putNumber("Left Rear Absolute Angle", LeftRear.getAbsoluteAngle());
+    SmartDashboard.putNumber("Right Rear Absolute Angle", RightRear.getAbsoluteAngle());
+
+    SmartDashboard.putNumber("Left Front RPM", LeftFront.getRPM());
+    SmartDashboard.putNumber("Right Front RPM", RightFront.getRPM());
+    SmartDashboard.putNumber("Left Rear RPM", LeftRear.getRPM());
+    SmartDashboard.putNumber("Right Rear RPM", RightRear.getRPM());
+
+    SmartDashboard.putNumber("Left Front Drive temp", getFrontLeftDriveTemp());
+    SmartDashboard.putNumber("Left Front Angle temp", getFrontLeftAngleTemp());
+    SmartDashboard.putNumber("Right Front Drive temp", getFrontRightDriveTemp());
+    SmartDashboard.putNumber("Right Front Angle temp", getFrontRightAngleTemp());
+    SmartDashboard.putNumber("Left Rear Drive temp", getRearLeftDriveTemp());
+    SmartDashboard.putNumber("Left Rear Angle temp", getRearLeftAngleTemp());
+    SmartDashboard.putNumber("Right Rear Drive temp", getRearRightDriveTemp());
+    SmartDashboard.putNumber("Right Rear Angle temp", getRearRightAngleTemp());
+  }
+
+  public void reset() {
+    LeftFront.resetEncoders();
+    RightFront.resetEncoders();
+    LeftRear.resetEncoders();
+    RightRear.resetEncoders();
   }
 
   /**

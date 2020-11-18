@@ -96,8 +96,17 @@ public class CspController extends XboxController {
         double x = getX(hand, Scaling.LINEAR);
         double y = -getY(hand, Scaling.LINEAR);
 
-        return Math.toDegrees((y > 0) ? (Math.atan2(x, y)) : 
-                (x > 0) ? (180 + Math.atan2(x, y)) : (-180.0 + Math.atan2(x, y)));
+        double baseTan = Math.atan2(x, y);
+
+        double calcAngle = (y > 0.0) ? baseTan :
+        ((x < 0.0) ? -(-180 - baseTan) :
+        ((x > 0.0) ? 180 + baseTan : 0.0));
+
+        double radAngle = (x == 0.0) ? ((y < 0) ? 180 : 0) : 
+        ((y == 0.0) ? ((x < 0.0) ? -90: 90) :
+        calcAngle);
+        
+        return Math.toDegrees(radAngle);
     }
 
     /**
