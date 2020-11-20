@@ -7,39 +7,45 @@
 
 package frc.robot.commands.drive.test;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
 public class WheelRotationTest extends CommandBase {
   Drivetrain drivetrain;
 
+  double start;
+
   /**
    * Creates a new WheelRotationTest.
    */
   public WheelRotationTest(Drivetrain drivetrain) {
     addRequirements(drivetrain);
+
+    this.drivetrain = drivetrain;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     drivetrain.reset();
+    start = (double)((System.currentTimeMillis()));
+
+    SmartDashboard.putNumber("Angle Setpoint", 90.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    try {
-      while(true) {
-        drivetrain.rawSet(90.0, 0.0);
-        Thread.sleep(1000);
-        drivetrain.rawSet(0.0, 0.0);
-        Thread.sleep(1000);
-      }
-    } catch(InterruptedException e) { 
-      Thread.currentThread().interrupt(); 
-      System.out.println("Interrupted exception in WheelRotationTest.java");
-   }
+    /*
+    double time = (double)((System.currentTimeMillis() - start)/10000);
+
+    if (Math.round(time/2) % 2 <= 1) drivetrain.rawSet(0, 0);
+    else drivetrain.rawSet(90, 0);
+    */
+    double set = SmartDashboard.getNumber("Angle Setpoint", 90.0);
+
+    drivetrain.rawSet(set, 0.0);
   }
 
   // Called once the command ends or is interrupted.

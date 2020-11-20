@@ -51,10 +51,10 @@ public class Drivetrain extends SubsystemBase {
   private Sensors sensors;
 
   //Initialize WheelDrive objects
-  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor, LFangleEncoder);
-  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor, RFangleEncoder);
-  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor, LRangleEncoder);
-  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder);
+  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor, LFangleEncoder, 72.5, false);
+  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor, RFangleEncoder, 174.9, true);
+  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor, LRangleEncoder, 2.2, false);
+  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder, 157.85, true);
 
   //Put together swerve module positions relative to the center of the robot.
   private Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
@@ -64,8 +64,7 @@ public class Drivetrain extends SubsystemBase {
 
   //Create a kinematics withe the swerve module positions
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-    FrontLeftLocation, FrontRightLocation, BackLeftLocation, BackRightLocation
-  );
+    FrontLeftLocation, FrontRightLocation, BackLeftLocation, BackRightLocation);
 
   //Initialize a ChassisSpeeds object and start it with default values
   private ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
@@ -102,6 +101,11 @@ public class Drivetrain extends SubsystemBase {
    */
   public Drivetrain(Sensors sensors) {
     this.sensors = sensors;
+
+    LeftFront.setInverted(false);
+    RightFront.setInverted(false);
+    LeftRear.setInverted(false);
+    RightRear.setInverted(false);
   }
 
   /**
@@ -189,7 +193,7 @@ public class Drivetrain extends SubsystemBase {
     Position = odometry.update(sensors.getRotation2d(), frontLeft, frontRight, backLeft, backRight);
   }
 
-  /**
+  /**p
    * Publish value from the drivetrain to the Smart Dashboard.
    */
   private void updateShuffleboard() {

@@ -37,6 +37,9 @@ public final class Constants {
     public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * FALCON_ENCODER_TICKS; //Encoder counts per revolution of the drive wheel.
     public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; //Encoder ticks per meter of the drive wheels.
 
+    public static final double ANGLE_GEARING = 12.0;
+    public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * FALCON_ENCODER_TICKS) / 360;
+
     public static final double DRIVE_MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
     public static final double DRIVE_MAX_VELOCITY = 4.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
     public static final double DRIVE_MAX_ACCEL = 3.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).

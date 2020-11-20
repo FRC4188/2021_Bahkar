@@ -25,7 +25,7 @@ import frc.robot.utils.enums.Pipeline;
 public class Sensors extends SubsystemBase {
 
   private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-  private final PigeonIMU pigeon = new PigeonIMU(31);
+  //private final PigeonIMU pigeon = new PigeonIMU(31);
 
   private NetworkTable TlimelightTable = null;
   private NetworkTable ClimelightTable = null;
@@ -38,7 +38,7 @@ public class Sensors extends SubsystemBase {
    * Creates a new Sensors.
    */
   public Sensors() {
-    setupPigeon();
+    //setupPigeon();
     setupGyro();
 
     TlimelightTable = NetworkTableInstance.getDefault().getTable("turret_limelight");
@@ -47,20 +47,22 @@ public class Sensors extends SubsystemBase {
     TlimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
     ClimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
 
+    /*
     // Creates UsbCamera and MjpegServer [1] and connects them
     CameraServer.getInstance().startAutomaticCapture();
     // Creates the CvSink and connects it to the UsbCamera
     CvSink cvSink = CameraServer.getInstance().getVideo();
     // Creates the CvSource and MjpegServer [2] and connects them
     CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+    */
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Compass Heading", getCompassAngle());
+    //SmartDashboard.putNumber("Compass Heading", getCompassAngle());
     SmartDashboard.putNumber("Gyro Heading", getGyro());
-    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
-    SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
+    //SmartDashboard.putNumber("Pigeon Yaw", getYaw());
+    //SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
   }
 
   private void setupGyro() {
@@ -68,6 +70,7 @@ public class Sensors extends SubsystemBase {
     resetGyro();
   }
 
+  /*
   private void setupPigeon() {
     pigeon.configFactoryDefault();
     pigeon.setCompassAngle(0);
@@ -79,6 +82,7 @@ public class Sensors extends SubsystemBase {
   public double getCompassAngle() {
     return pigeon.getCompassHeading();
   }
+  */
 
   private void calibrateGyro() {
     gyro.calibrate();
@@ -97,6 +101,7 @@ public class Sensors extends SubsystemBase {
     return (adjustedGyro) ? ((-gyro.getAngle() - 180.0) % 360.0) : ((-gyro.getAngle()) % 360);
   }
 
+  /*
   public double getYaw() {
     double[] measures = {0,0,0}; 
     pigeon.getYawPitchRoll(measures);
@@ -106,6 +111,7 @@ public class Sensors extends SubsystemBase {
   public double getRotation() {
     return (getYaw() + getGyro() + getCompassAngle()) / 3.0;
   }
+*/
 
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(getGyro());

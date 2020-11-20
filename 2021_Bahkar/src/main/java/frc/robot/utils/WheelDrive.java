@@ -19,12 +19,18 @@ public class WheelDrive {
   private TalonFX speedMotor;
   private CANCoder angleEncoder;
 
-  private PIDController anglePID = new PIDController(1.0, 0.0, 0.0);
+  private PIDController anglePID = new PIDController(5e-5, 0.0, 0.0);
 
-  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor, CANCoder angleEncoder) {
+  private double magOffset;
+  private boolean right;
+
+  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor, CANCoder angleEncoder, double magOffset, boolean right) {
     //Assign the motor objects.
     this.angleMotor = angleMotor;
     this.speedMotor = speedMotor;
+    this.angleEncoder = angleEncoder;
+    this.magOffset = magOffset;
+    this.right = right;
 
     configMotors();
   }
@@ -41,7 +47,7 @@ public class WheelDrive {
     angleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
     //Call PIDConfig method for each motor and set ramp rates.
-    DrivePIDConfig(speedMotor);
+    PIDConfig();
     speedMotor.configClosedloopRamp(1.0);
 
     //Call reset methods.
@@ -52,22 +58,28 @@ public class WheelDrive {
    * Reset all encoders to position 0.
    */
   public void resetEncoders() {
-    //Set encoder positions to 0
-    angleEncoder.setPosition(0);
+    angleEncoder.configFactoryDefault();
+
     angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    angleEncoder.configMagnetOffset(magOffset);
 
     speedMotor.setSelectedSensorPosition(0);
+    angleMotor.setSelectedSensorPosition(0);
   }
 
   /**
    * Method to set P, I, and D terms for drive motor closed loop control.
    * @param motor Motor which is being configured.
    */
-  public void DrivePIDConfig(TalonFX motor) {
+  public void PIDConfig() {
     //Assign the values.
-    motor.config_kP(0, 1.0, 10);
-    motor.config_kI(0, 0.0, 10);
-    motor.config_kD(0, 0.0, 10);
+    speedMotor.config_kP(0, 5e-2, 10);
+    speedMotor.config_kI(0, 0.0, 10);
+    speedMotor.config_kD(0, 0.0, 10);
+
+    angleMotor.config_kP(0, 5.0e-2, 10);
+    angleMotor.config_kI(0, 0.0, 10);
+    angleMotor.config_kD(0, 0.0, 10);
   }
 
   public void convertedDrive(SwerveModuleState state) {
@@ -77,18 +89,24 @@ public class WheelDrive {
     //Find the current angle of the wheel.
     double currentAngle = angleEncoder.getAbsolutePosition();
 
-    angleMotor.set(ControlMode.PercentOutput ,anglePID.calculate(currentAngle, state.angle.getDegrees()));
+    double angle = (right) ? ((-state.angle.getDegrees() + 180) % 360) - 180 : ((-state.angle.getDegrees() + 180) % 360) - 180;
+
+    angleMotor.set(ControlMode.Position, angle * Constants.ANGLE_TICKS_PER_DEGREE);
   }
 
   public SwerveModuleState updateModuleState() {
     double speed = (speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.DRIVE_COUNTS_PER_METER;
-    double angle = angleEncoder.getAbsolutePosition();
+    double angle = angleMotor.getSelectedSensorPosition() * Constants.ANGLE_TICKS_PER_DEGREE;
 
     return new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle)));
   }
 
+  public void setInverted(boolean invert) {
+    angleMotor.setInverted(invert);
+  }
+
   public void setAngle(double angle) {
-    angleMotor.set(ControlMode.PercentOutput, anglePID.calculate(angleEncoder.getAbsolutePosition(), angle));
+    angleMotor.set(ControlMode.Position, (angle * Constants.ANGLE_TICKS_PER_DEGREE));
   }
 
   public void setVelocity(double speed) {
