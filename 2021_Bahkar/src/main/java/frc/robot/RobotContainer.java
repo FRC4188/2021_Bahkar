@@ -8,7 +8,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.autogroups.TwoMeterTestGroup;
 import frc.robot.commands.autogroups.RotationTestGroup;
@@ -16,6 +18,7 @@ import frc.robot.commands.autogroups.SpontaneousToShoot;
 import frc.robot.commands.autogroups.TestCurveGroup;
 import frc.robot.commands.drive.KinematicManualDrive;
 import frc.robot.commands.drive.test.WheelRotationTest;
+import frc.robot.commands.drive.test.setPIDs;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretToOneEighty;
@@ -60,6 +63,8 @@ public class RobotContainer {
     setDefaultCommands();
     configureButtonBindings();
     putChooser();
+
+    SmartDashboard.putBoolean("Manual Drive", false);
   }
 
   public TempManager getTempManager() {
@@ -80,11 +85,12 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    pilot.getAButtonObj().toggleWhenPressed(new KinematicManualDrive(drivetrain, pilot));
-    pilot.getBButtonObj().whenPressed(new WheelRotationTest(drivetrain));
+    pilot.getAButtonObj().toggleWhenPressed(new KinematicManualDrive(drivetrain, 
+    () -> pilot.getY(Hand.kLeft), () -> pilot.getX(Hand.kLeft), () -> pilot.getX(Hand.kRight), () -> pilot.getAngle(Hand.kRight), () -> pilot.atZero(Hand.kRight), () -> pilot.getBumper(Hand.kRight)));
     pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
     pilot.getRbButtonObj().whileHeld(new FollowTarget(turret, true));
     pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
+    pilot.getXButtonObj().whenPressed(new setPIDs(drivetrain));
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
 

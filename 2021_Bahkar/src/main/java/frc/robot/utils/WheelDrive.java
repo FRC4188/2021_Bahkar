@@ -2,6 +2,7 @@ package frc.robot.utils;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -10,7 +11,9 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants;
+import frc.robot.utils.CSPMath;
 
 public class WheelDrive {
 
@@ -19,12 +22,15 @@ public class WheelDrive {
   private TalonFX speedMotor;
   private CANCoder angleEncoder;
 
-  private PIDController anglePID = new PIDController(5e-5, 0.0, 0.0);
+  private PIDController anglePID = new PIDController(0.00600, 0.0, 0.0);
 
   private double magOffset;
   private boolean right;
 
-  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor, CANCoder angleEncoder, double magOffset, boolean right) {
+  double wrap = 360.0;
+
+
+  public WheelDrive(TalonFX angleMotor, TalonFX speedMotor, CANCoder angleEncoder, double magOffset, boolean right, boolean back) {
     //Assign the motor objects.
     this.angleMotor = angleMotor;
     this.speedMotor = speedMotor;
@@ -42,13 +48,18 @@ public class WheelDrive {
     speedMotor.configFactoryDefault();
     angleMotor.configFactoryDefault();
 
+    speedMotor.setInverted(!right);
+
     //Select sensor for motors (integrated sensor).
     speedMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
     angleMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
+    speedMotor.setNeutralMode(NeutralMode.Brake);
+    angleMotor.setNeutralMode(NeutralMode.Brake);
+
     //Call PIDConfig method for each motor and set ramp rates.
     PIDConfig();
-    speedMotor.configClosedloopRamp(1.0);
+    speedMotor.configClosedloopRamp(0.5);
 
     //Call reset methods.
     resetEncoders();
@@ -73,30 +84,26 @@ public class WheelDrive {
    */
   public void PIDConfig() {
     //Assign the values.
-    speedMotor.config_kP(0, 5e-2, 10);
+    speedMotor.config_kP(0, 0.2, 10);
     speedMotor.config_kI(0, 0.0, 10);
     speedMotor.config_kD(0, 0.0, 10);
-
-    angleMotor.config_kP(0, 5.0e-2, 10);
-    angleMotor.config_kI(0, 0.0, 10);
-    angleMotor.config_kD(0, 0.0, 10);
   }
 
   public void convertedDrive(SwerveModuleState state) {
+    double set = state.angle.getDegrees();
+    double currentAngle = getAbsoluteAngle();
+
+    set = CSPMath.minChange(set, currentAngle, wrap) + currentAngle;
+
+    angleMotor.set(ControlMode.PercentOutput, anglePID.calculate(currentAngle, set));
+
     //Convert M/S to ticks per 100ms and set motor to it.
-     speedMotor.set(ControlMode.Velocity, state.speedMetersPerSecond * (Constants.DRIVE_COUNTS_PER_METER / 10.0));
-
-    //Find the current angle of the wheel.
-    double currentAngle = angleEncoder.getAbsolutePosition();
-
-    double angle = (right) ? ((-state.angle.getDegrees() + 180) % 360) - 180 : ((-state.angle.getDegrees() + 180) % 360) - 180;
-
-    angleMotor.set(ControlMode.Position, angle * Constants.ANGLE_TICKS_PER_DEGREE);
+    speedMotor.set(ControlMode.Velocity, (state.speedMetersPerSecond * (Constants.DRIVE_COUNTS_PER_METER / 10.0)));
   }
 
   public SwerveModuleState updateModuleState() {
     double speed = (speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.DRIVE_COUNTS_PER_METER;
-    double angle = angleMotor.getSelectedSensorPosition() * Constants.ANGLE_TICKS_PER_DEGREE;
+    double angle = angleEncoder.getAbsolutePosition();
 
     return new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle)));
   }
@@ -113,12 +120,22 @@ public class WheelDrive {
     speedMotor.set(ControlMode.Velocity, ((speed * Constants.DRIVE_COUNTS_PER_METER) / 10.0));
   }
 
+  public void setAnglePID(double kP, double kI, double kD) {
+    anglePID.setPID(kP, kI, kD);
+  }
+
+  public void setSpeedPID(double kP, double kI, double kD) {
+    speedMotor.config_kP(0, kP, 10);
+    speedMotor.config_kI(0, kI, 10);
+    speedMotor.config_kD(0, kD, 10);
+  }
+
   public double getAbsoluteAngle() {
-    return angleEncoder.getAbsolutePosition();
+    return -angleEncoder.getAbsolutePosition();
   }
 
   public double getRelativeAngle() {
-    return angleEncoder.getPosition();
+    return angleMotor.getSelectedSensorPosition();
   }
 
   public double getRPM() {

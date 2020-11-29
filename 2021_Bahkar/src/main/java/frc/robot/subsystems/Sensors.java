@@ -25,7 +25,7 @@ import frc.robot.utils.enums.Pipeline;
 public class Sensors extends SubsystemBase {
 
   private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-  //private final PigeonIMU pigeon = new PigeonIMU(31);
+  private final PigeonIMU pigeon = new PigeonIMU(31);
 
   private NetworkTable TlimelightTable = null;
   private NetworkTable ClimelightTable = null;
@@ -38,7 +38,7 @@ public class Sensors extends SubsystemBase {
    * Creates a new Sensors.
    */
   public Sensors() {
-    //setupPigeon();
+    setupPigeon();
     setupGyro();
 
     TlimelightTable = NetworkTableInstance.getDefault().getTable("turret_limelight");
@@ -59,9 +59,10 @@ public class Sensors extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //SmartDashboard.putNumber("Compass Heading", getCompassAngle());
+    SmartDashboard.putNumber("Compass Heading", getCompassAngle());
     SmartDashboard.putNumber("Gyro Heading", getGyro());
-    //SmartDashboard.putNumber("Pigeon Yaw", getYaw());
+    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
+    SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
     //SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
   }
 
@@ -70,7 +71,7 @@ public class Sensors extends SubsystemBase {
     resetGyro();
   }
 
-  /*
+  
   private void setupPigeon() {
     pigeon.configFactoryDefault();
     pigeon.setCompassAngle(0);
@@ -79,10 +80,14 @@ public class Sensors extends SubsystemBase {
     pigeon.setAccumZAngle(0.0);
   }
 
+  public double getFusedHeading() {
+    return -Math.IEEEremainder(pigeon.getFusedHeading(), 360);
+  }
+
   public double getCompassAngle() {
     return pigeon.getCompassHeading();
   }
-  */
+  
 
   private void calibrateGyro() {
     gyro.calibrate();
@@ -90,6 +95,8 @@ public class Sensors extends SubsystemBase {
 
   public void resetGyro() {
     gyro.reset();
+    pigeon.setYaw(0.0);
+    pigeon.setFusedHeading(0.0);
   }
 
   public void fixGyro() {
@@ -98,20 +105,20 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getGyro() {
-    return (adjustedGyro) ? ((-gyro.getAngle() - 180.0) % 360.0) : ((-gyro.getAngle()) % 360);
+    return Math.IEEEremainder(gyro.getAngle(), 360) * -1;
   }
 
-  /*
+  
   public double getYaw() {
     double[] measures = {0,0,0}; 
     pigeon.getYawPitchRoll(measures);
-    return (adjustedGyro) ? ((measures[0] - 180.0) % 360.0) : (measures[0] % 360.0);
+    return -Math.IEEEremainder(measures[0], 360);
   }
 
   public double getRotation() {
     return (getYaw() + getGyro() + getCompassAngle()) / 3.0;
   }
-*/
+
 
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(getGyro());
