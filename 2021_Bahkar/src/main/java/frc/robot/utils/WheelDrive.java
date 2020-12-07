@@ -10,8 +10,6 @@ import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants;
 import frc.robot.utils.CSPMath;
 
@@ -70,6 +68,8 @@ public class WheelDrive {
    */
   public void resetEncoders() {
     angleEncoder.configFactoryDefault();
+
+    angleEncoder.configSensorDirection(false);
 
     angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     angleEncoder.configMagnetOffset(magOffset);
@@ -131,11 +131,11 @@ public class WheelDrive {
   }
 
   public double getAbsoluteAngle() {
-    return -angleEncoder.getAbsolutePosition();
+    return angleEncoder.getAbsolutePosition();
   }
 
   public double getRelativeAngle() {
-    return angleMotor.getSelectedSensorPosition();
+    return angleEncoder.getPosition();
   }
 
   public double getRPM() {

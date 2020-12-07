@@ -3,16 +3,13 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Turret;
 
 public class TempManager {
 
     Drivetrain drivetrain;
-    Turret turret;
 
-    public TempManager(Drivetrain drivetrain, Turret turret) {
+    public TempManager(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
-        this.turret = turret;
     }
 
     public void run() {
@@ -26,7 +23,6 @@ public class TempManager {
         if (drivetrain.getRearLeftAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("RLAngle: " + drivetrain.getRearLeftAngleTemp() + ", ");
         if (drivetrain.getRearRightDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("RRDrive: " + drivetrain.getRearRightDriveTemp() + ", ");
         if (drivetrain.getRearRightAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("RRAngle: " + drivetrain.getRearRightAngleTemp() + ", ");
-        if (turret.getTemperature() > Constants.FIVEFIFTY_MAX_TEMP) sb.append("Turret: " + turret.getTemperature());
 
         SmartDashboard.putString("Temp Warnings", sb.toString());
     }

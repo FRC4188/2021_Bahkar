@@ -7,10 +7,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.TempManager;
 
 /**
@@ -24,7 +24,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private BrownoutProtection bop;
   private TempManager tempManager;
 
   /**
@@ -36,8 +35,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    bop = m_robotContainer.getBrownoutProtection();
     tempManager = m_robotContainer.getTempManager();
+
+    Notifier protection = new Notifier(() -> tempManager.run());
+    protection.startPeriodic(0.1);
   }
 
   /**
@@ -103,8 +104,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //tempManager.run();
-    //bop.run();
   }
 
   @Override

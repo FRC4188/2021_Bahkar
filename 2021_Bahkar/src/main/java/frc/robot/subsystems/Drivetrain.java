@@ -7,15 +7,10 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
 
-import edu.wpi.first.wpilibj.SlewRateLimiter;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -26,14 +21,10 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.CSPMath;
-import frc.robot.utils.CspController;
 import frc.robot.utils.WheelDrive;
-import frc.robot.utils.CspController.Scaling;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -114,6 +105,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Speed kP", 0.22);
     SmartDashboard.putNumber("Speed kI", 0.0);
     SmartDashboard.putNumber("Speed kD", 0.0);
+
+    Notifier shuffle = new Notifier(() -> updateShuffleboard());
+    shuffle.startPeriodic(0.1);
   }
 
   /**
@@ -131,32 +125,23 @@ public class Drivetrain extends SubsystemBase {
    * Method for field oriented drive using kinematics
    * @param pilot CspController of the pilot
    */
-  public void drive (DoubleSupplier speed, DoubleSupplier strafe, DoubleSupplier rotation, DoubleSupplier angle, BooleanSupplier noAngle, BooleanSupplier FO) {
-    SmartDashboard.putNumber("Speed In", speed.getAsDouble());
-    SmartDashboard.putNumber("Strafe In", strafe.getAsDouble());
-    SmartDashboard.putNumber("Rotation In", rotation.getAsDouble());
-
+  public void drive (double speed, double strafe, double rotation, boolean noAngle, boolean FO) {
     //Convert controller input to M/S and Rad/S
-    double Speed = (speed.getAsDouble()) * Constants.DRIVE_MAX_VELOCITY;
-    double Strafe = (strafe.getAsDouble()) * Constants.DRIVE_MAX_VELOCITY;
-
-    double Rotation = rotation.getAsDouble() * Constants.DRIVE_MAX_RADIANS;
-
+    double Speed = speed * Constants.DRIVE_MAX_VELOCITY;
+    double Strafe = strafe * Constants.DRIVE_MAX_VELOCITY;
+    double Rotation = rotation * Constants.DRIVE_MAX_RADIANS;
     double currentAngle = sensors.getFusedHeading();
-    SmartDashboard.putNumber("Controller Angle", Angle);
 
-    if (noAngle.getAsBoolean()) {
+    if (noAngle) {
       if (!lastNoAngle) {
         Angle = currentAngle;
       }
       Rotation = rotationPID.calculate(currentAngle, Angle);
     }
-    lastNoAngle = noAngle.getAsBoolean();
-
-    boolean fieldRelative = !FO.getAsBoolean();
+    lastNoAngle = noAngle;
 
     //Get a chassis speed and rotation from input.
-    speeds = (fieldRelative) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
+    speeds = (FO) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
       Speed, Strafe, Rotation, Rotation2d.fromDegrees(currentAngle))) :
       (new ChassisSpeeds(Speed, Strafe, Rotation));
 
@@ -172,6 +157,10 @@ public class Drivetrain extends SubsystemBase {
     //get an array of module states from the ChassisSpeeds.
     moduleStates = kinematics.toSwerveModuleStates(speeds);
 
+    setModuleStates(moduleStates);
+  }
+
+  public void setModuleStates(SwerveModuleState[] moduleStates) {
     //Seperate the elements of the array.
     frontLeft = moduleStates[0];
     frontRight = moduleStates[1];
@@ -210,7 +199,7 @@ public class Drivetrain extends SubsystemBase {
     backLeft = LeftRear.updateModuleState();
     backRight = RightRear.updateModuleState();
 
-    SmartDashboard.putNumber("Front Left Angle", -frontLeft.angle.getDegrees());
+    SmartDashboard.putNumber("Front Left Angle", frontLeft.angle.getDegrees());
     SmartDashboard.putNumber("Front Left Speed", frontLeft.speedMetersPerSecond);
 
     //update odometry using the new module states.
@@ -223,24 +212,8 @@ public class Drivetrain extends SubsystemBase {
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", Position.toString());
 
-    SmartDashboard.putNumber("Left Front Absolute Angle", LeftFront.getAbsoluteAngle());
-    SmartDashboard.putNumber("Right Front Absolute Angle", RightFront.getAbsoluteAngle());
-    SmartDashboard.putNumber("Left Rear Absolute Angle", LeftRear.getAbsoluteAngle());
-    SmartDashboard.putNumber("Right Rear Absolute Angle", RightRear.getAbsoluteAngle());
-
-    SmartDashboard.putNumber("Left Front RPM", LeftFront.getRPM());
-    SmartDashboard.putNumber("Right Front RPM", RightFront.getRPM());
-    SmartDashboard.putNumber("Left Rear RPM", LeftRear.getRPM());
-    SmartDashboard.putNumber("Right Rear RPM", RightRear.getRPM());
-
-    SmartDashboard.putNumber("Left Front Drive temp", getFrontLeftDriveTemp());
-    SmartDashboard.putNumber("Left Front Angle temp", getFrontLeftAngleTemp());
-    SmartDashboard.putNumber("Right Front Drive temp", getFrontRightDriveTemp());
-    SmartDashboard.putNumber("Right Front Angle temp", getFrontRightAngleTemp());
-    SmartDashboard.putNumber("Left Rear Drive temp", getRearLeftDriveTemp());
-    SmartDashboard.putNumber("Left Rear Angle temp", getRearLeftAngleTemp());
-    SmartDashboard.putNumber("Right Rear Drive temp", getRearRightDriveTemp());
-    SmartDashboard.putNumber("Right Rear Angle temp", getRearRightAngleTemp());
+    SmartDashboard.putNumber("Absolute", LeftFront.getAbsoluteAngle());
+    SmartDashboard.putNumber("Relative", LeftFront.getRelativeAngle());
   }
 
   public void reset() {
