@@ -7,8 +7,8 @@ public class BrownoutProtection {
 
     Drivetrain drivetrain;
 
-    double min_volts = Constants.ROBOT_MIN_VOLTS;
-    double mid_volts = Constants.ROBOT_MID_VOLTS;
+    double min_volts = Constants.RobotSpecs.MIN_VOLTS;
+    double mid_volts = Constants.RobotSpecs.MID_VOLTS;
     
     public BrownoutProtection(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;

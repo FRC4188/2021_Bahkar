@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.WheelDrive;
+import frc.robot.utils.components.WheelDrive;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -54,10 +54,10 @@ public class Drivetrain extends SubsystemBase {
   private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder, 158.37, true, true);
 
   //Put together swerve module positions relative to the center of the robot.
-  private Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
-  private Translation2d FrontRightLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
-  private Translation2d BackLeftLocation = new Translation2d(-(Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
-  private Translation2d BackRightLocation = new Translation2d(-(Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
+  private Translation2d FrontLeftLocation = new Translation2d((Constants.RobotSpecs.A_LENGTH/2), -(Constants.RobotSpecs.A_WIDTH/2));
+  private Translation2d FrontRightLocation = new Translation2d((Constants.RobotSpecs.A_LENGTH/2), (Constants.RobotSpecs.A_WIDTH/2));
+  private Translation2d BackLeftLocation = new Translation2d(-(Constants.RobotSpecs.A_LENGTH/2), -(Constants.RobotSpecs.A_WIDTH/2));
+  private Translation2d BackRightLocation = new Translation2d(-(Constants.RobotSpecs.A_LENGTH/2), (Constants.RobotSpecs.A_WIDTH/2));
 
   //Create a kinematics withe the swerve module positions
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -79,14 +79,14 @@ public class Drivetrain extends SubsystemBase {
 
   //Create initial odometry
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
-  new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
+  new Rotation2d(), new Pose2d(0.0, 0.0, new Rotation2d()));
 
   //Store odometry as a position on the field.
   private Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
   //Create a configuration for trajectories.
-  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.MAX_CACCEL);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.MAX_VELOCITY, Constants.Drive.MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -115,8 +115,7 @@ public class Drivetrain extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    //update odometry and shuffleboard ever scheduler run.
-    updateShuffleboard();
+    updateOdometry();
   }
 
   boolean lastNoAngle = true;
@@ -127,9 +126,9 @@ public class Drivetrain extends SubsystemBase {
    */
   public void drive (double speed, double strafe, double rotation, boolean noAngle, boolean FO) {
     //Convert controller input to M/S and Rad/S
-    double Speed = speed * Constants.DRIVE_MAX_VELOCITY;
-    double Strafe = strafe * Constants.DRIVE_MAX_VELOCITY;
-    double Rotation = rotation * Constants.DRIVE_MAX_RADIANS;
+    double Speed = speed * Constants.Drive.MAX_VELOCITY;
+    double Strafe = strafe * Constants.Drive.MAX_VELOCITY;
+    double Rotation = rotation * Constants.Drive.MAX_RADIANS;
     double currentAngle = sensors.getFusedHeading();
 
     if (noAngle) {

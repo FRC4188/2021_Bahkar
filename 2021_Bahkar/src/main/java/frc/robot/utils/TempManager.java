@@ -15,14 +15,14 @@ public class TempManager {
     public void run() {
         StringBuilder sb = new StringBuilder();
 
-        if (drivetrain.getFrontLeftDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("FLDrive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
-        if (drivetrain.getFrontLeftAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("FLAngle: " + drivetrain.getFrontLeftAngleTemp() + ", ");
-        if (drivetrain.getFrontRightDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("FRDrive: " + drivetrain.getFrontRightDriveTemp() + ", ");
-        if (drivetrain.getFrontRightAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("FRAngle: " + drivetrain.getFrontRightAngleTemp() + ", ");
-        if (drivetrain.getRearLeftDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("RLDrive: " + drivetrain.getRearLeftDriveTemp() + ", ");
-        if (drivetrain.getRearLeftAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("RLAngle: " + drivetrain.getRearLeftAngleTemp() + ", ");
-        if (drivetrain.getRearRightDriveTemp() > Constants.FALCON_MAX_TEMP) sb.append("RRDrive: " + drivetrain.getRearRightDriveTemp() + ", ");
-        if (drivetrain.getRearRightAngleTemp() > Constants.FALCON_MAX_TEMP) sb.append("RRAngle: " + drivetrain.getRearRightAngleTemp() + ", ");
+        if (drivetrain.getFrontLeftDriveTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("FL Drive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
+        if (drivetrain.getFrontLeftAngleTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("FL Angle: " + drivetrain.getFrontLeftAngleTemp() + ", ");
+        if (drivetrain.getFrontRightDriveTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("FR Drive: " + drivetrain.getFrontRightDriveTemp() + ", ");
+        if (drivetrain.getFrontRightAngleTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("FR Angle: " + drivetrain.getFrontRightAngleTemp() + ", ");
+        if (drivetrain.getRearLeftDriveTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("RL Drive: " + drivetrain.getRearLeftDriveTemp() + ", ");
+        if (drivetrain.getRearLeftAngleTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("RL Angle: " + drivetrain.getRearLeftAngleTemp() + ", ");
+        if (drivetrain.getRearRightDriveTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("RR Drive: " + drivetrain.getRearRightDriveTemp() + ", ");
+        if (drivetrain.getRearRightAngleTemp() > Constants.RobotSpecs.FALCON_MAX_TEMP) sb.append("RR Angle: " + drivetrain.getRearRightAngleTemp() + ", ");
 
         SmartDashboard.putString("Temp Warnings", sb.toString());
     }

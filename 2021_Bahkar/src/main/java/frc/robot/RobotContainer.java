@@ -13,15 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.autogroups.TwoMeterTestGroup;
-import frc.robot.commands.autogroups.RotationTestGroup;
-import frc.robot.commands.autogroups.TestCurveGroup;
 import frc.robot.commands.drive.test.setPIDs;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
-import frc.robot.utils.ButtonBox;
-import frc.robot.utils.CspController;
+import frc.robot.utils.components.ButtonBox;
+import frc.robot.utils.components.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
 
@@ -83,9 +80,6 @@ public class RobotContainer {
   }
 
   private void putChooser() {
-    autoChooser.addOption("Two meter test.", new TwoMeterTestGroup(drivetrain, sensors));
-    autoChooser.addOption("Test Curve", new TestCurveGroup(drivetrain, sensors));
-    autoChooser.addOption("Rotation Test", new RotationTestGroup(drivetrain, sensors));
   }
 
   /**
