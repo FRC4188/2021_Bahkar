@@ -93,6 +93,12 @@ public class WheelDrive {
     double set = state.angle.getDegrees();
     double currentAngle = getAbsoluteAngle();
 
+    if (set < 0) set += 360;
+    if (Math.abs(currentAngle - set) > Math.abs(currentAngle - (set - 180))) set -= 180;
+    else if (Math.abs(currentAngle - set) < Math.abs(currentAngle - (set - 180))) set += 180;
+    else if (currentAngle == set || currentAngle == set - 180 || currentAngle == set + 180) set = currentAngle;
+    if (set > 180) set -= 360;
+    
     set = CSPMath.minChange(set, currentAngle, wrap) + currentAngle;
 
     angleMotor.set(ControlMode.PercentOutput, anglePID.calculate(currentAngle, set));
@@ -138,7 +144,7 @@ public class WheelDrive {
     return angleEncoder.getPosition();
   }
 
-  public double getRPM() {
+  public double getRPM() { 
     return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.RobotSpecs.FALCON_ENCODER_TICKS;
   }
 
