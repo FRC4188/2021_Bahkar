@@ -13,14 +13,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.drive.test.setPIDs;
+import frc.robot.commands.drive.FollowTrajectory;
+import frc.robot.commands.drive.test.WheelRotationTest;
 import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.turret.FollowTarget;
+import frc.robot.commands.turret.TurretToOneEighty;
+import frc.robot.commands.turret.TurretToZero;
+import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
-import frc.robot.utils.components.ButtonBox;
-import frc.robot.utils.components.CspController;
+import frc.robot.subsystems.Turret;
+import frc.robot.utils.BrownoutProtection;
+import frc.robot.utils.ButtonBox;
+import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
+import frc.robot.utils.trajectory.OneMeter;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -32,8 +40,10 @@ public class RobotContainer {
 
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
+  private Turret turret = new Turret(sensors);
 
-  private TempManager tempManager = new TempManager(drivetrain);
+  private TempManager tempManager = new TempManager(drivetrain, turret);
+  private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
 
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
@@ -58,8 +68,11 @@ public class RobotContainer {
     return tempManager;
   }
 
+  public BrownoutProtection getBrownoutProtection() {
+    return bop;
+  }
+
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getY(Hand.kRight), pilot.atZero(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
   }
 
   /**
@@ -69,8 +82,13 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    pilot.getAButtonObj().toggleWhenPressed(new RunCommand( 
+    () -> drivetrain.drive(
+      pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)),
+    drivetrain));
     pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
-    pilot.getXButtonObj().whenPressed(new setPIDs(drivetrain));
+    pilot.getRbButtonObj().whileHeld(new FollowTarget(turret, true));
+    pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
 
@@ -90,6 +108,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return autoCommand;
+    return new FollowTrajectory(drivetrain, new OneMeter(drivetrain).getTrajectory(), true).getCommand();
   }
 }

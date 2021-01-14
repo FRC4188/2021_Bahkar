@@ -8,6 +8,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -190,7 +193,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getTurretVerticleAngle() {
-    return getTurretXYAngle()[1] + Constants.Turret.MOUNTING_ANGLE;
+    return getTurretXYAngle()[1] + Constants.TURRET_MOUNTING_ANGLE;
   }
 
   public double getTurretHorizontalAngle() {
@@ -198,18 +201,18 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getDistance() {
-    return (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
+    return (Constants.GOAL_HEIGHT - Constants.TURRET_LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
   }
 
   public double getTurretOffset() {
-    double a = Constants.Field.THREE_POINT_DEPTH;
+    double a = Constants.THREE_POINT_DEPTH;
     double b = getDistance();
     double c = getTurretSkew();
 
 
     double offset =  Math.toDegrees(Math.asin((a * Math.sin(Math.toRadians(180-c))) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - (2 * a * b * Math.cos(Math.toRadians(180 - c))))));
     double check = c - offset;
-    if (check <= Constants.Field.OFFSET_LIMIT) return offset;
+    if (check <= Constants.OFFSET_LIMIT) return offset;
     else return 0.0;
   }
 

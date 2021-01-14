@@ -7,10 +7,16 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -21,10 +27,14 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.components.WheelDrive;
+import frc.robot.utils.CSPMath;
+import frc.robot.utils.CspController;
+import frc.robot.utils.WheelDrive;
+import frc.robot.utils.CspController.Scaling;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -41,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
   private final TalonFX LRSpeedMotor = new TalonFX(6);
   private final CANCoder LRangleEncoder = new CANCoder(23);
 
-  private final TalonFX RRAngleMotor = new TalonFX(9);
+  private final TalonFX RRAngleMotor = new TalonFX(7);
   private final TalonFX RRSpeedMotor = new TalonFX(8);
   private final CANCoder RRangleEncoder = new CANCoder(24);
 
@@ -54,10 +64,10 @@ public class Drivetrain extends SubsystemBase {
   private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder, 158.37, true, true);
 
   //Put together swerve module positions relative to the center of the robot.
-  private Translation2d FrontLeftLocation = new Translation2d((Constants.RobotSpecs.A_LENGTH/2), -(Constants.RobotSpecs.A_WIDTH/2));
-  private Translation2d FrontRightLocation = new Translation2d((Constants.RobotSpecs.A_LENGTH/2), (Constants.RobotSpecs.A_WIDTH/2));
-  private Translation2d BackLeftLocation = new Translation2d(-(Constants.RobotSpecs.A_LENGTH/2), -(Constants.RobotSpecs.A_WIDTH/2));
-  private Translation2d BackRightLocation = new Translation2d(-(Constants.RobotSpecs.A_LENGTH/2), (Constants.RobotSpecs.A_WIDTH/2));
+  private Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
+  private Translation2d FrontRightLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
+  private Translation2d BackLeftLocation = new Translation2d(-(Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
+  private Translation2d BackRightLocation = new Translation2d(-(Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
 
   //Create a kinematics withe the swerve module positions
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -79,14 +89,14 @@ public class Drivetrain extends SubsystemBase {
 
   //Create initial odometry
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
-  new Rotation2d(), new Pose2d(0.0, 0.0, new Rotation2d()));
+  new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
 
   //Store odometry as a position on the field.
   private Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
 
   //Create a configuration for trajectories.
-  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.MAX_VELOCITY, Constants.Drive.MAX_ACCEL).addConstraint(CentAccel);
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -99,13 +109,6 @@ public class Drivetrain extends SubsystemBase {
     LeftRear.setInverted(false);
     RightRear.setInverted(false);
 
-    SmartDashboard.putNumber("Angle kP", 0.00600);
-    SmartDashboard.putNumber("Angle kI", 0.0);
-    SmartDashboard.putNumber("Angle kD", 0.0);
-    SmartDashboard.putNumber("Speed kP", 0.22);
-    SmartDashboard.putNumber("Speed kI", 0.0);
-    SmartDashboard.putNumber("Speed kD", 0.0);
-
     Notifier shuffle = new Notifier(() -> updateShuffleboard());
     shuffle.startPeriodic(0.1);
   }
@@ -115,32 +118,28 @@ public class Drivetrain extends SubsystemBase {
    */
   @Override
   public void periodic() {
+    //update odometry and shuffleboard ever scheduler run.
+    updateShuffleboard();
     updateOdometry();
   }
 
-  boolean lastNoAngle = true;
-  double Angle = 0.0;
   /**
    * Method for field oriented drive using kinematics
    * @param pilot CspController of the pilot
    */
-  public void drive (double speed, double strafe, double rotation, boolean noAngle, boolean FO) {
+  public void drive (double speed, double strafe, double rotation, boolean FO) {
     //Convert controller input to M/S and Rad/S
-    double Speed = speed * Constants.Drive.MAX_VELOCITY;
-    double Strafe = strafe * Constants.Drive.MAX_VELOCITY;
-    double Rotation = rotation * Constants.Drive.MAX_RADIANS;
+    double Speed = (speed) * Constants.DRIVE_MAX_VELOCITY;
+    double Strafe = (strafe) * Constants.DRIVE_MAX_VELOCITY;
+
+    double Rotation = rotation * Constants.DRIVE_MAX_RADIANS;
+
     double currentAngle = sensors.getFusedHeading();
 
-    if (noAngle) {
-      if (!lastNoAngle) {
-        Angle = currentAngle;
-      }
-      Rotation = rotationPID.calculate(currentAngle, Angle);
-    }
-    lastNoAngle = noAngle;
+    boolean fieldRelative = !FO;
 
     //Get a chassis speed and rotation from input.
-    speeds = (FO) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
+    speeds = (fieldRelative) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
       Speed, Strafe, Rotation, Rotation2d.fromDegrees(currentAngle))) :
       (new ChassisSpeeds(Speed, Strafe, Rotation));
 
@@ -165,9 +164,6 @@ public class Drivetrain extends SubsystemBase {
     frontRight = moduleStates[1];
     backLeft = moduleStates[2];
     backRight = moduleStates[3];
-
-    SmartDashboard.putNumber("Front Left setSpeed", frontLeft.speedMetersPerSecond);
-    SmartDashboard.putNumber("Front Left setAngle", frontLeft.angle.getDegrees());
 
     //Set the modules in the WheelDrive objects to the kinematic results.
     LeftFront.convertedDrive(frontLeft);
@@ -198,11 +194,12 @@ public class Drivetrain extends SubsystemBase {
     backLeft = LeftRear.updateModuleState();
     backRight = RightRear.updateModuleState();
 
-    SmartDashboard.putNumber("Front Left Angle", frontLeft.angle.getDegrees());
-    SmartDashboard.putNumber("Front Left Speed", frontLeft.speedMetersPerSecond);
-
     //update odometry using the new module states.
     Position = odometry.update(Rotation2d.fromDegrees(sensors.getFusedHeading()), frontLeft, frontRight, backLeft, backRight);
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    odometry.resetPosition(pose, Rotation2d.fromDegrees(sensors.getFusedHeading()));
   }
 
   /**p
@@ -210,9 +207,6 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", Position.toString());
-
-    SmartDashboard.putNumber("Absolute", LeftFront.getAbsoluteAngle());
-    SmartDashboard.putNumber("Relative", LeftFront.getRelativeAngle());
   }
 
   public void reset() {
@@ -221,27 +215,6 @@ public class Drivetrain extends SubsystemBase {
     LeftRear.resetEncoders();
     RightRear.resetEncoders();
   }
-
-
-  public void setPIDs() {
-    setAnglePID(SmartDashboard.getNumber("Angle kP", 0.0), SmartDashboard.getNumber("Angle kI", 0.0), SmartDashboard.getNumber("Angle kD", 0.0));
-    setSpeedPID(SmartDashboard.getNumber("Speed kP", 0.0), SmartDashboard.getNumber("Speed kI", 0.0), SmartDashboard.getNumber("Angle kD", 0.0));
-  }
-
-  private void setAnglePID(double kP, double kI, double kD) {
-    LeftFront.setAnglePID(kP, kI, kD);
-    RightFront.setAnglePID(kP, kI, kD);
-    LeftRear.setAnglePID(kP, kI, kD);
-    RightRear.setAnglePID(kP, kI, kD);
-  }
-
-  private void setSpeedPID(double kP, double kI, double kD) {
-    LeftFront.setSpeedPID(kP, kI, kD);
-    RightFront.setSpeedPID(kP, kI, kD);
-    LeftRear.setSpeedPID(kP, kI, kD);
-    RightRear.setSpeedPID(kP, kI, kD);
-  }
-
 
   /**
    * The object for converting motion to individual motor states.
