@@ -7,101 +7,38 @@
 
 package frc.robot.commands.drive;
 
-import java.util.Iterator;
-
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Sensors;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 
-public class FollowTrajectory extends CommandBase {
-  RamseteController controller = new RamseteController();
-
+public class FollowTrajectory {
+  SwerveControllerCommand controller;
   Drivetrain drivetrain;
-  Sensors sensors;
-  Trajectory trajectory;
-  Iterator<Double> angles = null;
-  Iterator<Double> times = null;
+  boolean solus;
 
-  long start;
-  double time;
-  double totalTime;
-
-  double refTime = 0.0;
-  double setAngle = 0.0;
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.001, new Constraints(Constants.DRIVE_MAX_RADIANS, 2.0 * Constants.DRIVE_MAX_RADIANS));
+  PIDController xController = new PIDController(0.5, 0.0, 0.0);
+  PIDController yController = new PIDController(0.5, 0.0, 0.0);
 
   /**
    * Creates a new FollowTrajectory.
    */
-  public FollowTrajectory(Drivetrain drivetrain, Sensors sensors, Trajectory trajectory) {
-    addRequirements(drivetrain);
-
+  public FollowTrajectory(Drivetrain drivetrain, Trajectory trajectory, boolean solus) {
     this.drivetrain = drivetrain;
-    this.sensors = sensors;
-    this.trajectory = trajectory;
 
-    totalTime = trajectory.getTotalTimeSeconds();
-
-    start = System.currentTimeMillis();
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    controller = new SwerveControllerCommand(
+      trajectory, drivetrain::getPose, drivetrain.getKinematics(), xController, yController, thetaController, drivetrain::setModuleStates, drivetrain);
+    drivetrain.resetOdometry(trajectory.getInitialPose());
   }
 
-  public FollowTrajectory(Drivetrain drivetrain, Sensors sensors, Trajectory trajectory, Iterator<Double> angles, Iterator<Double> times) {
-    addRequirements(drivetrain);
-
-    this.drivetrain = drivetrain;
-    this.sensors = sensors;
-    this.trajectory = trajectory;
-
-    totalTime = trajectory.getTotalTimeSeconds();
-
-    start = System.currentTimeMillis();
-
-    this.angles = angles;
-    this.times = times;
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    time = (double)((System.currentTimeMillis() - start)/1000);
-
-    Trajectory.State goal = trajectory.sample(time);
-    ChassisSpeeds adjustedSpeeds = controller.calculate(drivetrain.getPose(), goal);
-
-    if (angles.getClass() == null) {
-      drivetrain.setChassisSpeeds(adjustedSpeeds);
-
-    } else {
-
-      //This stuff is WIP
-      if (refTime < time) {
-        refTime = times.next();
-        setAngle = angles.next();
-      }
-
-      drivetrain.setChassisSpeeds(
-        new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond, adjustedSpeeds.vyMetersPerSecond, 0.0)
-      );
-    }
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    if (!interrupted) drivetrain.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, Rotation2d.fromDegrees(sensors.getGyro())));
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return (time == totalTime);
+  public Command getCommand() {
+    return (solus) ? controller.andThen(() -> drivetrain.drive(0,0,0, true)) : controller;
   }
 }

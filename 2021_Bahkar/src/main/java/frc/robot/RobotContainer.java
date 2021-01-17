@@ -12,11 +12,8 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.autogroups.TwoMeterTestGroup;
-import frc.robot.commands.autogroups.RotationTestGroup;
-import frc.robot.commands.autogroups.SpontaneousToShoot;
-import frc.robot.commands.autogroups.TestCurveGroup;
-import frc.robot.commands.drive.KinematicManualDrive;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.test.WheelRotationTest;
 import frc.robot.commands.drive.test.setPIDs;
 import frc.robot.commands.sensors.ResetGyro;
@@ -32,6 +29,8 @@ import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
+import frc.robot.utils.trajectory.CircleTest;
+import frc.robot.utils.trajectory.TestFile;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -76,6 +75,7 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
+    drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
   }
 
   /**
@@ -85,8 +85,6 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    pilot.getAButtonObj().toggleWhenPressed(new KinematicManualDrive(drivetrain, 
-    () -> pilot.getY(Hand.kLeft), () -> pilot.getX(Hand.kLeft), () -> pilot.getX(Hand.kRight), () -> pilot.getAngle(Hand.kRight), () -> pilot.atZero(Hand.kRight), () -> pilot.getBumper(Hand.kRight)));
     pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
     pilot.getRbButtonObj().whileHeld(new FollowTarget(turret, true));
     pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
@@ -100,9 +98,6 @@ public class RobotContainer {
   }
 
   private void putChooser() {
-    autoChooser.addOption("Two meter test.", new TwoMeterTestGroup(drivetrain, sensors));
-    autoChooser.addOption("Test Curve", new TestCurveGroup(drivetrain, sensors));
-    autoChooser.addOption("Rotation Test", new RotationTestGroup(drivetrain, sensors));
   }
 
   /**
@@ -113,6 +108,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return autoCommand;
+    return new FollowTrajectory(drivetrain, new CircleTest(drivetrain).getTrajectory(), true).getCommand();
   }
 }
