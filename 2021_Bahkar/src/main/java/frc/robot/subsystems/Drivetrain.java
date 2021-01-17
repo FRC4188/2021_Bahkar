@@ -92,8 +92,8 @@ public class Drivetrain extends SubsystemBase {
   new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
 
   //Create a configuration for trajectories.
-  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Auto.DRIVE_MAX_CACCEL);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Auto.DRIVE_MAX_VELOCITY, Constants.Auto.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.

@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drive.FollowTrajectory;
+import frc.robot.commands.drive.ToAngle;
+import frc.robot.commands.drive.ToPosition;
 import frc.robot.commands.drive.test.WheelRotationTest;
 import frc.robot.commands.drive.test.setPIDs;
 import frc.robot.commands.sensors.ResetGyro;
@@ -108,6 +110,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return new FollowTrajectory(drivetrain, new CircleTest(drivetrain).getTrajectory(), true).getCommand();
+    return new ToPosition(drivetrain, -1, -1);
   }
 }

@@ -15,11 +15,12 @@ public class CircleTest {
     public CircleTest(Drivetrain drivetrain) {
         TrajectoryConfig config = drivetrain.getConfig();
 
-        trajectory = TrajectoryGenerator.generateTrajectory( List.of(
+        trajectory = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0.0, 0.0, new Rotation2d()),
-            new Pose2d(3.0 * 1.153, 0.0, new Rotation2d())
-            //new Pose2d(3.0, 1.0, new Rotation2d(Math.PI / 2))
+            List.of(
+                new Translation2d(/*4.35*/2, 0.16)
             ),
+            new Pose2d(6.3, 0.16, new Rotation2d()),
             config
         );
     }

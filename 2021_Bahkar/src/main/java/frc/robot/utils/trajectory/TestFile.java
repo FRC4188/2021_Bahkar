@@ -17,9 +17,7 @@ public class TestFile {
 
         trajectory = TrajectoryGenerator.generateTrajectory( List.of(
             new Pose2d(0.0, 0.0, new Rotation2d()),
-            new Pose2d(4.93, 2.17, new Rotation2d()),
-            new Pose2d(6.92, 2.17, new Rotation2d()),
-            new Pose2d(8.6, 2.17, new Rotation2d())),
+            new Pose2d(2.0, 0.0, new Rotation2d())),
             config
         );
     }
