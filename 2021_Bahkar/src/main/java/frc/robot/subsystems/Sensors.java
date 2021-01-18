@@ -14,6 +14,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,6 +48,9 @@ public class Sensors extends SubsystemBase {
     TlimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
     ClimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
 
+    Notifier shuffle = new Notifier(() -> updateShuffleBoard());
+    shuffle.startPeriodic(0.1);
+
     /*
     // Creates UsbCamera and MjpegServer [1] and connects them
     CameraServer.getInstance().startAutomaticCapture();
@@ -59,6 +63,14 @@ public class Sensors extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Compass Heading", getCompassAngle());
+    SmartDashboard.putNumber("Gyro Heading", getGyro());
+    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
+    SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
+    //SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
+  }
+
+  private void updateShuffleBoard() {
     SmartDashboard.putNumber("Compass Heading", getCompassAngle());
     SmartDashboard.putNumber("Gyro Heading", getGyro());
     SmartDashboard.putNumber("Pigeon Yaw", getYaw());

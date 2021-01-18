@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drive.FollowTrajectory;
+import frc.robot.commands.drive.ToAngle;
+import frc.robot.commands.drive.ToPosition;
 import frc.robot.commands.drive.test.WheelRotationTest;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.turret.FollowTarget;
@@ -28,7 +30,8 @@ import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
-import frc.robot.utils.trajectory.OneMeter;
+import frc.robot.utils.trajectory.CircleTest;
+import frc.robot.utils.trajectory.TestFile;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -73,6 +76,7 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
+    drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
   }
 
   /**
@@ -82,10 +86,6 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    pilot.getAButtonObj().toggleWhenPressed(new RunCommand( 
-    () -> drivetrain.drive(
-      pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)),
-    drivetrain));
     pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
     pilot.getRbButtonObj().whileHeld(new FollowTarget(turret, true));
     pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
@@ -108,6 +108,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return new FollowTrajectory(drivetrain, new OneMeter(drivetrain).getTrajectory(), true).getCommand();
+    return new ToPosition(drivetrain, -1, -1);
   }
 }

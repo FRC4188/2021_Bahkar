@@ -76,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
   //Initialize a ChassisSpeeds object and start it with default values
   private ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
 
-  private PIDController rotationPID = new PIDController(0.07, 0.0, 0.0);
+  private PIDController rotationPID = new PIDController(0.2, 0.0, 0.001);
 
   //Initialize a list of module states and assign the kinematic results to them
   private SwerveModuleState[]  moduleStates = kinematics.toSwerveModuleStates(speeds);
@@ -91,12 +91,9 @@ public class Drivetrain extends SubsystemBase {
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
   new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
 
-  //Store odometry as a position on the field.
-  private Pose2d Position = odometry.update(new Rotation2d(), frontLeft, frontRight, backLeft, backRight);
-
   //Create a configuration for trajectories.
-  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.DRIVE_MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Auto.DRIVE_MAX_CACCEL);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Auto.DRIVE_MAX_VELOCITY, Constants.Auto.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -109,6 +106,12 @@ public class Drivetrain extends SubsystemBase {
     LeftRear.setInverted(false);
     RightRear.setInverted(false);
 
+    rotationPID.enableContinuousInput(-180, 180);
+
+    SmartDashboard.putNumber("Correction P", 0.0);
+    SmartDashboard.putNumber("Correction I", 0.0);
+    SmartDashboard.putNumber("Correction D", 0.0);
+
     Notifier shuffle = new Notifier(() -> updateShuffleboard());
     shuffle.startPeriodic(0.1);
   }
@@ -118,30 +121,44 @@ public class Drivetrain extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    //update odometry and shuffleboard ever scheduler run.
-    updateShuffleboard();
     updateOdometry();
   }
 
+  double Angle;
   /**
    * Method for field oriented drive using kinematics
    * @param pilot CspController of the pilot
    */
   public void drive (double speed, double strafe, double rotation, boolean FO) {
-    //Convert controller input to M/S and Rad/S
-    double Speed = (speed) * Constants.DRIVE_MAX_VELOCITY;
-    double Strafe = (strafe) * Constants.DRIVE_MAX_VELOCITY;
 
-    double Rotation = rotation * Constants.DRIVE_MAX_RADIANS;
+    //Convert controller input to M/S and Rad/S
+    speed = speed * Constants.DRIVE_MAX_VELOCITY;
+    strafe = strafe * Constants.DRIVE_MAX_VELOCITY;
+
+    rotation = rotation * Constants.DRIVE_MAX_RADIANS;
 
     double currentAngle = sensors.getFusedHeading();
+
+    double angleCorrection = 0.0;
+    /*
+    if (Rotation != 0) Angle = currentAngle;
+    else if (Speed != 0 || Strafe != 0) rotationPID.calculate(currentAngle, Angle);
+*/
+
+    if(rotation != 0){
+      Angle = currentAngle;
+    }else{
+      if( Math.abs(speed) > 0 || Math.abs(strafe) > 0 ){
+        angleCorrection = rotationPID.calculate(currentAngle, Angle);
+      }
+    }
 
     boolean fieldRelative = !FO;
 
     //Get a chassis speed and rotation from input.
     speeds = (fieldRelative) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
-      Speed, Strafe, Rotation, Rotation2d.fromDegrees(currentAngle))) :
-      (new ChassisSpeeds(Speed, Strafe, Rotation));
+      speed, strafe, rotation + angleCorrection, Rotation2d.fromDegrees(currentAngle))) :
+      (new ChassisSpeeds(speed, strafe, rotation));
 
     //Set the Chassis speeds after processing input.
     setChassisSpeeds(speeds);
@@ -195,7 +212,7 @@ public class Drivetrain extends SubsystemBase {
     backRight = RightRear.updateModuleState();
 
     //update odometry using the new module states.
-    Position = odometry.update(Rotation2d.fromDegrees(sensors.getFusedHeading()), frontLeft, frontRight, backLeft, backRight);
+    odometry.update(Rotation2d.fromDegrees(sensors.getFusedHeading()), frontLeft, frontRight, backLeft, backRight);
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -206,7 +223,7 @@ public class Drivetrain extends SubsystemBase {
    * Publish value from the drivetrain to the Smart Dashboard.
    */
   private void updateShuffleboard() {
-    SmartDashboard.putString("Odometry", Position.toString());
+    SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
   }
 
   public void reset() {
@@ -215,6 +232,26 @@ public class Drivetrain extends SubsystemBase {
     LeftRear.resetEncoders();
     RightRear.resetEncoders();
   }
+
+
+  public void setPIDs() {
+    rotationPID.setPID(SmartDashboard.getNumber("Correction P", 0.0), SmartDashboard.getNumber("Correction I", 0.0), SmartDashboard.getNumber("Correction D", 0.0));
+  }
+
+  private void setAnglePID(double kP, double kI, double kD) {
+    LeftFront.setAnglePID(kP, kI, kD);
+    RightFront.setAnglePID(kP, kI, kD);
+    LeftRear.setAnglePID(kP, kI, kD);
+    RightRear.setAnglePID(kP, kI, kD);
+  }
+
+  private void setSpeedPID(double kP, double kI, double kD) {
+    LeftFront.setSpeedPID(kP, kI, kD);
+    RightFront.setSpeedPID(kP, kI, kD);
+    LeftRear.setSpeedPID(kP, kI, kD);
+    RightRear.setSpeedPID(kP, kI, kD);
+  }
+
 
   /**
    * The object for converting motion to individual motor states.
@@ -253,7 +290,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Pose2d position.
    */
   public Pose2d getPose() {
-    return Position;
+    return odometry.getPoseMeters();
   }
 
   /**

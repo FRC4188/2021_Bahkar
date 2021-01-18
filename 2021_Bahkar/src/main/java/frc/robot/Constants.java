@@ -46,6 +46,12 @@ public final class Constants {
     public static final double DRIVE_MAX_CACCEL = 8.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
     public static final double DRIVE_MAX_RADIANS = 3 * Math.PI; //Maximum rotational velocity (Radians per Second).
 
+    public final class Auto {
+        public static final double DRIVE_MAX_VELOCITY = 1.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
+        public static final double DRIVE_MAX_ACCEL = 3.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
+        public static final double DRIVE_MAX_CACCEL = 5.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
+    }
+
     public static final double STARTING_X = 0.0; //Starting X position of the robot (Meters).
     public static final double STARTING_Y = 0.0; //Starting Y position of the robot (Meters).
 
