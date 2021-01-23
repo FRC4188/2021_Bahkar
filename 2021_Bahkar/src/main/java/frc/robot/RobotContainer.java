@@ -13,10 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.ToAngle;
 import frc.robot.commands.drive.ToPosition;
 import frc.robot.commands.drive.test.WheelRotationTest;
+import frc.robot.commands.hopper.AutoHopper;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretToOneEighty;
@@ -25,6 +27,7 @@ import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Hopper;
 import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
@@ -44,6 +47,7 @@ public class RobotContainer {
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
   private Turret turret = new Turret(sensors);
+  private Hopper hopper = new Hopper(sensors);
 
   private TempManager tempManager = new TempManager(drivetrain, turret);
   private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
@@ -77,6 +81,7 @@ public class RobotContainer {
 
   private void setDefaultCommands() {
     drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
+    hopper.setDefaultCommand(new SpinHopper(hopper, () -> copilot.getY(Hand.kRight)));
   }
 
   /**
@@ -91,7 +96,8 @@ public class RobotContainer {
     pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
-
+    copilot.getAButtonObj().whileHeld(new AutoHopper(hopper));
+    copilot.getBButtonObj().whileHeld(new AutoHopper(hopper));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));

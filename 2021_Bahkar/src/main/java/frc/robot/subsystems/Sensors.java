@@ -14,6 +14,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +32,10 @@ public class Sensors extends SubsystemBase {
   private NetworkTable TlimelightTable = null;
   private NetworkTable ClimelightTable = null;
   private Pipeline pipeline = Pipeline.CLOSE;
+
+  private final DigitalInput topBeamA = new DigitalInput(0);
+  private final DigitalInput topBeamB = new DigitalInput(1);
+
 
   boolean adjustedGyro = false;
 
@@ -63,11 +68,7 @@ public class Sensors extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Compass Heading", getCompassAngle());
-    SmartDashboard.putNumber("Gyro Heading", getGyro());
-    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
-    SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
-    //SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
+    updateShuffleBoard();
   }
 
   private void updateShuffleBoard() {
@@ -76,6 +77,8 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Pigeon Yaw", getYaw());
     SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
     //SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
+    SmartDashboard.putBoolean("Top Forward Beam", topBeamA.get());
+    SmartDashboard.putBoolean("Top Backward Beam", topBeamB.get());
   }
 
   private void setupGyro() {
@@ -275,5 +278,9 @@ public class Sensors extends SubsystemBase {
 
   public double getChassisHorizontalAngle() {
     return getChassisXYAngle()[0];
+  }
+
+  public boolean getTopBeam() {
+    return (topBeamA.get() && topBeamB.get());
   }
 }
