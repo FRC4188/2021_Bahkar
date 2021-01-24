@@ -8,13 +8,20 @@
 package frc.robot.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Hood;
 
 public class RaiseHood extends CommandBase {
+
+  private final Hood hood;
+  private final double changeRate;
   /**
    * Creates a new RaiseHood.
    */
-  public RaiseHood() {
+  public RaiseHood(Hood hood, double changeRate) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(hood);
+    this.hood = hood;
+    this.changeRate = changeRate;
   }
 
   // Called when the command is initially scheduled.
@@ -25,6 +32,7 @@ public class RaiseHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    hood.raiseHood(changeRate);
   }
 
   // Called once the command ends or is interrupted.

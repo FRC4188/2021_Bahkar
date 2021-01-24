@@ -14,9 +14,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drive.test.setPIDs;
+import frc.robot.commands.hood.RaiseHood;
+import frc.robot.commands.hood.LowerHood;
 import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.shooter.SpinShooter;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Sensors;
+import frc.robot.subsystems.Shooter;
 import frc.robot.utils.components.ButtonBox;
 import frc.robot.utils.components.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
@@ -32,6 +37,8 @@ public class RobotContainer {
 
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
+  private Hood hood = new Hood();
+  private Shooter shooter = new Shooter();
 
   private TempManager tempManager = new TempManager(drivetrain);
 
@@ -73,7 +80,10 @@ public class RobotContainer {
     pilot.getXButtonObj().whenPressed(new setPIDs(drivetrain));
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
-
+    copilot.getYButtonObj().whenPressed(new SpinShooter(shooter, 100));
+    copilot.getYButtonObj().whenReleased(new SpinShooter(shooter, 0));
+    copilot.getDpadUpButtonObj().whileHeld(new RaiseHood(hood, 0.1));
+    copilot.getDpadDownButtonObj().whileHeld(new LowerHood(hood, 0.1));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));

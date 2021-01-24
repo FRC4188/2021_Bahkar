@@ -53,4 +53,12 @@ public final class Constants {
         public static final double MAX_ANG = 370; //Farthest bound of the turret's roation in degrees.
         public static final double MIN_ANG = -10; //Other farthers bound of the turret's rotation in degrees.
     }
+
+    public static final class Shooter {
+        public static final double kP = 0.3;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double MAX_VELOCITY = 21300.0;
+        public static final double RAMP_RATE = 0.25;
+    }
 }

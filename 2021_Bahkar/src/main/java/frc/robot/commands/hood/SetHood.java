@@ -8,13 +8,19 @@
 package frc.robot.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Hood;
 
-public class MoveHood extends CommandBase {
+public class SetHood extends CommandBase {
+  private final Hood hood;
+  private final double position;
+
   /**
    * Creates a new MoveHood.
    */
-  public MoveHood() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public SetHood(Hood hood, double position) {
+    addRequirements(hood);
+      this.hood = hood;
+      this.position = position;
   }
 
   // Called when the command is initially scheduled.
@@ -25,6 +31,7 @@ public class MoveHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    hood.setHoodPosition(/*position*/);
   }
 
   // Called once the command ends or is interrupted.
