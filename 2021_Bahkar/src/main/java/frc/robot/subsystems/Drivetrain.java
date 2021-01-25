@@ -89,11 +89,7 @@ public class Drivetrain extends SubsystemBase {
 
   //Create initial odometry
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
-  new Rotation2d(), new Pose2d(Constants.STARTING_Y, Constants.STARTING_X, new Rotation2d()));
-
-  //Create a configuration for trajectories.
-  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Auto.DRIVE_MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Auto.DRIVE_MAX_VELOCITY, Constants.Auto.DRIVE_MAX_ACCEL).addConstraint(CentAccel);
+  new Rotation2d(), new Pose2d());
 
   /**
    * Creates a new Drivetrain.
@@ -132,10 +128,10 @@ public class Drivetrain extends SubsystemBase {
   public void drive (double speed, double strafe, double rotation, boolean FO) {
 
     //Convert controller input to M/S and Rad/S
-    speed = speed * Constants.DRIVE_MAX_VELOCITY;
-    strafe = strafe * Constants.DRIVE_MAX_VELOCITY;
+    speed = speed * Constants.Drive.MAX_VELOCITY;
+    strafe = strafe * Constants.Drive.MAX_VELOCITY;
 
-    rotation = rotation * Constants.DRIVE_MAX_RADIANS;
+    rotation = rotation * Constants.Drive.MAX_RADIANS;
 
     double currentAngle = sensors.getFusedHeading();
 
@@ -291,14 +287,6 @@ public class Drivetrain extends SubsystemBase {
    */
   public Pose2d getPose() {
     return odometry.getPoseMeters();
-  }
-
-  /**
-   * Get the Trajectory config object.
-   * @return TrajectoryConfig object.
-   */
-  public TrajectoryConfig getConfig() {
-    return trajectoryConfig;
   }
 
   public double getFrontLeftDriveTemp() {

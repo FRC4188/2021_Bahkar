@@ -8,54 +8,77 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
+
+import java.util.Iterator;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.HolonomicDriveController;
+import frc.robot.utils.trajectory.CSPSwerveTrajectory;
 
 public class SwerveControl extends CommandBase {
   Drivetrain drivetrain;
   Trajectory trajectory;
+  Iterator<Double> times;
+  Iterator<Double> angles;
   double theta;
 
+  double nextTime;
+  double angle;
+
   Timer timer = new Timer();
-  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.DRIVE_MAX_RADIANS, 2.0 * Constants.DRIVE_MAX_RADIANS));
+
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.Drive.MAX_RADIANS, 2.0 * Constants.Drive.MAX_RADIANS));
   PIDController xController = new PIDController(1.5, 0.0, 0.0);
-  PIDController yController = new PIDController(1.5, 0.0, 0.0
-  );
+  PIDController yController = new PIDController(1.5, 0.0, 0.0);
+
+  HolonomicDriveController controller = new HolonomicDriveController(xController, yController, thetaController);
+
   /**
    * Creates a new SwerveControl.
    */
-  public SwerveControl(Drivetrain drivetrain, Trajectory trajectory) {
+  public SwerveControl(Drivetrain drivetrain, CSPSwerveTrajectory trajectory) {
     addRequirements(drivetrain);
+
+    this.drivetrain = drivetrain;
+    this.trajectory = trajectory.getTrajectory();
+    this.times = trajectory.getTimes().iterator();
+    this.angles = trajectory.getAngles().iterator();
+
+    controller.setEnabled(true);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drivetrain.resetOdometry(trajectory.getInitialPose());
-    theta = drivetrain.getPose().getRotation().getDegrees();
-
-    timer.reset();
     timer.start();
+
+    times.next();
+    nextTime = times.next();
+    angle = angles.next();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Pose2d setPoint = trajectory.sample(timer.get()).poseMeters;
-    Pose2d c_pose = drivetrain.getPose();
+    Pose2d pose = drivetrain.getPose();
+    double time = timer.get();
 
-    double xVel = xController.calculate(c_pose.getTranslation().getX(), setPoint.getTranslation().getX()) * Constants.DRIVE_MAX_VELOCITY;
-    double yVel = yController.calculate(c_pose.getTranslation().getY(), setPoint.getTranslation().getY()) * Constants.DRIVE_MAX_VELOCITY;
-    double thetaVel = thetaController.calculate(c_pose.getRotation().getDegrees(), theta);
+    if (time >= nextTime) {
+      angle = angles.next();
+      if (times.hasNext()) nextTime = times.next();
+    }
 
-    drivetrain.drive(xVel, yVel, thetaVel, false);
+    drivetrain.setChassisSpeeds(controller.calculate(pose, trajectory.sample(time), Rotation2d.fromDegrees(angle)));
   }
 
   // Called once the command ends or is interrupted.

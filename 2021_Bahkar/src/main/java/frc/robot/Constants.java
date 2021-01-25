@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 
 /**
@@ -30,30 +32,29 @@ public final class Constants {
     public static final double FALCON_ENCODER_TICKS = 2048; //Counts per revolution of the Falcon 500 motor.
     public static final double FALCON_MAX_TEMP = 50.0; //Max temperature of Falcon 500 (Celsius).
     
-    public static final double DRIVE_GEARING = 6.54545454545; //Gear ratio of the drive motor.
-    public static final double WHEEL_DIAMETER = 0.1016;//Units.inchesToMeters(4); //Diameter of the drive wheels (Meters).
-    public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER; //Circumfrence of the drive wheels (Meters).
-    public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; //Rotations per meter of the drive wheels.
-    public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * FALCON_ENCODER_TICKS; //Encoder counts per revolution of the drive wheel.
-    public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; //Encoder ticks per meter of the drive wheels.
+    public final class Drive {
+        public static final double DRIVE_GEARING = 6.54545454545; //Gear ratio of the drive motor.
+        public static final double WHEEL_DIAMETER = 0.1016;//Units.inchesToMeters(4); //Diameter of the drive wheels (Meters).
+        public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER; //Circumfrence of the drive wheels (Meters).
+        public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; //Rotations per meter of the drive wheels.
+        public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * FALCON_ENCODER_TICKS; //Encoder counts per revolution of the drive wheel.
+        public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; //Encoder ticks per meter of the drive wheels.
+    
+        public static final double ANGLE_GEARING = 12.0;
+        public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * FALCON_ENCODER_TICKS) / 360;
+    
+        public static final double MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
+        public static final double MAX_VELOCITY = 5.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
+        public static final double MAX_ACCEL = 10.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
+        public static final double MAX_CACCEL = 8.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
+        public static final double MAX_RADIANS = 3 * Math.PI; //Maximum rotational velocity (Radians per Second).
 
-    public static final double ANGLE_GEARING = 12.0;
-    public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * FALCON_ENCODER_TICKS) / 360;
-
-    public static final double DRIVE_MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
-    public static final double DRIVE_MAX_VELOCITY = 5.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
-    public static final double DRIVE_MAX_ACCEL = 10.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
-    public static final double DRIVE_MAX_CACCEL = 8.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
-    public static final double DRIVE_MAX_RADIANS = 3 * Math.PI; //Maximum rotational velocity (Radians per Second).
-
-    public final class Auto {
-        public static final double DRIVE_MAX_VELOCITY = 1.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
-        public static final double DRIVE_MAX_ACCEL = 3.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
-        public static final double DRIVE_MAX_CACCEL = 5.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
+        public final class Auto {
+            public static final double MAX_VELOCITY = 1.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
+            public static final double MAX_ACCEL = 3.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
+            public static final double MAX_CACCEL = 5.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
+        }
     }
-
-    public static final double STARTING_X = 0.0; //Starting X position of the robot (Meters).
-    public static final double STARTING_Y = 0.0; //Starting Y position of the robot (Meters).
 
     public static final double GOAL_HEIGHT = Units.feetToMeters(8.1875); //Height of the goal from the ground (Meters).
     public static final double THREE_POINT_DEPTH = Units.feetToMeters(2 + (5.25/12.0)); //Depth of the 3 point goal inside the 2 point goal (Meters).

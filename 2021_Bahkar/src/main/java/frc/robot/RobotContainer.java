@@ -30,8 +30,6 @@ import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
-import frc.robot.utils.trajectory.CircleTest;
-import frc.robot.utils.trajectory.TestFile;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
