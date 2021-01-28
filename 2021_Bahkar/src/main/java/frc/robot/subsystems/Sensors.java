@@ -201,6 +201,9 @@ public class Sensors extends SubsystemBase {
     return (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
   }
 
+  public static double getHorizontalDistance() {
+    return (); 
+  }
   public double getTurretOffset() {
     double a = Constants.Field.THREE_POINT_DEPTH;
     double b = getDistance();
