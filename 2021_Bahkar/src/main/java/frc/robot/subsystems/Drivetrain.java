@@ -64,10 +64,10 @@ public class Drivetrain extends SubsystemBase {
   private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder, 158.37, true, true);
 
   //Put together swerve module positions relative to the center of the robot.
-  private Translation2d FrontLeftLocation = new Translation2d((Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
-  private Translation2d FrontRightLocation = new Translation2d((Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
-  private Translation2d BackLeftLocation = new Translation2d(-(Constants.A_LENGTH/2), -(Constants.A_WIDTH/2));
-  private Translation2d BackRightLocation = new Translation2d(-(Constants.A_LENGTH/2), (Constants.A_WIDTH/2));
+  private Translation2d FrontLeftLocation = new Translation2d((Constants.Robot.A_LENGTH/2), -(Constants.Robot.A_WIDTH/2));
+  private Translation2d FrontRightLocation = new Translation2d((Constants.Robot.A_LENGTH/2), (Constants.Robot.A_WIDTH/2));
+  private Translation2d BackLeftLocation = new Translation2d(-(Constants.Robot.A_LENGTH/2), -(Constants.Robot.A_WIDTH/2));
+  private Translation2d BackRightLocation = new Translation2d(-(Constants.Robot.A_LENGTH/2), (Constants.Robot.A_WIDTH/2));
 
   //Create a kinematics withe the swerve module positions
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
