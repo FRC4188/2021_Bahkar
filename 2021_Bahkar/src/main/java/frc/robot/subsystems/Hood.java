@@ -3,16 +3,18 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CSPMath;
 
 
 public class Hood extends SubsystemBase {
 
-  private final Servo linearServo = new Servo(1);
-  private boolean atMax;
+  private final Servo rightLinearServo = new Servo(69);
+  private final Servo leftLinearServo = new Servo(69);
   
   public Hood() {
-    linearServo.set(0.0);
-    atMax = false;
+    rightLinearServo.set(0.0);
+    leftLinearServo.set(0.0);
+
   }
 
   @Override
@@ -25,20 +27,32 @@ public class Hood extends SubsystemBase {
    * @param position 
    */
   public void setHoodPosition(/*double position*/) {
-    linearServo.set(SmartDashboard.getNumber("Set Hood Position", 0.0));
+    rightLinearServo.set(/*position*/SmartDashboard.getNumber("Set Hood Position", 0.0));
   }
 
-  public void raiseHood(double changeRate) {
-    linearServo.set(getHoodPosition() + changeRate);
+  public void setHoodAngle(double angle) {
+    double position = CSPMath.angleToServoPosition(angle);
+    
+    rightLinearServo.set(position);
+    leftLinearServo.set(position);
   }
 
-  public void lowerHood(double changeRate) {
-    linearServo.set(getHoodPosition()- changeRate);
+  public void raiseHood(double incrementRate) {
+    rightLinearServo.set(getHoodPosition() + incrementRate);
+    leftLinearServo.set(getHoodPosition() + incrementRate);
   }
+
+  public void lowerHood(double decrementRate) {
+    rightLinearServo.set(getHoodPosition() - decrementRate);
+    rightLinearServo.set(getHoodPosition() - decrementRate);
+  }
+
   /**
-   * @return the position of the linear servo
+   * @return the position of the right linear servo
    */
   public double getHoodPosition() {
-    return linearServo.get();
+    double hoodPosition = rightLinearServo.get() == leftLinearServo.get() ? rightLinearServo.get() : -1;
+    
+    return hoodPosition;
   }
 }

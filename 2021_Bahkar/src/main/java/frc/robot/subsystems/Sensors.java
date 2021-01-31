@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.enums.LedMode;
+import frc.robot.utils.CSPMath;
 import frc.robot.utils.enums.CameraMode;
 import frc.robot.utils.enums.Pipeline;
 
@@ -204,6 +205,16 @@ public class Sensors extends SubsystemBase {
   public static double getHorizontalDistance() {
     return (); 
   }
+
+  public double[] formulaRPMandAngle() {
+    double vy = CSPMath.getVy();
+    double vx = CSPMath.getVx(getHorizontalDistance(), vy);
+    double launchAngle = CSPMath.getLaunchAngle(vx, vy);
+    double[] angleAndRPM = {CSPMath.getVelocity(vx, vy, launchAngle), CSPMath.getLaunchAngle(vx, vy)};
+
+    return angleAndRPM;
+  }
+
   public double getTurretOffset() {
     double a = Constants.Field.THREE_POINT_DEPTH;
     double b = getDistance();

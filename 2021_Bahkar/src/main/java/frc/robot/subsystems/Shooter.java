@@ -15,19 +15,20 @@ public class Shooter extends SubsystemBase {
     private final TalonFX upperShooterMotor = new TalonFX(69);
     private final TalonFX lowerShooterMotor = new TalonFX(69);
 
-    
-    //https://www.omnicalculator.com/physics/projectile-motion
+    private Sensors sensors;
 
-    public Shooter() {
+    public Shooter(Sensors sensors) {
+        this.sensors = sensors;
+        //set slave motor
+        upperShooterMotor.follow(lowerShooterMotor);
         //set inversions
         lowerShooterMotor.setInverted(true);
         upperShooterMotor.setInverted(InvertType.FollowMaster);
-        //set slave motor
-        upperShooterMotor.follow(lowerShooterMotor);
+        
         // setup encoders
         upperShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
         lowerShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
-        
+
         // configuration
         setCoast();
         PIDConfig();
@@ -56,7 +57,7 @@ public class Shooter extends SubsystemBase {
     }
 
     /**
-     * Sets shooter motors to a given velocity in rpm.
+     * Sets shooter motors to a given velocity in RPM
      */
     public void setVelocity(double velocity) {
         double adjust = SmartDashboard.getNumber("Set shooter rpm", 0.0) * Constants.RobotSpecs.FALCON_ENCODER_TICKS

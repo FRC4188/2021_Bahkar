@@ -38,7 +38,7 @@ public class RobotContainer {
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
   private Hood hood = new Hood();
-  private Shooter shooter = new Shooter();
+  private Shooter shooter = new Shooter(sensors);
 
   private TempManager tempManager = new TempManager(drivetrain);
 
