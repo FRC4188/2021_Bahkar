@@ -5,31 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Turret;
 
-public class AutoHopper extends CommandBase {
-  Hopper hopper;
+public class TurretPower extends CommandBase {
+  Turret turret;
+  double power;
   /**
-   * Creates a new AutoHopper.
+   * Creates a new TurretPower.
    */
-  public AutoHopper(Hopper hopper) {
-    addRequirements(hopper);
-    this.hopper = hopper;
+  public TurretPower(Turret turret, double power) {
+    addRequirements(turret);
+    this.turret = turret;
+    this.power = power;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    turret.set(power);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (hopper.getBeam()) hopper.set(-0.35);
-    else hopper.set(0.0);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +42,6 @@ public class AutoHopper extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

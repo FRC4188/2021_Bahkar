@@ -20,7 +20,7 @@ public class Turret extends SubsystemBase {
 
   Sensors sensors;
 
-  CANSparkMax turretMotor = new CANSparkMax(23, MotorType.kBrushless);
+  CANSparkMax turretMotor = new CANSparkMax(22, MotorType.kBrushless);
   CANEncoder turretEncoder = new CANEncoder(turretMotor);
   CANPIDController pid = new CANPIDController(turretMotor);
 

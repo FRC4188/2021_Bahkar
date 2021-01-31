@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
     public static final double ROBOT_MIN_VOLTS = 6.0; //Minimum available battery volts before things get really bad.
     public static final double ROBOT_MID_VOLTS = 8.0; //Battery voltage where we start getting a little bit worried.
 

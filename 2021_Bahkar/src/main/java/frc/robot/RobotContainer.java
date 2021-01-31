@@ -21,6 +21,7 @@ import frc.robot.commands.drive.test.WheelRotationTest;
 import frc.robot.commands.hopper.AutoHopper;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.turret.FollowTarget;
+import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
 import frc.robot.commands.turret.TurretToZero;
 import frc.robot.commands.turret.ZeroTurret;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Shooter;
 import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
@@ -48,6 +50,7 @@ public class RobotContainer {
   private Drivetrain drivetrain = new Drivetrain(sensors);
   private Turret turret = new Turret(sensors);
   private Hopper hopper = new Hopper(sensors);
+  private Shooter shooter = new Shooter();
 
   private TempManager tempManager = new TempManager(drivetrain, turret);
   private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
@@ -80,8 +83,9 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
-    hopper.setDefaultCommand(new SpinHopper(hopper, () -> copilot.getY(Hand.kRight)));
+    //drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
+    //hopper.setDefaultCommand(new SpinHopper(hopper, () -> copilot.getY(Hand.kRight)));
+    shooter.setDefaultCommand(new RunCommand(() -> shooter.setPercentage(0.8), shooter));
   }
 
   /**
@@ -96,8 +100,13 @@ public class RobotContainer {
     pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
-    copilot.getAButtonObj().whileHeld(new AutoHopper(hopper));
-    copilot.getBButtonObj().whileHeld(new AutoHopper(hopper));
+    pilot.getAButtonObj().whileHeld(new AutoHopper(hopper));
+    pilot.getBButtonObj().whileHeld(new SpinHopper(hopper, -0.75));
+
+    copilot.getDpadLeftButtonObj().whileHeld(new TurretPower(turret, 0.2));
+    copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0));
+    copilot.getDpadRightButtonObj().whileHeld(new TurretPower(turret, -0.2));
+    copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));

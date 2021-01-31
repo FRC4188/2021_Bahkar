@@ -13,7 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-  CANSparkMax intakeMotor = new CANSparkMax(11, MotorType.kBrushless);
+  CANSparkMax intakeMotor = new CANSparkMax(21, MotorType.kBrushless);
   /**
    * Creates a new Intake.
    */
