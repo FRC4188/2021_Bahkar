@@ -14,7 +14,8 @@ public class Hood extends SubsystemBase {
   public Hood() {
     rightLinearServo.set(0.0);
     leftLinearServo.set(0.0);
-
+    rightLinearServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
+    leftLinearServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
   }
 
   @Override
@@ -27,7 +28,10 @@ public class Hood extends SubsystemBase {
    * @param position 
    */
   public void setHoodPosition(/*double position*/) {
-    rightLinearServo.set(/*position*/SmartDashboard.getNumber("Set Hood Position", 0.0));
+    double position = SmartDashboard.getNumber("Set Hood Position", 0.0);
+    rightLinearServo.set(position);
+    leftLinearServo.set(position);
+    //try setSpeed(), setPosition() or setAngle() if that doesn't work
   }
 
   public void setHoodAngle(double angle) {

@@ -18,6 +18,7 @@ import frc.robot.commands.hood.RaiseHood;
 import frc.robot.commands.hood.LowerHood;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.shooter.SpinShooter;
+import frc.robot.commands.shooter.SpinShooterToFormula;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Sensors;
@@ -84,6 +85,7 @@ public class RobotContainer {
     copilot.getYButtonObj().whenReleased(new SpinShooter(shooter, 0));
     copilot.getDpadUpButtonObj().whileHeld(new RaiseHood(hood, 0.1));
     copilot.getDpadDownButtonObj().whileHeld(new LowerHood(hood, 0.1));
+    copilot.getXButtonObj().whenPressed(new SpinShooterToFormula(shooter, sensors, hood));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));
