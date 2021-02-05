@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.hopper.SpinHopper;
+import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.ToAngle;
 import frc.robot.commands.drive.ToPosition;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
@@ -48,6 +50,7 @@ public class RobotContainer {
   private Drivetrain drivetrain = new Drivetrain(sensors);
   private Turret turret = new Turret(sensors);
   private Hopper hopper = new Hopper(sensors);
+  private Intake intake = new Intake();
 
   private TempManager tempManager = new TempManager(drivetrain, turret);
   private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
@@ -81,7 +84,6 @@ public class RobotContainer {
 
   private void setDefaultCommands() {
     drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
-    hopper.setDefaultCommand(new SpinHopper(hopper, () -> copilot.getY(Hand.kRight)));
   }
 
   /**
@@ -97,7 +99,8 @@ public class RobotContainer {
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
     copilot.getAButtonObj().whileHeld(new AutoHopper(hopper));
-    copilot.getBButtonObj().whileHeld(new AutoHopper(hopper));
+    copilot.getXButtonObj().whileHeld(new SpinIntake(intake, 0.2));
+    copilot.getBButtonObj().whileHeld(new SpinHopper(hopper, 0.1));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));
