@@ -47,7 +47,7 @@ public class Hood extends SubsystemBase {
     boolean isSamePosition = getServoPositions()[0] == getServoPositions()[1] ? true : false;
     int endCounter = 0;
     endCounter += isSamePosition && (getServoPositions()[0] == 0.0 || getServoPositions()[0] == 1.0) ? 1 : 0;
-
+    //
     if (endCounter % 2 == 0) {
       //lower hood 
       rLinearServo.set(getServoPositions()[1] - 0.1);
