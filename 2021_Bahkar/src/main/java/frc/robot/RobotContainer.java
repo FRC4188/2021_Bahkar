@@ -119,6 +119,10 @@ public class RobotContainer {
 
     copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5));
     copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0));
+
+    copilot.getDpadDownButtonObj().whenPressed(new RunCommand(() -> intake.lower()));
+    copilot.getDpadUpButtonObj().whenPressed(new RunCommand(() -> intake.raise()));
+    copilot.getAButtonObj().whenPressed(new RunCommand(() -> intake.toggle()));
   }
 
   private void putChooser() {

@@ -39,8 +39,8 @@ public class SpinHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (power == null) hopper.set(percentage);
-    else hopper.set(power.getAsDouble());
+    if (power == null) hopper.set(-percentage);
+    else hopper.set(-power.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
