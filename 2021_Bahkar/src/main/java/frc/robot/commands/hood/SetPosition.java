@@ -5,19 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
+package frc.robot.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Hood;
 
-public class AutoHopper extends CommandBase {
-  Hopper hopper;
+public class SetPosition extends CommandBase {
+  Hood hood;
+  double position;
+  boolean cont;
   /**
-   * Creates a new AutoHopper.
+   * Creates a new SetPosition.
    */
-  public AutoHopper(Hopper hopper) {
-    addRequirements(hopper);
-    this.hopper = hopper;
+  public SetPosition(Hood hood, double position, boolean cont) {
+    addRequirements(hood);
+    this.hood = hood;
+    this.position = position;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -28,19 +32,18 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (hopper.getBeam()) hopper.set(0.35);
-    else hopper.set(0.0);
+    hood.set(position);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    hopper.set(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return cont;
   }
 }

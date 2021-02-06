@@ -23,6 +23,7 @@ public class Hopper extends SubsystemBase {
    */
   public Hopper(Sensors sensors) {
     this.sensors = sensors;
+    hopperMotor.setInverted(true);
   }
 
   @Override

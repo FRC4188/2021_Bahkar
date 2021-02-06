@@ -5,19 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Shooter;
 
-public class AutoHopper extends CommandBase {
-  Hopper hopper;
+public class SpinShooter extends CommandBase {
+  private Shooter shooter;
+  private double velocity;
   /**
-   * Creates a new AutoHopper.
+   * Creates a new SpinShooter.
    */
-  public AutoHopper(Hopper hopper) {
-    addRequirements(hopper);
-    this.hopper = hopper;
+  public SpinShooter(Shooter shooter, double velocity) {
+    addRequirements(shooter);
+    this.velocity = velocity;
   }
 
   // Called when the command is initially scheduled.
@@ -28,14 +29,12 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (hopper.getBeam()) hopper.set(0.35);
-    else hopper.set(0.0);
+    shooter.setVelocity(velocity);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    hopper.set(0.0);
   }
 
   // Returns true when the command should end.

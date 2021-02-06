@@ -30,9 +30,10 @@ public class Shooter extends SubsystemBase {
         
         // configuration
         setCoast();
-        //PIDConfig();
-        //setRampRate();
-        SmartDashboard.putNumber("Shooter Wheels RPM ", getLowerVelocity());
+        PIDConfig();
+        setRampRate();
+
+        SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
     }
 
     @Override
@@ -40,13 +41,13 @@ public class Shooter extends SubsystemBase {
 
     }
 
-    /*
+
     public void PIDConfig() {
         lowerShooterMotor.config_kP(0, Constants.Shooter.kP, 10);
         lowerShooterMotor.config_kI(0, Constants.Shooter.kI, 10);
         lowerShooterMotor.config_kD(0, Constants.Shooter.kD, 10);
     }
-*/
+
     /**
      * Sets shooter motors to a given percentage [-1.0, 1.0].
      */
@@ -56,13 +57,11 @@ public class Shooter extends SubsystemBase {
 
     /**
      * Sets shooter motors to a given velocity in rpm.
-     *//*
+     */
     public void setVelocity(double velocity) {
-        double adjust = SmartDashboard.getNumber("Set shooter rpm", 0.0) * Constants.RobotSpecs.FALCON_ENCODER_TICKS
-                / 600;
-        velocity *= (Constants.RobotSpecs.FALCON_ENCODER_TICKS) / 600;
-        lowerShooterMotor.set(ControlMode.Velocity, velocity + adjust);
-    }*/
+        velocity *= (Constants.Robot.FALCON_ENCODER_TICKS) / 600;
+        lowerShooterMotor.set(ControlMode.Velocity, velocity);
+    }
 
     /**
      * Sets shooter motors to brake mode.
@@ -82,24 +81,24 @@ public class Shooter extends SubsystemBase {
 
     /**
      * Configures shooter motor ramp rates.
-     *//*
+     */
     public void setRampRate() {
         lowerShooterMotor.configClosedloopRamp(Constants.Shooter.RAMP_RATE);
         lowerShooterMotor.configOpenloopRamp(Constants.Shooter.RAMP_RATE);
-    }*/
+    }
 
     /**
      * Gets left shooter motor velocity in rpm.
      */
     public double getLowerVelocity() {
-        return (lowerShooterMotor.getSelectedSensorVelocity() * 600) / Constants.FALCON_ENCODER_TICKS;
+        return (lowerShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
     }
 
     /**
      * Gets right shooter motor velocity in rpm.
      */
     public double getUpperVelocity() {
-        return (upperShooterMotor.getSelectedSensorVelocity() * 600) / Constants.FALCON_ENCODER_TICKS;
+        return (upperShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
     }
 
     /**

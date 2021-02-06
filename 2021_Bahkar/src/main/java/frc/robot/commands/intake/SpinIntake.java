@@ -5,19 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 
-public class AutoHopper extends CommandBase {
-  Hopper hopper;
+public class SpinIntake extends CommandBase {
+  private Intake intake;
+  private double power;
+  private boolean cont;
+
   /**
-   * Creates a new AutoHopper.
+   * Creates a new SpinIntake.
    */
-  public AutoHopper(Hopper hopper) {
-    addRequirements(hopper);
-    this.hopper = hopper;
+  public SpinIntake(Intake intake, double power, boolean cont) {
+    addRequirements(intake);
+    this.intake = intake;
+    this.power = power;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -28,19 +33,18 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (hopper.getBeam()) hopper.set(0.35);
-    else hopper.set(0.0);
+    intake.set(power);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    hopper.set(0.0);
+    intake.set(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

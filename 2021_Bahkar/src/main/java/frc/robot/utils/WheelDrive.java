@@ -100,14 +100,14 @@ public class WheelDrive {
 
     angleMotor.set(ControlMode.PercentOutput, anglePID.calculate(currentAngle, set));
 
-    double speed = (state.speedMetersPerSecond * (Constants.DRIVE_COUNTS_PER_METER / 10.0));
+    double speed = (state.speedMetersPerSecond * (Constants.Drive.DRIVE_COUNTS_PER_METER / 10.0));
 
     //Convert M/S to ticks per 100ms and set motor to it.
     speedMotor.set(ControlMode.Velocity, speed);
   }
 
   public SwerveModuleState updateModuleState() {
-    double speed = (speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.DRIVE_COUNTS_PER_METER;
+    double speed = (speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.Drive.DRIVE_COUNTS_PER_METER;
     double angle = angleEncoder.getAbsolutePosition();
 
     return new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle)));
@@ -118,11 +118,11 @@ public class WheelDrive {
   }
 
   public void setAngle(double angle) {
-    angleMotor.set(ControlMode.Position, (angle * Constants.ANGLE_TICKS_PER_DEGREE));
+    angleMotor.set(ControlMode.Position, (angle * Constants.Drive.ANGLE_TICKS_PER_DEGREE));
   }
 
   public void setVelocity(double speed) {
-    speedMotor.set(ControlMode.Velocity, ((speed * Constants.DRIVE_COUNTS_PER_METER) / 10.0));
+    speedMotor.set(ControlMode.Velocity, ((speed * Constants.Drive.DRIVE_COUNTS_PER_METER) / 10.0));
   }
 
   public void setAnglePID(double kP, double kI, double kD) {
@@ -144,10 +144,10 @@ public class WheelDrive {
   }
 
   public double getRPM() {
-    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.FALCON_ENCODER_TICKS;
+    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.Robot.FALCON_ENCODER_TICKS;
   }
 
   public double getMS() {
-    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.DRIVE_COUNTS_PER_METER;
+    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.Drive.DRIVE_COUNTS_PER_METER;
   }
 }
