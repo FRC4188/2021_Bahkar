@@ -100,7 +100,8 @@ public class RobotContainer {
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
     copilot.getAButtonObj().whileHeld(new AutoHopper(hopper));
     copilot.getXButtonObj().whileHeld(new SpinIntake(intake, 0.2));
-    copilot.getBButtonObj().whileHeld(new SpinHopper(hopper, 0.1));
+    copilot.getBButtonObj().whileHeld(new SpinHopper(hopper, 1.0));
+    copilot.getBButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));
