@@ -8,80 +8,80 @@ import frc.robot.utils.CSPMath;
 
 public class Hood extends SubsystemBase {
 
-  private final Servo rightLinearServo = new Servo(0);
-  private final Servo leftLinearServo = new Servo(1);
+  private final Servo rLinearServo = new Servo(0);
+  private final Servo lLinearServo = new Servo(1);
   
   public Hood() {
-    rightLinearServo.set(0.0);
-    leftLinearServo.set(0.0);
-    rightLinearServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
-    leftLinearServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
+    rLinearServo.set(0.0);
+    lLinearServo.set(0.0);
+    rLinearServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
+    lLinearServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Right Hood Position", rightLinearServo.get());
-    SmartDashboard.putNumber("Left Hood Position", leftLinearServo.get());
-    SmartDashboard.putNumber("Hood Positon", rightLinearServo.get());
-
+    SmartDashboard.putNumber("Right Hood Position", getServoPositions()[1]);
+    SmartDashboard.putNumber("Left Hood Position", getServoPositions()[0]);
+    SmartDashboard.putNumber("Hood Positon", rLinearServo.get());
   }
 
   /**
    * Moves hood to linear servo position [0.0, 1.0]
-   * @param position 
+   * 
+   * @param position
    */
   public void setHoodPosition(double position) {
-    rightLinearServo.set(position);
-    leftLinearServo.set(position);
-    //try setSpeed(), setPosition() or setAngle() if that doesn't work
+    rLinearServo.set(position);
+    lLinearServo.set(position);
+    // try setSpeed(), setPosition() or setAngle() if that doesn't work
   }
 
   public void setHoodAngle(double angle) {
-    double position = /*CSPMath.angleToServoPosition(angle);*/ angle;
-    
-    rightLinearServo.set(position);
-    leftLinearServo.set(position);
+    double position = /* CSPMath.angleToServoPosition(angle); */ angle;
+
+    rLinearServo.set(position);
+    lLinearServo.set(position);
   }
 
-  public void toggleHood() {
-    double rate = 0.1;
+  public void cycleHood() {
+    boolean isSamePosition = getServoPositions()[0] == getServoPositions()[1] ? true : false;
+    int endCounter = 0;
+    endCounter += isSamePosition && (getServoPositions()[0] == 0.0 || getServoPositions()[0] == 1.0) ? 1 : 0;
 
-    if (rightLinearServo.get() == 1.0 && leftLinearServo.get() == 1.0) {
-      rightLinearServo.set(rightLinearServo.get() - rate);
-      leftLinearServo.set(leftLinearServo.get() - rate);
-    } else if (rightLinearServo.get() == 0.0 && leftLinearServo.get() == 0.0) {
-      rightLinearServo.set(rightLinearServo.get() + rate);
-      leftLinearServo.set(leftLinearServo.get() + rate);
+    if (endCounter % 2 == 0) {
+      //lower hood 
+      rLinearServo.set(getServoPositions()[1] - 0.1);
+      lLinearServo.set(getServoPositions()[0] - 0.1);
+    } else {
+      //raise hood
+      rLinearServo.set(getServoPositions()[1] + 0.1);
+      lLinearServo.set(getServoPositions()[0] + 0.1);
     }
   }
 
   public void raiseHood(double incrementRate) {
-  
-    rightLinearServo.set(rightLinearServo.get() + incrementRate);
-    leftLinearServo.set(leftLinearServo.get() + incrementRate);
+    rLinearServo.set(rLinearServo.get() + incrementRate);
+    lLinearServo.set(lLinearServo.get() + incrementRate);
   }
 
   public void lowerHood(double decrementRate) {
-    rightLinearServo.set(rightLinearServo.get() - decrementRate);
-    leftLinearServo.set(leftLinearServo.get() - decrementRate);
-  }
-
-  /**
-   * @return the position of the right linear servo
-   */
-  public double getHoodPosition() {
-    double hoodPosition = rightLinearServo.get() == leftLinearServo.get() ? rightLinearServo.get() : -1;
-    
-    return hoodPosition;
+    rLinearServo.set(rLinearServo.get() - decrementRate);
+    lLinearServo.set(lLinearServo.get() - decrementRate);
   }
 
   public void setSpeed(double speed) {
-    rightLinearServo.setSpeed(speed);
-    leftLinearServo.setSpeed(speed);
+    rLinearServo.setSpeed(speed);
+    lLinearServo.setSpeed(speed);
+  }
+
+  public double[] getServoPositions() {
+    double[] servoPositions = {lLinearServo.get(), rLinearServo.get()};
+
+    return servoPositions;
   }
 
   public void holdPosition() {
-    rightLinearServo.set(rightLinearServo.get());
-    leftLinearServo.set(leftLinearServo.get());
+    rLinearServo.set(rLinearServo.get());
+    lLinearServo.set(lLinearServo.get());
   }
 }

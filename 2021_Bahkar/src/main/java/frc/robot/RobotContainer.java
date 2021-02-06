@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drive.test.setPIDs;
 import frc.robot.commands.hood.RaiseHood;
 import frc.robot.commands.hood.SetHood;
-import frc.robot.commands.hood.ToggleHood;
+import frc.robot.commands.hood.CycleHood;
 import frc.robot.commands.hood.LowerHood;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.shooter.SpinShooter;
@@ -91,10 +91,10 @@ public class RobotContainer {
     copilot.getDpadUpButtonObj().whileHeld(new RaiseHood(hood, 0.5));
     copilot.getDpadDownButtonObj().whileHeld(new LowerHood(hood, 0.5));
     copilot.getXButtonObj().whenPressed(new SetHood(hood, () -> SmartDashboard.getNumber("Hood Position", 0.0)));
-    copilot.getBButtonObj().whenPressed(new SetHood(hood, 1.0));
-    copilot.getAButtonObj().whileHeld(new ToggleHood(hood));
+    copilot.getBButtonObj().whenPressed(new SetHood(hood, 5));
+    copilot.getAButtonObj().whileHeld(new CycleHood(hood));
     copilot.getDpadLeftButtonObj().whileHeld(new RunCommand(() -> hood.setSpeed(1.0), hood));
-    copilot.getDpadLeftButtonObj().whenReleased(new RunCommand(() -> hood.getHoodPosition(), hood));
+    copilot.getDpadLeftButtonObj().whenReleased(new RunCommand(() -> hood.getServoPositions(), hood));
     copilot.getDpadRightButtonObj().whileHeld(new RunCommand(() -> hood.setSpeed(-1.0), hood));
     copilot.getDpadRightButtonObj().whenReleased(new RunCommand(() -> hood.holdPosition(), hood));
 

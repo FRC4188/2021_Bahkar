@@ -10,13 +10,13 @@ package frc.robot.commands.hood;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
 
-public class ToggleHood extends CommandBase {
+public class CycleHood extends CommandBase {
   private final Hood hood;
 
   /**
    * Creates a new ToggleHood.
    */
-  public ToggleHood(Hood hood) {
+  public CycleHood(Hood hood) {
     addRequirements(hood);
     this.hood = hood;
   }
@@ -29,12 +29,13 @@ public class ToggleHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.toggleHood();
+    hood.cycleHood();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    hood.holdPosition();
   }
 
   // Returns true when the command should end.
