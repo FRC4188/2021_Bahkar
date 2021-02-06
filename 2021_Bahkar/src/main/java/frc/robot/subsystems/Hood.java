@@ -8,8 +8,8 @@ import frc.robot.utils.CSPMath;
 
 public class Hood extends SubsystemBase {
 
-  private final Servo rightLinearServo = new Servo(69);
-  private final Servo leftLinearServo = new Servo(69);
+  private final Servo rightLinearServo = new Servo(0);
+  private final Servo leftLinearServo = new Servo(1);
   
   public Hood() {
     rightLinearServo.set(0.0);
@@ -20,35 +20,50 @@ public class Hood extends SubsystemBase {
 
   @Override
   public void periodic() {
-  //SmartDashboard.putNumber("Hood Position", getHoodPosition());
+    SmartDashboard.putNumber("Right Hood Position", rightLinearServo.get());
+    SmartDashboard.putNumber("Left Hood Position", leftLinearServo.get());
+    SmartDashboard.putNumber("Hood Positon", rightLinearServo.get());
+
   }
 
   /**
    * Moves hood to linear servo position [0.0, 1.0]
    * @param position 
    */
-  public void setHoodPosition(/*double position*/) {
-    double position = SmartDashboard.getNumber("Set Hood Position", 0.0);
+  public void setHoodPosition(double position) {
     rightLinearServo.set(position);
     leftLinearServo.set(position);
     //try setSpeed(), setPosition() or setAngle() if that doesn't work
   }
 
   public void setHoodAngle(double angle) {
-    double position = CSPMath.angleToServoPosition(angle);
+    double position = /*CSPMath.angleToServoPosition(angle);*/ angle;
     
     rightLinearServo.set(position);
     leftLinearServo.set(position);
   }
 
+  public void toggleHood() {
+    double rate = 0.1;
+
+    if (rightLinearServo.get() == 1.0 && leftLinearServo.get() == 1.0) {
+      rightLinearServo.set(rightLinearServo.get() - rate);
+      leftLinearServo.set(leftLinearServo.get() - rate);
+    } else if (rightLinearServo.get() == 0.0 && leftLinearServo.get() == 0.0) {
+      rightLinearServo.set(rightLinearServo.get() + rate);
+      leftLinearServo.set(leftLinearServo.get() + rate);
+    }
+  }
+
   public void raiseHood(double incrementRate) {
-    rightLinearServo.set(getHoodPosition() + incrementRate);
-    leftLinearServo.set(getHoodPosition() + incrementRate);
+  
+    rightLinearServo.set(rightLinearServo.get() + incrementRate);
+    leftLinearServo.set(leftLinearServo.get() + incrementRate);
   }
 
   public void lowerHood(double decrementRate) {
-    rightLinearServo.set(getHoodPosition() - decrementRate);
-    rightLinearServo.set(getHoodPosition() - decrementRate);
+    rightLinearServo.set(rightLinearServo.get() - decrementRate);
+    leftLinearServo.set(leftLinearServo.get() - decrementRate);
   }
 
   /**
@@ -58,5 +73,15 @@ public class Hood extends SubsystemBase {
     double hoodPosition = rightLinearServo.get() == leftLinearServo.get() ? rightLinearServo.get() : -1;
     
     return hoodPosition;
+  }
+
+  public void setSpeed(double speed) {
+    rightLinearServo.setSpeed(speed);
+    leftLinearServo.setSpeed(speed);
+  }
+
+  public void holdPosition() {
+    rightLinearServo.set(rightLinearServo.get());
+    leftLinearServo.set(leftLinearServo.get());
   }
 }

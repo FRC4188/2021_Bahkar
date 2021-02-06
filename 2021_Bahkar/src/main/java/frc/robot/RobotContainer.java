@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.Set;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -15,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drive.test.setPIDs;
 import frc.robot.commands.hood.RaiseHood;
+import frc.robot.commands.hood.SetHood;
+import frc.robot.commands.hood.ToggleHood;
 import frc.robot.commands.hood.LowerHood;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.shooter.SpinShooter;
@@ -67,7 +71,8 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getY(Hand.kRight), pilot.atZero(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
+    //drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getY(Hand.kRight), pilot.atZero(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
+    hood.setDefaultCommand(new RunCommand(() -> hood.setSpeed(0.0), hood));
   }
 
   /**
@@ -78,14 +83,22 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
-    pilot.getXButtonObj().whenPressed(new setPIDs(drivetrain));
+    //pilot.getXButtonObj().whenPressed(new setPIDs(drivetrain));
 
     //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
-    copilot.getYButtonObj().whenPressed(new SpinShooter(shooter, 100));
-    copilot.getYButtonObj().whenReleased(new SpinShooter(shooter, 0));
-    copilot.getDpadUpButtonObj().whileHeld(new RaiseHood(hood, 0.1));
-    copilot.getDpadDownButtonObj().whileHeld(new LowerHood(hood, 0.1));
-    copilot.getXButtonObj().whenPressed(new SpinShooterToFormula(shooter, sensors, hood));
+    //copilot.getYButtonObj().whenPressed(new SpinShooter(shooter, 100));
+    //copilot.getYButtonObj().whenReleased(new SpinShooter(shooter, 0));
+    copilot.getDpadUpButtonObj().whileHeld(new RaiseHood(hood, 0.5));
+    copilot.getDpadDownButtonObj().whileHeld(new LowerHood(hood, 0.5));
+    copilot.getXButtonObj().whenPressed(new SetHood(hood, () -> SmartDashboard.getNumber("Hood Position", 0.0)));
+    copilot.getBButtonObj().whenPressed(new SetHood(hood, 1.0));
+    copilot.getAButtonObj().whileHeld(new ToggleHood(hood));
+    copilot.getDpadLeftButtonObj().whileHeld(new RunCommand(() -> hood.setSpeed(1.0), hood));
+    copilot.getDpadLeftButtonObj().whenReleased(new RunCommand(() -> hood.getHoodPosition(), hood));
+    copilot.getDpadRightButtonObj().whileHeld(new RunCommand(() -> hood.setSpeed(-1.0), hood));
+    copilot.getDpadRightButtonObj().whenReleased(new RunCommand(() -> hood.holdPosition(), hood));
+
+    //copilot.getXButtonObj().whenPressed(new SpinShooterToFormula(shooter, sensors, hood));
     //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
     //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
     //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));

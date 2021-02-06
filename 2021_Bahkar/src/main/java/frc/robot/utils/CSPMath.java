@@ -17,9 +17,9 @@ public class CSPMath {
         return Math.abs(minChange(a, b, wrap));
     }
 
-    public static double angleToServoPosition(double angle) {
+   /* public static double angleToServoPosition(double angle) {
         return 
-    }
+    }*/
 
     /**
      * Calculates the horizontal velocity component from range of a projectile formula

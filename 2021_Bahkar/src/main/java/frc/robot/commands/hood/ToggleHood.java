@@ -7,45 +7,29 @@
 
 package frc.robot.commands.hood;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
 
-public class SetHood extends CommandBase {
-  private Hood hood;
-  private double position = 0.0;
-  private DoubleSupplier dashRef = null;
-
-  private boolean sup;
+public class ToggleHood extends CommandBase {
+  private final Hood hood;
 
   /**
-   * Creates a new MoveHood.
+   * Creates a new ToggleHood.
    */
-  public SetHood(Hood hood, double position) {
+  public ToggleHood(Hood hood) {
     addRequirements(hood);
-      this.hood = hood;
-      this.position = position;
-
-      sup = false;
-  }
-
-  public SetHood(Hood hood, DoubleSupplier dashRef) {
     this.hood = hood;
-    this.dashRef = dashRef;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (sup) position = dashRef.getAsDouble();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.setHoodPosition(position);
+    hood.toggleHood();
   }
 
   // Called once the command ends or is interrupted.

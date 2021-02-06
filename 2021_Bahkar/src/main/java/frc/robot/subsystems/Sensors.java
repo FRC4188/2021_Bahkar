@@ -203,7 +203,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public static double getHorizontalDistance() {
-    return (); 
+    return (1.0); 
   }
 
   public double[] formulaRPMandAngle() {
