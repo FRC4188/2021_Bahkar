@@ -5,30 +5,21 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
+package frc.robot.commands.hood;
 
-import java.util.function.DoubleSupplier;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Hood;
 
-public class SpinHopper extends CommandBase {
+public class DashPosition extends CommandBase {
 
-  Hopper hopper;
-  double percentage;
-  DoubleSupplier power = null;
+  private Hood hood;
   /**
-   * Creates a new SpinHopper.
+   * Creates a new DashPosition.
    */
-  public SpinHopper(Hopper hopper, double percentage) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hopper);
-    this.hopper = hopper;
-    this.percentage = percentage;
-  }
-
-  public SpinHopper(Hopper hopper, DoubleSupplier power) {
-    this.power = power;
+  public DashPosition(Hood hood) {
+    addRequirements(hood);
+    this.hood = hood;
   }
 
   // Called when the command is initially scheduled.
@@ -39,8 +30,7 @@ public class SpinHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (power == null) hopper.set(-percentage);
-    else hopper.set(-power.getAsDouble());
+    hood.set(SmartDashboard.getNumber("Set Hood Position", 0.0));
   }
 
   // Called once the command ends or is interrupted.

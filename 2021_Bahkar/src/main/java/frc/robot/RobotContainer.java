@@ -19,17 +19,23 @@ import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.ToAngle;
 import frc.robot.commands.drive.ToPosition;
 import frc.robot.commands.drive.test.WheelRotationTest;
+import frc.robot.commands.hood.DashPosition;
+import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.AutoHopper;
 import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.shooter.DashVelocity;
 import frc.robot.commands.turret.FollowTarget;
+import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
 import frc.robot.commands.turret.TurretToZero;
 import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
@@ -51,6 +57,8 @@ public class RobotContainer {
   private Turret turret = new Turret(sensors);
   private Hopper hopper = new Hopper(sensors);
   private Intake intake = new Intake();
+  private Shooter shooter = new Shooter();
+  private Hood hood = new Hood();
 
   private TempManager tempManager = new TempManager(drivetrain, turret);
   private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
@@ -83,7 +91,8 @@ public class RobotContainer {
   }
 
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
+    hood.setDefaultCommand(new DashPosition(hood));
+    shooter.setDefaultCommand(new DashVelocity(shooter));
   }
 
   /**
@@ -93,18 +102,27 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
-    pilot.getRbButtonObj().whileHeld(new FollowTarget(turret, true));
-    pilot.getRbButtonObj().whenReleased(new FollowTarget(turret, false));
+    pilot.getAButtonObj().whenPressed(new SpinIntake(intake, 0.5, true));
+    pilot.getAButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
 
-    //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
-    copilot.getAButtonObj().whileHeld(new AutoHopper(hopper));
-    copilot.getXButtonObj().whileHeld(new SpinIntake(intake, 0.2));
-    copilot.getBButtonObj().whileHeld(new SpinHopper(hopper, 1.0));
-    copilot.getBButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
-    //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
-    //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
-    //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));
+    pilot.getBButtonObj().whenPressed(new SpinIntake(intake, -0.5, true));
+    pilot.getBButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
+
+    pilot.getXButtonObj().whenPressed(new AutoHopper(hopper));
+    pilot.getXButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
+
+    pilot.getYButtonObj().whenPressed(new SpinHopper(hopper, 0.4));
+    pilot.getYButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
+//
+    copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5));
+    copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0));
+
+    copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5));
+    copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0));
+
+    copilot.getDpadDownButtonObj().whenPressed(new RunCommand(() -> intake.lower()));
+    copilot.getDpadUpButtonObj().whenPressed(new RunCommand(() -> intake.raise()));
+    copilot.getRbButtonObj().whenPressed(new RunCommand(() -> intake.toggle()));
   }
 
   private void putChooser() {

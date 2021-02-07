@@ -28,7 +28,6 @@ public class Robot extends TimedRobot {
   private BrownoutProtection bop;
   private TempManager tempManager;
 
-  Servo hood = new Servo(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -116,15 +115,10 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
   }
 
-  double setPlace = 0.82;
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
-    if (hood.get() == 0.82) setPlace = 0.17;
-    else if (hood.get() == 0.17) setPlace = 0.82;
-
-    hood.set(setPlace);
   }
 }

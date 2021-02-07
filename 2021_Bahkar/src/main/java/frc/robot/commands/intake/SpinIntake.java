@@ -11,17 +11,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
 
 public class SpinIntake extends CommandBase {
-  Intake intake;
-  double percentage;
+  private Intake intake;
+  private double power;
+  private boolean cont;
+
   /**
    * Creates a new SpinIntake.
    */
-  public SpinIntake(Intake intake, double percentage) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public SpinIntake(Intake intake, double power, boolean cont) {
     addRequirements(intake);
     this.intake = intake;
-    this.percentage = percentage;
-
+    this.power = power;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -32,18 +33,18 @@ public class SpinIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.set(percentage);
+    intake.set(power);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.set(0);
+    intake.set(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

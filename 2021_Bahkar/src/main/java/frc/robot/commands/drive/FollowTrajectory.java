@@ -22,7 +22,7 @@ public class FollowTrajectory {
   Drivetrain drivetrain;
   boolean solus;
 
-  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.001, new Constraints(Constants.DRIVE_MAX_RADIANS, 2.0 * Constants.DRIVE_MAX_RADIANS));
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.001, new Constraints(Constants.Drive.MAX_RADIANS, 2.0 * Constants.Drive.MAX_RADIANS));
   PIDController xController = new PIDController(0.5, 0.0, 0.0);
   PIDController yController = new PIDController(0.5, 0.0, 0.0);
 

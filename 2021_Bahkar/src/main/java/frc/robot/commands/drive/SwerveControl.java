@@ -24,7 +24,7 @@ public class SwerveControl extends CommandBase {
   double theta;
 
   Timer timer = new Timer();
-  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.DRIVE_MAX_RADIANS, 2.0 * Constants.DRIVE_MAX_RADIANS));
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.Drive.MAX_RADIANS, 2.0 * Constants.Drive.MAX_RADIANS));
   PIDController xController = new PIDController(1.5, 0.0, 0.0);
   PIDController yController = new PIDController(1.5, 0.0, 0.0
   );
@@ -51,8 +51,8 @@ public class SwerveControl extends CommandBase {
     Pose2d setPoint = trajectory.sample(timer.get()).poseMeters;
     Pose2d c_pose = drivetrain.getPose();
 
-    double xVel = xController.calculate(c_pose.getTranslation().getX(), setPoint.getTranslation().getX()) * Constants.DRIVE_MAX_VELOCITY;
-    double yVel = yController.calculate(c_pose.getTranslation().getY(), setPoint.getTranslation().getY()) * Constants.DRIVE_MAX_VELOCITY;
+    double xVel = xController.calculate(c_pose.getTranslation().getX(), setPoint.getTranslation().getX()) * Constants.Drive.MAX_VELOCITY;
+    double yVel = yController.calculate(c_pose.getTranslation().getY(), setPoint.getTranslation().getY()) * Constants.Drive.MAX_VELOCITY;
     double thetaVel = thetaController.calculate(c_pose.getRotation().getDegrees(), theta);
 
     drivetrain.drive(xVel, yVel, thetaVel, false);

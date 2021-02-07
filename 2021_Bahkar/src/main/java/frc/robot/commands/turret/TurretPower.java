@@ -5,42 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
-
-import java.util.function.DoubleSupplier;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Turret;
 
-public class SpinHopper extends CommandBase {
-
-  Hopper hopper;
-  double percentage;
-  DoubleSupplier power = null;
+public class TurretPower extends CommandBase {
+  Turret turret;
+  double power;
   /**
-   * Creates a new SpinHopper.
+   * Creates a new TurretPower.
    */
-  public SpinHopper(Hopper hopper, double percentage) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hopper);
-    this.hopper = hopper;
-    this.percentage = percentage;
-  }
-
-  public SpinHopper(Hopper hopper, DoubleSupplier power) {
+  public TurretPower(Turret turret, double power) {
+    addRequirements(turret);
+    this.turret = turret;
     this.power = power;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    turret.set(power);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (power == null) hopper.set(-percentage);
-    else hopper.set(-power.getAsDouble());
+
   }
 
   // Called once the command ends or is interrupted.

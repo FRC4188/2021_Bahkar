@@ -20,7 +20,7 @@ public class Turret extends SubsystemBase {
 
   Sensors sensors;
 
-  CANSparkMax turretMotor = new CANSparkMax(23, MotorType.kBrushless);
+  CANSparkMax turretMotor = new CANSparkMax(22, MotorType.kBrushless);
   CANEncoder turretEncoder = new CANEncoder(turretMotor);
   CANPIDController pid = new CANPIDController(turretMotor);
 
@@ -47,10 +47,10 @@ public class Turret extends SubsystemBase {
     pid.setI(1e-6);
     pid.setD(0);
     pid.setIZone(0.0);
-    pid.setFF(1.0 / Constants.TURRET_MAX_VELOCITY);
+    pid.setFF(1.0 / Constants.Turret.MAX_VELOCITY);
     pid.setOutputRange(-1.0, 1.0);
-    pid.setSmartMotionMaxVelocity(Constants.TURRET_MAX_VELOCITY, 0);
-    pid.setSmartMotionMaxAccel(Constants.TURRET_MAX_ACCELERATION, 0);
+    pid.setSmartMotionMaxVelocity(Constants.Turret.MAX_VELOCITY, 0);
+    pid.setSmartMotionMaxAccel(Constants.Turret.MAX_ACCELERATION, 0);
     turretMotor.setClosedLoopRampRate(0.0);
     turretMotor.setOpenLoopRampRate(0.5);
     turretMotor.setIdleMode(IdleMode.kBrake);
@@ -74,7 +74,7 @@ public class Turret extends SubsystemBase {
    * Turns turret to angle in degrees.
    */
   public void setAngle(double angle) {
-      angle /= Constants.TURRET_ENCODER_TO_DEGREES;
+      angle /= Constants.Turret.ENCODER_TO_DEGREES;
       pid.setReference(angle, ControlType.kSmartMotion);
   }
 
@@ -93,14 +93,14 @@ public class Turret extends SubsystemBase {
      * Returns turret encoder position in degrees.
      */
     public double getPosition() {
-      return turretEncoder.getPosition() * Constants.TURRET_ENCODER_TO_DEGREES;
+      return turretEncoder.getPosition() * Constants.Turret.ENCODER_TO_DEGREES;
   }
 
   /**
    * Returns turret encoder velocity in degrees per second.
    */
   public double getVelocity() {
-      return turretEncoder.getVelocity() * Constants.TURRET_ENCODER_TO_DEGREES / 60.0;
+      return turretEncoder.getVelocity() * Constants.Turret.ENCODER_TO_DEGREES / 60.0;
   }
 
   public double getTemperature() {

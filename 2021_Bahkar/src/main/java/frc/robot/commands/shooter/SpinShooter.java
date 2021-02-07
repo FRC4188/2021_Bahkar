@@ -5,30 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
-
-import java.util.function.DoubleSupplier;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Shooter;
 
-public class SpinHopper extends CommandBase {
-
-  Hopper hopper;
-  double percentage;
-  DoubleSupplier power = null;
+public class SpinShooter extends CommandBase {
+  private Shooter shooter;
+  private double velocity;
   /**
-   * Creates a new SpinHopper.
+   * Creates a new SpinShooter.
    */
-  public SpinHopper(Hopper hopper, double percentage) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hopper);
-    this.hopper = hopper;
-    this.percentage = percentage;
-  }
-
-  public SpinHopper(Hopper hopper, DoubleSupplier power) {
-    this.power = power;
+  public SpinShooter(Shooter shooter, double velocity) {
+    addRequirements(shooter);
+    this.velocity = velocity;
   }
 
   // Called when the command is initially scheduled.
@@ -39,8 +29,7 @@ public class SpinHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (power == null) hopper.set(-percentage);
-    else hopper.set(-power.getAsDouble());
+    shooter.setVelocity(velocity);
   }
 
   // Called once the command ends or is interrupted.

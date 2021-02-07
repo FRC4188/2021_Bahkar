@@ -5,30 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hopper;
-
-import java.util.function.DoubleSupplier;
+package frc.robot.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Hood;
 
-public class SpinHopper extends CommandBase {
-
-  Hopper hopper;
-  double percentage;
-  DoubleSupplier power = null;
+public class SetPosition extends CommandBase {
+  Hood hood;
+  double position;
+  boolean cont;
   /**
-   * Creates a new SpinHopper.
+   * Creates a new SetPosition.
    */
-  public SpinHopper(Hopper hopper, double percentage) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hopper);
-    this.hopper = hopper;
-    this.percentage = percentage;
-  }
-
-  public SpinHopper(Hopper hopper, DoubleSupplier power) {
-    this.power = power;
+  public SetPosition(Hood hood, double position, boolean cont) {
+    addRequirements(hood);
+    this.hood = hood;
+    this.position = position;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -39,8 +32,8 @@ public class SpinHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (power == null) hopper.set(-percentage);
-    else hopper.set(-power.getAsDouble());
+    hood.set(position);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -51,6 +44,6 @@ public class SpinHopper extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return cont;
   }
 }

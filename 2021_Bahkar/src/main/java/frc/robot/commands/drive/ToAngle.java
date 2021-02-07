@@ -18,7 +18,7 @@ public class ToAngle extends CommandBase {
   Drivetrain drivetrain;
   double angle;
 
-  ProfiledPIDController thetaController = new ProfiledPIDController(0.25, 0.0, 0.0, new Constraints(Constants.DRIVE_MAX_VELOCITY, Constants.DRIVE_MAX_ACCEL));
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.25, 0.0, 0.0, new Constraints(Constants.Drive.MAX_VELOCITY, Constants.Drive.MAX_ACCEL));
   /**
    * Creates a new ToAngle.
    */

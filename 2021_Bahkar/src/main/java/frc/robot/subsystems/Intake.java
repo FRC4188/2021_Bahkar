@@ -10,15 +10,17 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-  CANSparkMax intakeMotor = new CANSparkMax(11, MotorType.kBrushless);
+  CANSparkMax intakeMotor = new CANSparkMax(21, MotorType.kBrushless);
+  Solenoid piston = new Solenoid(0);
   /**
    * Creates a new Intake.
    */
   public Intake() {
-
+    intakeMotor.setInverted(true);
   }
 
   @Override
@@ -28,5 +30,21 @@ public class Intake extends SubsystemBase {
 
   public void set(double power) {
     intakeMotor.set(power);
+  }
+
+  public void raise() {
+    piston.set(false);
+  }
+
+  public void lower() {
+    piston.set(false);
+  }
+
+  public void toggle() {
+    piston.set(!piston.get());
+  }
+
+  public boolean getLowered() {
+    return piston.get();
   }
 }
