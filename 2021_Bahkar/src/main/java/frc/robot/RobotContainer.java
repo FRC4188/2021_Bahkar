@@ -15,22 +15,36 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.drive.test.setPIDs;
-import frc.robot.commands.hood.RaiseHood;
-import frc.robot.commands.hood.SetHood;
-import frc.robot.commands.hood.CycleHood;
-import frc.robot.commands.hood.LowerHood;
+import frc.robot.commands.hopper.SpinHopper;
+import frc.robot.commands.intake.SpinIntake;
+import frc.robot.commands.drive.FollowTrajectory;
+import frc.robot.commands.drive.ToAngle;
+import frc.robot.commands.drive.ToPosition;
+import frc.robot.commands.drive.test.WheelRotationTest;
+import frc.robot.commands.hood.DashPosition;
+import frc.robot.commands.hood.SetPosition;
+import frc.robot.commands.hopper.AutoHopper;
 import frc.robot.commands.sensors.ResetGyro;
-import frc.robot.commands.shooter.SpinShooter;
-import frc.robot.commands.shooter.SpinShooterToFormula;
+import frc.robot.commands.shooter.DashVelocity;
+import frc.robot.commands.turret.FollowTarget;
+import frc.robot.commands.turret.TurretPower;
+import frc.robot.commands.turret.TurretToOneEighty;
+import frc.robot.commands.turret.TurretToZero;
+import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Sensors;
+import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import frc.robot.utils.components.ButtonBox;
-import frc.robot.utils.components.CspController;
+import frc.robot.utils.BrownoutProtection;
+import frc.robot.utils.ButtonBox;
+import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
+import frc.robot.utils.trajectory.CircleTest;
+import frc.robot.utils.trajectory.TestFile;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -42,10 +56,14 @@ public class RobotContainer {
 
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
+  private Turret turret = new Turret(sensors);
+  private Hopper hopper = new Hopper(sensors);
+  private Intake intake = new Intake();
+  private Shooter shooter = new Shooter();
   private Hood hood = new Hood();
-  private Shooter shooter = new Shooter(sensors);
 
-  private TempManager tempManager = new TempManager(drivetrain);
+  private TempManager tempManager = new TempManager(drivetrain, turret);
+  private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
 
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
@@ -70,9 +88,13 @@ public class RobotContainer {
     return tempManager;
   }
 
+  public BrownoutProtection getBrownoutProtection() {
+    return bop;
+  }
+
   private void setDefaultCommands() {
-    //drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getY(Hand.kRight), pilot.atZero(Hand.kRight), pilot.getBumper(Hand.kRight)), drivetrain));
-    hood.setDefaultCommand(new RunCommand(() -> hood.setSpeed(0.0), hood));
+    hood.setDefaultCommand(new DashPosition(hood));
+    shooter.setDefaultCommand(new DashVelocity(shooter));
   }
 
   /**
@@ -82,26 +104,27 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    pilot.getBackButtonObj().whenPressed(new ResetGyro(sensors));
-    //pilot.getXButtonObj().whenPressed(new setPIDs(drivetrain));
+    pilot.getAButtonObj().whenPressed(new SpinIntake(intake, 0.5, true));
+    pilot.getAButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
 
-    //copilot.getStartButtonObj().whenPressed(new ZeroTurret(turret));
-    //copilot.getYButtonObj().whenPressed(new SpinShooter(shooter, 100));
-    //copilot.getYButtonObj().whenReleased(new SpinShooter(shooter, 0));
-    copilot.getDpadUpButtonObj().whileHeld(new RaiseHood(hood, 0.5));
-    copilot.getDpadDownButtonObj().whileHeld(new LowerHood(hood, 0.5));
-    copilot.getXButtonObj().whenPressed(new SetHood(hood, () -> SmartDashboard.getNumber("Hood Position", 0.0)));
-    copilot.getBButtonObj().whenPressed(new SetHood(hood, 5));
-    copilot.getAButtonObj().whileHeld(new CycleHood(hood));
-    copilot.getDpadLeftButtonObj().whileHeld(new RunCommand(() -> hood.setSpeed(1.0), hood));
-    copilot.getDpadLeftButtonObj().whenReleased(new RunCommand(() -> hood.getServoPositions(), hood));
-    copilot.getDpadRightButtonObj().whileHeld(new RunCommand(() -> hood.setSpeed(-1.0), hood));
-    copilot.getDpadRightButtonObj().whenReleased(new RunCommand(() -> hood.holdPosition(), hood));
+    pilot.getBButtonObj().whenPressed(new SpinIntake(intake, -0.5, true));
+    pilot.getBButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
 
-    //copilot.getXButtonObj().whenPressed(new SpinShooterToFormula(shooter, sensors, hood));
-    //bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
-    //bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
-    //bBox.getButton3Obj().whenPressed(new SpontaneousToShoot(drivetrain, sensors));
+    pilot.getXButtonObj().whenPressed(new AutoHopper(hopper));
+    pilot.getXButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
+
+    pilot.getYButtonObj().whenPressed(new SpinHopper(hopper, 0.4));
+    pilot.getYButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
+//
+    copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5));
+    copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0));
+
+    copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5));
+    copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0));
+
+    copilot.getDpadDownButtonObj().whenPressed(new RunCommand(() -> intake.lower()));
+    copilot.getDpadUpButtonObj().whenPressed(new RunCommand(() -> intake.raise()));
+    copilot.getRbButtonObj().whenPressed(new RunCommand(() -> intake.toggle()));
   }
 
   private void putChooser() {
@@ -115,6 +138,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return autoCommand;
+    return new ToPosition(drivetrain, -1, -1);
   }
 }

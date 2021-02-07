@@ -5,23 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hood;
+package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Hopper;
 
-public class RaiseHood extends CommandBase {
-
-  private final Hood hood;
-  private final double changeRate;
+public class AutoHopper extends CommandBase {
+  Hopper hopper;
   /**
-   * Creates a new RaiseHood.
+   * Creates a new AutoHopper.
    */
-  public RaiseHood(Hood hood, double changeRate) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hood);
-    this.hood = hood;
-    this.changeRate = changeRate;
+  public AutoHopper(Hopper hopper) {
+    addRequirements(hopper);
+    this.hopper = hopper;
   }
 
   // Called when the command is initially scheduled.
@@ -32,12 +28,14 @@ public class RaiseHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.raiseHood(changeRate);
+    if (hopper.getBeam()) hopper.set(0.0);
+    else hopper.set(0.35);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    hopper.set(0.0);
   }
 
   // Returns true when the command should end.

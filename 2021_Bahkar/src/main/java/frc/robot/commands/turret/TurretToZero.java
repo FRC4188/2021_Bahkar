@@ -5,47 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hood;
+package frc.robot.commands.turret;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Turret;
 
-public class SetHood extends CommandBase {
-  private Hood hood;
-  private double position = 0.0;
-  private DoubleSupplier dashRef = null;
-
-  private boolean sup;
-
+public class TurretToZero extends CommandBase {
+  
+  Turret turret;
+  
   /**
-   * Creates a new MoveHood.
+   * Creates a new TurretToZero.
    */
-  public SetHood(Hood hood, double position) {
-    addRequirements(hood);
-      this.hood = hood;
-      this.position = position;
-
-      sup = false;
-  }
-
-  public SetHood(Hood hood, DoubleSupplier dashRef) {
-    this.hood = hood;
-    this.dashRef = dashRef;
+  public TurretToZero(Turret turret) {
+    addRequirements(turret);
+    
+    this.turret = turret;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (sup) position = dashRef.getAsDouble();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.setHoodPosition(position);
+    turret.setAngle(0.0);
   }
 
   // Called once the command ends or is interrupted.
@@ -56,6 +42,6 @@ public class SetHood extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

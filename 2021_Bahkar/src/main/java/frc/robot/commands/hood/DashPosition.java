@@ -7,21 +7,19 @@
 
 package frc.robot.commands.hood;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
 
-public class LowerHood extends CommandBase {
+public class DashPosition extends CommandBase {
 
-  private final Hood hood;
-  private final double changeRate;
+  private Hood hood;
   /**
-   * Creates a new LowerHood.
+   * Creates a new DashPosition.
    */
-  public LowerHood(Hood hood, double changeRate) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public DashPosition(Hood hood) {
     addRequirements(hood);
     this.hood = hood;
-    this.changeRate = changeRate;
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +30,7 @@ public class LowerHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.lowerHood(changeRate);
+    hood.set(SmartDashboard.getNumber("Set Hood Position", 0.0));
   }
 
   // Called once the command ends or is interrupted.

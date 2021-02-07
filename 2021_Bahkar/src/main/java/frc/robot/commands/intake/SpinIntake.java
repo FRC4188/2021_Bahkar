@@ -5,20 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Intake;
 
-public class SpinShooter extends CommandBase {
-  private Shooter shooter;
-  private double velocity;
+public class SpinIntake extends CommandBase {
+  private Intake intake;
+  private double power;
+  private boolean cont;
+
   /**
-   * Creates a new SpinShooter.
+   * Creates a new SpinIntake.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
-    addRequirements(shooter);
-    this.velocity = velocity;
+  public SpinIntake(Intake intake, double power, boolean cont) {
+    addRequirements(intake);
+    this.intake = intake;
+    this.power = power;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -29,17 +33,18 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(velocity);
+    intake.set(power);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intake.set(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

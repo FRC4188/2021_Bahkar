@@ -5,20 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Hood;
 
-public class SpinShooter extends CommandBase {
-  private Shooter shooter;
-  private double velocity;
+public class SetPosition extends CommandBase {
+  Hood hood;
+  double position;
+  boolean cont;
   /**
-   * Creates a new SpinShooter.
+   * Creates a new SetPosition.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
-    addRequirements(shooter);
-    this.velocity = velocity;
+  public SetPosition(Hood hood, double position, boolean cont) {
+    addRequirements(hood);
+    this.hood = hood;
+    this.position = position;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +32,8 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(velocity);
+    hood.set(position);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +44,6 @@ public class SpinShooter extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return cont;
   }
 }

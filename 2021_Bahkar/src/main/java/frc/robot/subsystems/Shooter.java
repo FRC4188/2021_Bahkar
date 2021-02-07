@@ -12,29 +12,28 @@ import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
 
-    private final TalonFX upperShooterMotor = new TalonFX(69);
-    private final TalonFX lowerShooterMotor = new TalonFX(69);
+    private final TalonFX upperShooterMotor = new TalonFX(10);
+    private final TalonFX lowerShooterMotor = new TalonFX(11);
 
-    private Sensors sensors;
+    
+    //https://www.omnicalculator.com/physics/projectile-motion
 
-    public Shooter(Sensors sensors) {
-        this.sensors = sensors;
-        //set slave motor
-        upperShooterMotor.follow(lowerShooterMotor);
+    public Shooter() {
         //set inversions
         lowerShooterMotor.setInverted(true);
         upperShooterMotor.setInverted(InvertType.FollowMaster);
-        
+        //set slave motor
+        upperShooterMotor.follow(lowerShooterMotor);
         // setup encoders
         upperShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
         lowerShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
-
+        
         // configuration
         setCoast();
         PIDConfig();
         setRampRate();
 
-        SmartDashboard.putNumber("Shooter Wheels RPM ", getLowerVelocity());
+        SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
     }
 
     @Override
@@ -52,18 +51,15 @@ public class Shooter extends SubsystemBase {
      * Sets shooter motors to a given percentage [-1.0, 1.0].
      */
     public void setPercentage(double percent) {
-        double adjust = SmartDashboard.getNumber("Set shooter rpm", 0.0) / Constants.Shooter.MAX_VELOCITY;
-        lowerShooterMotor.set(ControlMode.PercentOutput, percent + adjust);
+        lowerShooterMotor.set(ControlMode.PercentOutput, percent);
     }
 
     /**
-     * Sets shooter motors to a given velocity in RPM
+     * Sets shooter motors to a given velocity in rpm.
      */
     public void setVelocity(double velocity) {
-        double adjust = SmartDashboard.getNumber("Set shooter rpm", 0.0) * Constants.RobotSpecs.FALCON_ENCODER_TICKS
-                / 600;
-        velocity *= (Constants.RobotSpecs.FALCON_ENCODER_TICKS) / 600;
-        lowerShooterMotor.set(ControlMode.Velocity, velocity + adjust);
+        velocity *= (Constants.Robot.FALCON_ENCODER_TICKS) / 600;
+        lowerShooterMotor.set(ControlMode.Velocity, velocity);
     }
 
     /**
@@ -94,14 +90,14 @@ public class Shooter extends SubsystemBase {
      * Gets left shooter motor velocity in rpm.
      */
     public double getLowerVelocity() {
-        return (lowerShooterMotor.getSelectedSensorVelocity() * 600) / Constants.RobotSpecs.FALCON_ENCODER_TICKS;
+        return (lowerShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
     }
 
     /**
      * Gets right shooter motor velocity in rpm.
      */
     public double getUpperVelocity() {
-        return (upperShooterMotor.getSelectedSensorVelocity() * 600) / Constants.RobotSpecs.FALCON_ENCODER_TICKS;
+        return (upperShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
     }
 
     /**

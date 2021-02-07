@@ -7,18 +7,18 @@
 
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 
-public class SpinShooter extends CommandBase {
-  private Shooter shooter;
-  private double velocity;
+public class DashVelocity extends CommandBase {
+  Shooter shooter;
   /**
-   * Creates a new SpinShooter.
+   * Creates a new DashVelocity.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
+  public DashVelocity(Shooter shooter) {
     addRequirements(shooter);
-    this.velocity = velocity;
+    this.shooter = shooter;
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +29,7 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(velocity);
+    shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0));
   }
 
   // Called once the command ends or is interrupted.

@@ -5,20 +5,29 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.drive;
 
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Constants;
+import frc.robot.subsystems.Drivetrain;
 
-public class SpinShooter extends CommandBase {
-  private Shooter shooter;
-  private double velocity;
+public class ToAngle extends CommandBase {
+  Drivetrain drivetrain;
+  double angle;
+
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.25, 0.0, 0.0, new Constraints(Constants.Drive.MAX_VELOCITY, Constants.Drive.MAX_ACCEL));
   /**
-   * Creates a new SpinShooter.
+   * Creates a new ToAngle.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
-    addRequirements(shooter);
-    this.velocity = velocity;
+  public ToAngle(Drivetrain drivetrain, double angle) {
+    addRequirements(drivetrain);
+
+    this.drivetrain = drivetrain;
+
+    thetaController.setGoal(angle);
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +38,8 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(velocity);
+    ChassisSpeeds speeds = new ChassisSpeeds(0, 0, thetaController.calculate(-drivetrain.getPose().getRotation().getDegrees()));
+    drivetrain.setChassisSpeeds(speeds);
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +50,6 @@ public class SpinShooter extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return thetaController.atSetpoint();
   }
 }

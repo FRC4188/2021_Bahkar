@@ -5,25 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Sensors;
+import frc.robot.subsystems.Turret;
 
-public class SpinShooterToFormula extends CommandBase {
+public class FollowTarget extends CommandBase {
+  Turret turret;
 
-  private Shooter shooter;
-  private Sensors sensors;
-  private Hood hood;
+  boolean cont;
 
   /**
-   * Creates a new SpinShooterToFormula.
+   * Creates a new FollowTarget.
    */
-  public SpinShooterToFormula(Shooter shooter, Sensors sensors, Hood hood) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter, sensors, hood);
+  public FollowTarget(Turret turret, boolean cont) {
+    addRequirements(turret);
+
+    this.turret = turret;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -34,14 +33,13 @@ public class SpinShooterToFormula extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(sensors.formulaRPMandAngle()[0]);
-    hood.setHoodAngle(sensors.formulaRPMandAngle()[1]);
+    turret.trackTarget(cont);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setPercentage(0.0);
+    turret.trackTarget(false);
   }
 
   // Returns true when the command should end.
@@ -49,6 +47,4 @@ public class SpinShooterToFormula extends CommandBase {
   public boolean isFinished() {
     return false;
   }
-
-  
 }

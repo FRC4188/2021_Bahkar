@@ -5,20 +5,31 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.drive.test;
+package frc.robot.commands.hopper;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Hopper;
 
-public class setPIDs extends CommandBase {
+public class SpinHopper extends CommandBase {
 
-  Drivetrain drivetrain;
+  Hopper hopper;
+  double percentage;
+  DoubleSupplier power = null;
   /**
-   * Creates a new setPIDs.
+   * Creates a new SpinHopper.
    */
-  public setPIDs(Drivetrain drivetrain) {
-    this.drivetrain = drivetrain;
-    }
+  public SpinHopper(Hopper hopper, double percentage) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(hopper);
+    this.hopper = hopper;
+    this.percentage = percentage;
+  }
+
+  public SpinHopper(Hopper hopper, DoubleSupplier power) {
+    this.power = power;
+  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -28,7 +39,8 @@ public class setPIDs extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.setPIDs();
+    if (power == null) hopper.set(-percentage);
+    else hopper.set(-power.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
@@ -39,6 +51,6 @@ public class setPIDs extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

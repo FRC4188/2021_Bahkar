@@ -5,31 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
 
-public class SpinShooter extends CommandBase {
-  private Shooter shooter;
-  private double velocity;
+public class TurretPower extends CommandBase {
+  Turret turret;
+  double power;
   /**
-   * Creates a new SpinShooter.
+   * Creates a new TurretPower.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
-    addRequirements(shooter);
-    this.velocity = velocity;
+  public TurretPower(Turret turret, double power) {
+    addRequirements(turret);
+    this.turret = turret;
+    this.power = power;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    turret.set(power);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(velocity);
+
   }
 
   // Called once the command ends or is interrupted.

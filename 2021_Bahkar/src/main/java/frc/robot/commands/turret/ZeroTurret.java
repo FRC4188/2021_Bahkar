@@ -5,20 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
 
-public class SpinShooter extends CommandBase {
-  private Shooter shooter;
-  private double velocity;
+public class ZeroTurret extends CommandBase {
+
+  Turret turret;
+
   /**
-   * Creates a new SpinShooter.
+   * Creates a new ZeroTurret.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
-    addRequirements(shooter);
-    this.velocity = velocity;
+  public ZeroTurret(Turret turret) {
+    this.turret = turret;
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +29,7 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setVelocity(velocity);
+    turret.resetEncoders();
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +40,6 @@ public class SpinShooter extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

@@ -5,20 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.hood;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Turret;
 
-public class CycleHood extends CommandBase {
-  private final Hood hood;
-
+public class TurretToOneEighty extends CommandBase {
+  Turret turret;
   /**
-   * Creates a new ToggleHood.
+   * Creates a new TurretToOneEighty.
    */
-  public CycleHood(Hood hood) {
-    addRequirements(hood);
-    this.hood = hood;
+  public TurretToOneEighty(Turret turret) {
+    addRequirements(turret);
+    
+    this.turret = turret;
   }
 
   // Called when the command is initially scheduled.
@@ -29,18 +29,17 @@ public class CycleHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.cycleHood();
+    turret.setAngle(180.0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    hood.holdPosition();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
