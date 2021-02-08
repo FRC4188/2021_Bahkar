@@ -7,24 +7,17 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.hopper.SpinHopper;
-import frc.robot.commands.intake.SpinIntake;
-import frc.robot.commands.drive.FollowTrajectory;
-import frc.robot.commands.drive.ToAngle;
-import frc.robot.commands.drive.ToPosition;
-import frc.robot.commands.drive.test.WheelRotationTest;
+import frc.robot.commands.intake.ClearDeadzone;
+import frc.robot.commands.groups.AutoIntake;
+import frc.robot.commands.groups.AutoOuttake;
 import frc.robot.commands.hood.DashPosition;
-import frc.robot.commands.hood.SetPosition;
-import frc.robot.commands.hopper.AutoHopper;
-import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.shooter.DashVelocity;
-import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
 import frc.robot.commands.turret.TurretToZero;
@@ -41,17 +34,13 @@ import frc.robot.utils.ButtonBox;
 import frc.robot.utils.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
-import frc.robot.utils.trajectory.CircleTest;
-import frc.robot.utils.trajectory.TestFile;
 
 /**
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
+ * Controls the robot, holding commands, button bindings, and auto routines.
  */
 public class RobotContainer {
 
+  // Create the subsystems; Sensors first to be fed into each of the others.
   private Sensors sensors = new Sensors();
   private Drivetrain drivetrain = new Drivetrain(sensors);
   private Turret turret = new Turret(sensors);
@@ -60,14 +49,16 @@ public class RobotContainer {
   private Shooter shooter = new Shooter();
   private Hood hood = new Hood();
 
-  private TempManager tempManager = new TempManager(drivetrain, turret);
+  // Subsystem Regulation
+  private TempManager tempManager = new TempManager(drivetrain, shooter, turret, hopper, intake);
   private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
 
+  // Input devices
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
   ButtonBox bBox = new ButtonBox(2);
   
-  // auto chooser initialization
+  // Auto chooser initialization
   private final SendableChooser<CspSequentialCommandGroup> autoChooser =
     new SendableChooser<CspSequentialCommandGroup>();
 
@@ -78,54 +69,87 @@ public class RobotContainer {
     setDefaultCommands();
     configureButtonBindings();
     putChooser();
-
-    SmartDashboard.putBoolean("Manual Drive", false);
   }
 
+  /**
+   * @return TempManager object.
+   */
   public TempManager getTempManager() {
     return tempManager;
   }
 
+  /**
+   * @return BrownoutProtection object.
+   */
   public BrownoutProtection getBrownoutProtection() {
     return bop;
   }
 
+  /**
+   * Method which assigns default commands to different subsystems.
+   */
   private void setDefaultCommands() {
+    drivetrain.setDefaultCommand(new RunCommand(
+      () -> drivetrain.drive(
+        pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)),
+        drivetrain
+    ));
     hood.setDefaultCommand(new DashPosition(hood));
     shooter.setDefaultCommand(new DashVelocity(shooter));
   }
 
   /**
-   * Use this method to define your button->command mappings.  Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Method which assigns commands to different button actions.
    */
   private void configureButtonBindings() {
-    pilot.getAButtonObj().whenPressed(new SpinIntake(intake, 0.5, true));
-    pilot.getAButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
+    /*
+    Pilot commands follow:
+    */
 
-    pilot.getBButtonObj().whenPressed(new SpinIntake(intake, -0.5, true));
-    pilot.getBButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
+    // Trigger the intaking and outtaking commands.
+    pilot.getAButtonObj().whenPressed(new AutoIntake(intake, hopper, true));
+    pilot.getAButtonObj().whenReleased(new AutoIntake(intake, hopper, false));
+    pilot.getBButtonObj().whenPressed(new AutoOuttake(intake, hopper, true));
+    pilot.getBButtonObj().whenReleased(new AutoOuttake(intake, hopper, false));
 
-    pilot.getXButtonObj().whenPressed(new AutoHopper(hopper));
-    pilot.getXButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
+    // Relative referenced intake command.
+    pilot.getRbButtonObj().whenPressed(new RunCommand(() -> intake.toggle()));
 
-    pilot.getYButtonObj().whenPressed(new SpinHopper(hopper, 0.4));
-    pilot.getYButtonObj().whenReleased(new SpinHopper(hopper, 0.0));
-//
+    /*
+    Copilot commands follow:
+    */
+
+    // Manually turn the turret.
     copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5));
     copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0));
-
     copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5));
     copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0));
 
+    // Absolute referenced intake commands.
     copilot.getDpadDownButtonObj().whenPressed(new RunCommand(() -> intake.lower()));
     copilot.getDpadUpButtonObj().whenPressed(new RunCommand(() -> intake.raise()));
-    copilot.getRbButtonObj().whenPressed(new RunCommand(() -> intake.toggle()));
+
+    /*
+    Button box commands follow:
+    */
+
+    // Turret commands.
+    bBox.getButton1Obj().whenPressed(new TurretToZero(turret));
+    bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
+
+    // Intake command.
+    bBox.getButton3Obj().whenPressed(new ClearDeadzone(intake));
+
+    /*
+    SmartDashboard commands follow:
+    */
+
+    // Turret command.
+    SmartDashboard.putData("Zero Turret", new InstantCommand(() -> new ZeroTurret(turret)));
   }
 
   private void putChooser() {
+    autoChooser.addOption("Do Nothing", null);
   }
 
   /**
@@ -136,6 +160,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return new ToPosition(drivetrain, -1, -1);
+    return autoCommand;
   }
 }

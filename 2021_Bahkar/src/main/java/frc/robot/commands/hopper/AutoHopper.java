@@ -12,12 +12,14 @@ import frc.robot.subsystems.Hopper;
 
 public class AutoHopper extends CommandBase {
   Hopper hopper;
+  boolean cont;
   /**
    * Creates a new AutoHopper.
    */
-  public AutoHopper(Hopper hopper) {
+  public AutoHopper(Hopper hopper, boolean cont) {
     addRequirements(hopper);
     this.hopper = hopper;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -41,6 +43,6 @@ public class AutoHopper extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

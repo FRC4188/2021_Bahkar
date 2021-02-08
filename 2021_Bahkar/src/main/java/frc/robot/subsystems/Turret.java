@@ -8,11 +8,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -20,11 +21,11 @@ public class Turret extends SubsystemBase {
 
   Sensors sensors;
 
+  // Motor control components.
   CANSparkMax turretMotor = new CANSparkMax(22, MotorType.kBrushless);
   CANEncoder turretEncoder = new CANEncoder(turretMotor);
-  CANPIDController pid = new CANPIDController(turretMotor);
-
-  boolean isTracking;
+  ProfiledPIDController pid = new ProfiledPIDController(Constants.Turret.kP, Constants.Turret.kI, Constants.Turret.kD,
+                              new Constraints(Constants.Turret.MAX_VELOCITY, Constants.Turret.MAX_ACCELERATION));
 
   /**
    * Creates a new Turret.
@@ -43,14 +44,10 @@ public class Turret extends SubsystemBase {
   * Configures gains for Spark closed loop controller.
   */
   private void controllerInit() {
-    pid.setP(4e-5);
-    pid.setI(1e-6);
-    pid.setD(0);
-    pid.setIZone(0.0);
-    pid.setFF(1.0 / Constants.Turret.MAX_VELOCITY);
-    pid.setOutputRange(-1.0, 1.0);
-    pid.setSmartMotionMaxVelocity(Constants.Turret.MAX_VELOCITY, 0);
-    pid.setSmartMotionMaxAccel(Constants.Turret.MAX_ACCELERATION, 0);
+    pid.setP(Constants.Turret.kP);
+    pid.setI(Constants.Turret.kI);
+    pid.setD(Constants.Turret.kD);
+
     turretMotor.setClosedLoopRampRate(0.0);
     turretMotor.setOpenLoopRampRate(0.5);
     turretMotor.setIdleMode(IdleMode.kBrake);
@@ -60,11 +57,12 @@ public class Turret extends SubsystemBase {
   * Resets turret encoder value to 0.
   */
   public void resetEncoders() {
-    turretEncoder.setPosition(0);
+    turretEncoder.setPosition(0.0);
   }
 
   /**
   * Sets turret motor to given percentage [-1.0, 1.0].
+  * @param percent The goal percentage to set the turret motor to.
   */
   public void set(double percent) {
     turretMotor.set(percent);
@@ -72,46 +70,47 @@ public class Turret extends SubsystemBase {
 
   /**
    * Turns turret to angle in degrees.
+   * @param angle Angle for the turret to move to.
    */
   public void setAngle(double angle) {
       angle /= Constants.Turret.ENCODER_TO_DEGREES;
-      pid.setReference(angle, ControlType.kSmartMotion);
+      turretMotor.set(pid.calculate(turretEncoder.getPosition(), angle));
   }
 
+  /**
+   * Method to track the limelight target
+   * @param cont whether to continue tracking or stop.
+   */
   public void trackTarget(boolean cont) {
     double angle = sensors.getTurretHorizontalAngle();
     double offset = sensors.getTurretOffset();
-    double power = cont ? -(angle + offset) / 47 : 0;
-
-    isTracking = cont;
-
+    double power = pid.calculate(angle - offset, 0.0);
+    
     set(power);
   }
-
   
-    /**
-     * Returns turret encoder position in degrees.
-     */
-    public double getPosition() {
-      return turretEncoder.getPosition() * Constants.Turret.ENCODER_TO_DEGREES;
+  /**
+   * Returns turret encoder position in degrees.
+   * @return Degrees of the turret's current rotation.
+   */
+  public double getPosition() {
+    return turretEncoder.getPosition() * Constants.Turret.ENCODER_TO_DEGREES;
   }
 
   /**
    * Returns turret encoder velocity in degrees per second.
+   * @return Velocity of the turret in degrees per second.
    */
   public double getVelocity() {
       return turretEncoder.getVelocity() * Constants.Turret.ENCODER_TO_DEGREES / 60.0;
   }
 
+  /**
+   * Returns the temperature of the turret motor.
+   * @return Motor temperature in celcius.
+   */
   public double getTemperature() {
     return turretMotor.getMotorTemperature();
-  }
-
-  /**
-   * Sets the isTracking variable (for SmartDashboard purposes).
-   */
-  public void setTracking(boolean track) {
-      isTracking = track;
   }
 
   /**
@@ -121,9 +120,13 @@ public class Turret extends SubsystemBase {
       return turretMotor.getMotorTemperature();
   }
 
+  /**
+   * Method to determine if the turret is aimed at the limelight target.
+   * @return Whether the turret is correctly aimed.
+   */
   public boolean getIsAimed() {
     double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset();
-    boolean aimed = (angle < 1.0 && angle > 1.0) ? true : false;
+    boolean aimed = (Math.abs(angle - turretEncoder.getPosition()) < Constants.Turret.POS_TOLERANCE) ? true : false;
     return aimed;
   }
 }

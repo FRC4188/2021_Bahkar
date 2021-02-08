@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Hopper extends SubsystemBase {
@@ -31,11 +30,27 @@ public class Hopper extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  /**
+   * Sets the power to the hopper motor.
+   * @param percentage power to set the motor to in a range of [-1.0, 1.0].
+   */
   public void set(double percentage) {
     hopperMotor.set(ControlMode.PercentOutput, percentage);
   }
 
+  /**
+   * Gets the state of the beam breaker.
+   * @return True if the beam is unbroken, false if the beam is broken.
+   */
   public boolean getBeam() {
     return (sensors.getTopBeam());
+  }
+
+  /**
+   * Returns the temperature of the hopper motor.
+   * @return Temperature of hopper in celsius.
+   */
+  public double getTemp() {
+    return hopperMotor.getTemperature();
   }
 }

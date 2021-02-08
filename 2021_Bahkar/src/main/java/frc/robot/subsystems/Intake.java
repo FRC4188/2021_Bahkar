@@ -28,23 +28,48 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  /**
+   * Sets the power for the intake motor.
+   * @param power power input in a range of [-1.0, 1.0]
+   */
   public void set(double power) {
     intakeMotor.set(power);
   }
 
+  /**
+   * Raises the intake.
+   */
   public void raise() {
     piston.set(false);
   }
 
+  /**
+   * Lowers the intake.
+   */
   public void lower() {
     piston.set(false);
   }
 
+  /**
+   * Raises/Lowers the intake to wherever it isn't.
+   */
   public void toggle() {
     piston.set(!piston.get());
   }
 
+  /**
+   * Method to determine the current position of the intake.
+   * @return True if lowered, false if raised.
+   */
   public boolean getLowered() {
     return piston.get();
+  }
+
+  /**
+   * Returns the temperature of the intake motor.
+   * @return Motor temperature of the intake motor in celsius.
+   */
+  public double getMotorTemp() {
+    return intakeMotor.getMotorTemperature();
   }
 }

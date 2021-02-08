@@ -5,46 +5,54 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.turret;
+package frc.robot.commands.intake;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.Constants;
+import frc.robot.subsystems.Intake;
 
-public class FollowTarget extends CommandBase {
-  Turret turret;
-
-  boolean cont;
-
+public class ClearDeadzone extends CommandBase {
+  Intake intake;
+  Timer timer;
+  int flops = 0;
+  double lastRef = 0.0;
   /**
-   * Creates a new FollowTarget.
+   * Creates a new ClearDeadzone.
    */
-  public FollowTarget(Turret turret, boolean cont) {
-    addRequirements(turret);
-
-    this.turret = turret;
-    this.cont = cont;
+  public ClearDeadzone(Intake intake) {
+    this.intake = intake;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer.start();
+    intake.lower();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.trackTarget(cont);
+    double current = timer.get() % (Constants.Intake.FLOP_RATE / 2);
+  
+    if (current < lastRef) {
+      intake.toggle();
+      flops = !intake.getLowered() ? flops + 1 : flops;
+    }
+
+    lastRef = current;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    turret.trackTarget(false);
+    intake.lower();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !cont;
+    return flops == 4;
   }
 }

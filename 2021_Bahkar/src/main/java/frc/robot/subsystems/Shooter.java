@@ -14,7 +14,6 @@ public class Shooter extends SubsystemBase {
 
     private final TalonFX upperShooterMotor = new TalonFX(10);
     private final TalonFX lowerShooterMotor = new TalonFX(11);
-
     
     //https://www.omnicalculator.com/physics/projectile-motion
 
@@ -104,7 +103,7 @@ public class Shooter extends SubsystemBase {
     /**
      * Returns left shooter motor temperature in Celcius.
      */
-    public double getLowertemp() {
+    public double getLowerTemp() {
         return lowerShooterMotor.getTemperature();
     }
 

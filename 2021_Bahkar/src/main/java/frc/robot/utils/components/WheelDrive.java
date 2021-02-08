@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
-import frc.robot.utils.CSPMath;
 
+/**
+ * Class to drive two motors as a single swerve module.
+ */
 public class WheelDrive {
 
   //Unassigned motor objects.

@@ -65,12 +65,22 @@ public final class Constants {
     public final class Turret{
         public static final double LIMELIGHT_HEIGHT = 1.0; //Height fromt the ground of the limelight (Meters).
         public static final double MOUNTING_ANGLE = 0.0; //Verticle angle which the limelight sits at on the turret (Degrees).
+
         public static final double MAX_VELOCITY = 11000; // rpm
-        public static final double MAX_ACCELERATION = 22000; // rpm / sec
+        public static final double MAX_ACCELERATION = 22000; // rpm per sec
+
         public static final double GEAR_RATIO = 300; // angular velocity will be divided by this amount
         public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO; // degrees
+
+        public static final double kP = 2.4e-2;
+        public static final double kI = 3e-3;
+        public static final double kD = 1e-2;
+
+        public static final double POS_TOLERANCE = 0.1; // degrees
+        public static final double VEL_TOLERANCE = 2.0; // degrees per second
+
         public static final double MAX_ANG = 370; //Farthest bound of the turret's roation in degrees.
-        public static final double MIN_ANG = -10; //Other farthers bound of the turret's rotation in degrees.
+        public static final double MIN_ANG = -10; //Other farthest bound of the turret's rotation in degrees.
     }
 
     public final class Shooter {
@@ -79,5 +89,9 @@ public final class Constants {
         public static final double kD = 0.0;
 
         public static final double RAMP_RATE = 1.5;
+    }
+
+    public final class Intake {
+        public static final double FLOP_RATE = 0.5;
     }
 }

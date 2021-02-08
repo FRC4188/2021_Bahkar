@@ -32,18 +32,32 @@ public class Hood extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  /**
+   * Sends updated values to NetworkTables.
+   */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Hood Position", getPos());
   }
 
+  /**
+   * Set the position of the hood servos
+   * @param pos Position in range [0.0, -1.0].
+   */
   public void set(double pos) {
     servos.setPos(pos);
   }
 
+  /**
+   * Return the position which the servo is set to.
+   * @return Set position in range [0.0, 1.0].
+   */
   public double getPos() {
     return servos.getPos();
   }
 
+  /**
+   * Sets the hood position to stay where it is.
+   */
   public void holdPos() {
     servos.setPos(servos.getPos());
   }

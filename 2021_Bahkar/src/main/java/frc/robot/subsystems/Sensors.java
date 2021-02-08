@@ -8,9 +8,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -24,6 +21,9 @@ import frc.robot.utils.enums.LedMode;
 import frc.robot.utils.enums.CameraMode;
 import frc.robot.utils.enums.Pipeline;
 
+/**
+ * Class to control and monitor sensors.
+ */
 public class Sensors extends SubsystemBase {
 
   private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
@@ -35,10 +35,6 @@ public class Sensors extends SubsystemBase {
 
   private final DigitalInput topBeamA = new DigitalInput(0);
   private final DigitalInput topBeamB = new DigitalInput(1);
-
-
-  boolean adjustedGyro = false;
-
 
   /**
    * Creates a new Sensors.
@@ -55,15 +51,6 @@ public class Sensors extends SubsystemBase {
 
     Notifier shuffle = new Notifier(() -> updateShuffleBoard());
     shuffle.startPeriodic(0.1);
-
-    /*
-    // Creates UsbCamera and MjpegServer [1] and connects them
-    CameraServer.getInstance().startAutomaticCapture();
-    // Creates the CvSink and connects it to the UsbCamera
-    CvSink cvSink = CameraServer.getInstance().getVideo();
-    // Creates the CvSource and MjpegServer [2] and connects them
-    CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
-    */
   }
 
   @Override
@@ -71,72 +58,83 @@ public class Sensors extends SubsystemBase {
     updateShuffleBoard();
   }
 
+  /**
+   * Send updated values to NetworkTables; call in a Notifier
+   */
   private void updateShuffleBoard() {
-    SmartDashboard.putNumber("Compass Heading", getCompassAngle());
     SmartDashboard.putNumber("Gyro Heading", getGyro());
     SmartDashboard.putNumber("Pigeon Yaw", getYaw());
     SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
-    //SmartDashboard.putNumber("Average of Pigeon, Compass, and Gyro measures.", getRotation());
-    SmartDashboard.putBoolean("Top Forward Beam", topBeamA.get());
-    SmartDashboard.putBoolean("Top Backward Beam", topBeamB.get());
+    SmartDashboard.putBoolean("Top Beam A", topBeamA.get());
+    SmartDashboard.putBoolean("Top Beam B", topBeamB.get());
   }
 
+  /**
+   * Prepares the gyro for competition.
+   */
   private void setupGyro() {
     calibrateGyro();
     resetGyro();
   }
 
-  
+  /**
+   * Prepared the pigeon for competition
+   */
   private void setupPigeon() {
     pigeon.configFactoryDefault();
-    pigeon.setCompassAngle(0);
     pigeon.setYaw(0.0);
     pigeon.setFusedHeading(0.0);
     pigeon.setAccumZAngle(0.0);
   }
 
+  /**
+   * Return the more accurate fused heading of the pigeon.
+   * @return Fused heading (normal gyro with corrections).
+   */
   public double getFusedHeading() {
     return -Math.IEEEremainder(pigeon.getFusedHeading(), 360);
   }
 
-  public double getCompassAngle() {
-    return pigeon.getCompassHeading();
-  }
-  
-
+  /**
+   * Calibrate the gyro to fix variability in returns; requires a few seconds idle.
+   */
   private void calibrateGyro() {
     gyro.calibrate();
   }
 
+  /**
+   * Send the gyro/pigeon to 0 degrees.
+   */
   public void resetGyro() {
     gyro.reset();
     pigeon.setYaw(0.0);
     pigeon.setFusedHeading(0.0);
   }
 
-  public void fixGyro() {
-    resetGyro();
-    adjustedGyro = true;
-  }
-
+  /**
+   * value read from the Analog Devices Gyro (innacurate after very fast spinning).
+   * @return Degree value of the gyro in degrees.
+   */
   public double getGyro() {
-    return Math.IEEEremainder(gyro.getAngle(), 360) * -1;
+    return Math.IEEEremainder(-gyro.getAngle(), 360);
   }
 
-  
+  /**
+   * Pigeon gyro rotation value.
+   * @return pige
+   */
   public double getYaw() {
     double[] measures = {0,0,0}; 
     pigeon.getYawPitchRoll(measures);
     return -Math.IEEEremainder(measures[0], 360);
   }
 
-  public double getRotation() {
-    return (getYaw() + getGyro() + getCompassAngle()) / 3.0;
-  }
-
-
+  /**
+   * Returns the pigeon yaw as a Rotation2d object.
+   * @return Rotation2d measured by pigeon.
+   */
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(getGyro());
+    return Rotation2d.fromDegrees(getYaw());
   }
 
   /**
@@ -181,9 +179,12 @@ public class Sensors extends SubsystemBase {
     return rawVal;
   }
 
+  /**
+   * Determines whether a limelight target is in view of the turret limelight.
+   * @return True if there is a single limelight target, false otherwise.
+   */
   public boolean getTurretHasTarget() {
-    boolean HasTarget = (TlimelightTable.getEntry("tv").getDouble(0.0) == 1.0) ? true : false;
-    return HasTarget;
+    return (TlimelightTable.getEntry("tv").getDouble(0.0) == 1.0);
   }
 
   public double getTurretCenterOff() {
@@ -197,7 +198,7 @@ public class Sensors extends SubsystemBase {
     return Math.toDegrees(
       ((y != 0) ? (Math.atan(x / y)) : 
       ((x == 0.0) ? (0.0) :
-      ((x > 0.0) ? (90.0) : (170.0)
+      ((x > 0.0) ? (0.0) : (180.0)
       ))));
   }
 
@@ -207,18 +208,34 @@ public class Sensors extends SubsystemBase {
     return XY;
   }
 
+  /**
+   * Returns the limelight verticle angle correcting the inherent error.
+   * @return Real angle from the target to the limelight, with correction.
+   */
   public double getTurretVerticleAngle() {
     return getTurretXYAngle()[1] + Constants.Turret.MOUNTING_ANGLE;
   }
 
+  /**
+   * Returns the limelight verticle angle correcting the inherent error.
+   * @return Real angle from the target to the limelight, with correction.
+   */
   public double getTurretHorizontalAngle() {
     return getTurretXYAngle()[0];
   }
 
+  /**
+   * Return the distance from the robot to the goal; only for use on the hexagonal port goal.
+   * @return distance from the robot to the goal.
+   */
   public double getDistance() {
     return (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
   }
 
+  /**
+   * Returns the correction to score in the inner port.
+   * @return The angle offset from the target to aim at in order to hit inner port.
+   */
   public double getTurretOffset() {
     double a = Constants.Field.THREE_POINT_DEPTH;
     double b = getDistance();
@@ -272,14 +289,26 @@ public class Sensors extends SubsystemBase {
     return XY;
   }
 
+  /**
+   * Returns the chassis limelight verticle angle value corrected for 
+   * @return
+   */
   public double getChassisVerticleAngle() {
     return getChassisXYAngle()[1];
   }
 
+  /**
+   * Returns the chassis limelight horizontal angle value corrected for 
+   * @return
+   */
   public double getChassisHorizontalAngle() {
     return getChassisXYAngle()[0];
   }
 
+  /**
+   * Returns whether there in an obstruction in the top beam.
+   * @return True if the beam in unbroken, false if it has been broken.
+   */
   public boolean getTopBeam() {
     return (topBeamA.get() && topBeamB.get());
   }

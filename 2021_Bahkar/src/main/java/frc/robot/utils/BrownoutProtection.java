@@ -4,6 +4,9 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Turret;
 
+/**
+ * Class to reduce power expenditure in response to low voltage.
+ */
 public class BrownoutProtection {
 
     Drivetrain drivetrain;
@@ -18,5 +21,6 @@ public class BrownoutProtection {
     }
 
     public void run() {
+        // TODO: Write the actual code.
     }
 }
