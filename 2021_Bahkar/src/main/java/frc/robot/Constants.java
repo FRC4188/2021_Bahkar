@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.util.Units;
 public final class Constants {
 
     public final class Physics {
-        public static final double ACCEL_GRAVITY = 9.81;
+        public static final double ACCEL_GRAVITY = 9.8;
     }
 
     public final class Robot {
@@ -61,13 +61,13 @@ public final class Constants {
     }
 
     public final static class Field {
-        public final static double GOAL_HEIGHT = Units.feetToMeters(8.1875); //Height of the goal from the ground (Meters).
-        public final static double THREE_POINT_DEPTH = Units.feetToMeters(2 + (5.25/12.0)); //Depth of the 3 point goal inside the 2 point goal (Meters).
-        public final static double PORT_SIDE_LENGTH = Units.feetToMeters(2.5 / (2 * Math.sin(Math.toRadians(60)))); //Side length of the port (Meters).
-        public final static double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2))); //Limit for the skew against the 3-point goal (Degrees).
-		public static final int POWER_CELL_DIAMETER = 0;
-		public static final int PORT_HEIGHT = 0;
-		public static final int INNER_PORT_DIAMETER = 0;
+        public static final double GOAL_HEIGHT = Units.feetToMeters(8.1875); //Height of the goal from the ground (Meters).
+        public static final double PORT_HEIGHT = 2.5; //feet
+        public static final double THREE_POINT_DEPTH = Units.feetToMeters(2 + (5.25/12.0)); //Depth of the 3 point goal inside the 2 point goal (Meters).
+        public static final double PORT_SIDE_LENGTH = Units.feetToMeters(PORT_HEIGHT / (2 * Math.sin(Math.toRadians(60)))); //Side length of the port (Meters).
+        public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2))); //Limit for the skew against the 3-point goal (Degrees).
+        public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0); //Diameter of the power cell (Meters).
+        public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0); //Diameter of the inner port (Meters).
     }
 
     public final class Turret{
@@ -81,12 +81,16 @@ public final class Constants {
         public static final double MIN_ANG = -10; //Other farthers bound of the turret's rotation in degrees.
     }
 
-    public final class Shooter {
+    public static final class Shooter {
         public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-
         public static final double RAMP_RATE = 1.5;
-        public static final double SHOOTER_HEIGHT = 
+        public static final double SHOOTER_HEIGHT = Units.feetToMeters(1.5);
+        public static final double WHEEL_DIAMETER = Units.feetToMeters(4.0 / 12);
+    }
+
+    public final class Intake {
+        public static final double RAMP_RATE = 0.5;
     }
 }

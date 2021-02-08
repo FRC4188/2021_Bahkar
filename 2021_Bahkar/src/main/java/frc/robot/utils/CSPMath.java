@@ -25,7 +25,7 @@ public class CSPMath {
      * Calculates the horizontal velocity component from range of a projectile formula
      * @param distanceToTarget
      * @param vy the vertical velocity
-     * @return the horizontal velocity in ft/s
+     * @return the horizontal velocity in m/s
      */
     public static double getVx(double distanceToTarget, double vy) {
         return ((2 * Constants.Physics.ACCEL_GRAVITY * (distanceToTarget + Constants.Field.THREE_POINT_DEPTH)) / (vy + Math.sqrt(Math.pow(vy, 2) + (2 * Constants.Physics.ACCEL_GRAVITY * Constants.Shooter.SHOOTER_HEIGHT))));
@@ -33,7 +33,7 @@ public class CSPMath {
 
     /**
      * Calculates the vertical velocity component from maximum height of a projectile formula
-     * @return the vertical velocity in ft/s
+     * @return the vertical velocity in m/s
      */
     public static double getVy() {
         return Math.sqrt(2 * Constants.Physics.ACCEL_GRAVITY * (Constants.Field.GOAL_HEIGHT - Constants.Shooter.SHOOTER_HEIGHT));
@@ -108,5 +108,13 @@ public class CSPMath {
             || projectileEquations(distanceToTarget, (distanceToTarget + Constants.Field.THREE_POINT_DEPTH), false) <= (Constants.Field.GOAL_HEIGHT - (Constants.Field.INNER_PORT_DIAMETER / 2))) {isClearInner = false;}
 
         return isClearOuter && isClearInner;
+    }
+
+    /**
+     * Converts ft/s to RPM
+     * @return velocity in RPM 
+     */
+    public static double toRPM(double feetPerSec) {
+        return (30 * feetPerSec) / (Math.PI * (Constants.Shooter.WHEEL_DIAMETER / 2));
     }
 }

@@ -114,12 +114,6 @@ public class Turret extends SubsystemBase {
       isTracking = track;
   }
 
-  /**
-   * Returns turret motor temperature in Celcius.
-   */
-  public double getTemp() {
-      return turretMotor.getMotorTemperature();
-  }
 
   public boolean getIsAimed() {
     double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset();

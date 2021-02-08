@@ -63,19 +63,10 @@ public class Shooter extends SubsystemBase {
     }
 
     /**
-     * Sets shooter motors to brake mode.
-     */
-    public void setBrake() {
-        lowerShooterMotor.setNeutralMode(NeutralMode.Brake);
-        upperShooterMotor.setNeutralMode(NeutralMode.Brake);
-    }
-
-    /**
      * Sets shooter motors to coast mode.
      */
     public void setCoast() {
         lowerShooterMotor.setNeutralMode(NeutralMode.Coast);
-        upperShooterMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     /**
@@ -98,6 +89,7 @@ public class Shooter extends SubsystemBase {
      */
     public double getUpperVelocity() {
         return (upperShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
+        //check if formula is correct by running at max rpm and see if the returned velocity is equal to 6380 rpm
     }
 
     /**
