@@ -12,7 +12,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -27,12 +29,16 @@ public class Turret extends SubsystemBase {
   ProfiledPIDController pid = new ProfiledPIDController(Constants.Turret.kP, Constants.Turret.kI, Constants.Turret.kD,
                               new Constraints(Constants.Turret.MAX_VELOCITY, Constants.Turret.MAX_ACCELERATION));
 
+  Notifier shuffle;
+
   /**
    * Creates a new Turret.
    */
   public Turret(Sensors sensors) {
     this.sensors = sensors;
     controllerInit();
+
+    shuffle = new Notifier(() -> updateShuffleboard());
   }
 
   @Override
@@ -58,6 +64,19 @@ public class Turret extends SubsystemBase {
   */
   public void resetEncoders() {
     turretEncoder.setPosition(0.0);
+  }
+
+  private void updateShuffleboard() {
+    SmartDashboard.putBoolean("Is Aimed", getIsAimed());
+    SmartDashboard.putNumber("Turret Angle", getPosition());
+  }
+
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
   }
 
   /**

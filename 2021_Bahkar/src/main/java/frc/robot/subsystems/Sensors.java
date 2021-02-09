@@ -36,6 +36,8 @@ public class Sensors extends SubsystemBase {
   private final DigitalInput topBeamA = new DigitalInput(0);
   private final DigitalInput topBeamB = new DigitalInput(1);
 
+  Notifier shuffle;
+
   /**
    * Creates a new Sensors.
    */
@@ -49,8 +51,7 @@ public class Sensors extends SubsystemBase {
     TlimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
     ClimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
 
-    Notifier shuffle = new Notifier(() -> updateShuffleBoard());
-    shuffle.startPeriodic(0.1);
+    shuffle = new Notifier(() -> updateShuffleBoard());
   }
 
   @Override
@@ -62,11 +63,17 @@ public class Sensors extends SubsystemBase {
    * Send updated values to NetworkTables; call in a Notifier
    */
   private void updateShuffleBoard() {
-    SmartDashboard.putNumber("Gyro Heading", getGyro());
-    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
     SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
     SmartDashboard.putBoolean("Top Beam A", topBeamA.get());
     SmartDashboard.putBoolean("Top Beam B", topBeamB.get());
+  }
+
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
   }
 
   /**

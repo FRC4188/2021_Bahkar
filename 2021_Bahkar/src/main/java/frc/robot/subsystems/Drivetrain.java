@@ -85,6 +85,7 @@ public class Drivetrain extends SubsystemBase {
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
   private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(CentAccel);
 
+  Notifier shuffle;
   /**
    * Creates a new Drivetrain.
    */
@@ -98,8 +99,7 @@ public class Drivetrain extends SubsystemBase {
 
     rotationPID.enableContinuousInput(-180, 180);
 
-    Notifier shuffle = new Notifier(() -> updateShuffleboard());
-    shuffle.startPeriodic(0.1);
+    shuffle = new Notifier(() -> updateShuffleboard());
   }
 
   /**
@@ -216,6 +216,16 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
+    SmartDashboard.putString("ChassisSpeeds", getChassisSpeeds().toString());
+    SmartDashboard.putNumber("Total Speed", Math.sqrt( Math.pow(getChassisSpeeds().vxMetersPerSecond, 2) + Math.pow(getChassisSpeeds().vyMetersPerSecond, 2)));
+  }
+
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
   }
 
   /**
@@ -249,7 +259,7 @@ public class Drivetrain extends SubsystemBase {
    * @return the ChassisSpeeds object.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return speeds;
+    return kinematics.toChassisSpeeds(getModuleStates());
   }
 
   /**

@@ -85,6 +85,22 @@ public class RobotContainer {
     return bop;
   }
 
+  public void closeNotifiers() {
+    drivetrain.closeNotifier();
+    hood.closeNotifier();
+    sensors.closeNotifier();
+    shooter.closeNotifier();
+    turret.closeNotifier();
+  }
+
+  public void openNotifier() {
+    drivetrain.openNotifier();
+    hood.openNotifier();
+    sensors.openNotifier();
+    shooter.openNotifier();
+    turret.openNotifier();
+  }
+
   /**
    * Method which assigns default commands to different subsystems.
    */

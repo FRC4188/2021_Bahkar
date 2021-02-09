@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -14,6 +15,8 @@ public class Shooter extends SubsystemBase {
 
     private final TalonFX upperShooterMotor = new TalonFX(10);
     private final TalonFX lowerShooterMotor = new TalonFX(11);
+
+    Notifier shuffle;
     
     //https://www.omnicalculator.com/physics/projectile-motion
 
@@ -33,6 +36,8 @@ public class Shooter extends SubsystemBase {
         setRampRate();
 
         SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
+
+        shuffle = new Notifier(() -> updateShuffleboard());
     }
 
     @Override
@@ -46,6 +51,18 @@ public class Shooter extends SubsystemBase {
         lowerShooterMotor.config_kI(0, Constants.Shooter.kI, 10);
         lowerShooterMotor.config_kD(0, Constants.Shooter.kD, 10);
     }
+
+    private void updateShuffleboard() {
+        SmartDashboard.putNumber("Shooter Speed", getUpperVelocity());
+    }
+
+    public void closeNotifier() {
+        shuffle.close();
+    }
+
+    public void openNotifier() {
+        shuffle.startPeriodic(0.1);
+      }
 
     /**
      * Sets shooter motors to a given percentage [-1.0, 1.0].

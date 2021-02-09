@@ -16,6 +16,8 @@ import frc.robot.utils.components.DualServos;
 public class Hood extends SubsystemBase {
   DualServos servos = new DualServos(new Servo(0), new Servo(1));
 
+  Notifier shuffle;
+
   /**
    * Creates a new Hood.
    */
@@ -23,8 +25,7 @@ public class Hood extends SubsystemBase {
     SmartDashboard.putNumber("Set Hood Position", 0.0);
     servos.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
 
-    Notifier shuffle = new Notifier(() -> updateShuffleboard());
-    shuffle.startPeriodic(0.1);
+    shuffle = new Notifier(() -> updateShuffleboard());
   }
 
   @Override
@@ -37,6 +38,14 @@ public class Hood extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Hood Position", getPos());
+  }
+
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
   }
 
   /**
