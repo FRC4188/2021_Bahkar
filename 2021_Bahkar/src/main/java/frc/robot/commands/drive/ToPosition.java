@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Sensors;
 
 public class ToPosition extends CommandBase {
   Drivetrain drivetrain;

@@ -18,16 +18,15 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   CANSparkMax intakeMotor = new CANSparkMax(21, MotorType.kBrushless);
-  CANEncoder intakeMotorEncoder = intakeMotor.getEncoder();
+  CANEncoder intakeEncoder = intakeMotor.getEncoder();
   Solenoid piston = new Solenoid(0);
 
   /**
    * Creates a new Intake.
    */
   public Intake() {
-    intakeMotor.setInverted(true);
-    intakeMotor.setIdleMode(IdleMode.kCoast);
     resetEncoders();
+    controllerInit();
   }
 
   @Override
@@ -35,39 +34,61 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void resetEncoders() {
-    intakeMotorEncoder.setPosition(0);
+  public void controllerInit() {
+    intakeMotor.setInverted(true);
+    intakeMotor.setIdleMode(IdleMode.kCoast);
+    intakeMotor.setOpenLoopRampRate(Constants.Intake.RAMP_RATE);
   }
 
+  /**
+   * Sets the power for the intake motor.
+   * @param power power input in a range of [-1.0, 1.0]
+   */
   public void set(double power) {
     intakeMotor.set(power);
   }
 
-  public double getIntakeMotorTemp() {
-    return intakeMotor.getMotorTemperature();
+  /**
+  * Resets turret encoder value to 0.
+  */
+  public void resetEncoders() {
+    intakeEncoder.setPosition(0.0);
   }
 
-  public double getIntakeMotorPosition() {
-    return intakeMotorEncoder.getPosition();
-  }
-
-  public void setIntakeRampRate() {
-    intakeMotor.setOpenLoopRampRate(Constants.Intake.RAMP_RATE);
-  }
-
+  /**
+   * Raises the intake.
+   */
   public void raise() {
     piston.set(false);
   }
 
+  /**
+   * Lowers the intake.
+   */
   public void lower() {
     piston.set(false);
   }
 
+  /**
+   * Raises/Lowers the intake to wherever it isn't.
+   */
   public void toggle() {
     piston.set(!piston.get());
   }
 
+  /**
+   * Method to determine the current position of the intake.
+   * @return True if lowered, false if raised.
+   */
   public boolean getIsLowered() {
     return piston.get();
+  }
+
+  /**
+   * Returns the temperature of the intake motor.
+   * @return Motor temperature of the intake motor in celsius.
+   */
+  public double getTemp() {
+    return intakeMotor.getMotorTemperature();
   }
 }

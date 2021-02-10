@@ -14,24 +14,15 @@ public class Shooter extends SubsystemBase {
 
     private final TalonFX upperShooterMotor = new TalonFX(10);
     private final TalonFX lowerShooterMotor = new TalonFX(11);
-
     
     //https://www.omnicalculator.com/physics/projectile-motion
 
     public Shooter() {
-        //set inversions
-        lowerShooterMotor.setInverted(true);
-        upperShooterMotor.setInverted(InvertType.FollowMaster);
-        //set slave motor
-        upperShooterMotor.follow(lowerShooterMotor);
+        controllerInit();
+
         // setup encoders
         upperShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
         lowerShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
-        
-        // configuration
-        setCoast();
-        PIDConfig();
-        setRampRate();
 
         SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
     }
@@ -41,10 +32,20 @@ public class Shooter extends SubsystemBase {
 
     }
 
-    public void PIDConfig() {
+    public void controllerInit() {
         lowerShooterMotor.config_kP(0, Constants.Shooter.kP, 10);
         lowerShooterMotor.config_kI(0, Constants.Shooter.kI, 10);
         lowerShooterMotor.config_kD(0, Constants.Shooter.kD, 10);
+
+        lowerShooterMotor.setNeutralMode(NeutralMode.Coast);
+
+        lowerShooterMotor.configClosedloopRamp(Constants.Shooter.RAMP_RATE);
+        lowerShooterMotor.configOpenloopRamp(Constants.Shooter.RAMP_RATE);
+
+        lowerShooterMotor.setInverted(true);
+        upperShooterMotor.setInverted(InvertType.FollowMaster);
+
+        upperShooterMotor.follow(lowerShooterMotor);
     }
 
     /**
@@ -60,21 +61,6 @@ public class Shooter extends SubsystemBase {
     public void setVelocity(double velocity) {
         velocity *= (Constants.Robot.FALCON_ENCODER_TICKS) / 600;
         lowerShooterMotor.set(ControlMode.Velocity, velocity);
-    }
-
-    /**
-     * Sets shooter motors to coast mode.
-     */
-    public void setCoast() {
-        lowerShooterMotor.setNeutralMode(NeutralMode.Coast);
-    }
-
-    /**
-     * Configures shooter motor ramp rates.
-     */
-    public void setRampRate() {
-        lowerShooterMotor.configClosedloopRamp(Constants.Shooter.RAMP_RATE);
-        lowerShooterMotor.configOpenloopRamp(Constants.Shooter.RAMP_RATE);
     }
 
     /**
@@ -95,7 +81,7 @@ public class Shooter extends SubsystemBase {
     /**
      * Returns left shooter motor temperature in Celcius.
      */
-    public double getLowertemp() {
+    public double getLowerTemp() {
         return lowerShooterMotor.getTemperature();
     }
 
