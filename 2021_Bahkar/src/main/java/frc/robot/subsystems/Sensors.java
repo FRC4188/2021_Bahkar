@@ -240,6 +240,14 @@ public class Sensors extends SubsystemBase {
   }
 
   /**
+   * Finds the correct RPM for the shooter to spin at to hit the shot.
+   * @return Shooter speed in RPM
+   */
+  public double formulaAngle() {
+    return getDistance();
+  }
+
+  /**
    * Returns the correction to score in the inner port.
    * @return The angle offset from the target to aim at in order to hit inner port.
    */

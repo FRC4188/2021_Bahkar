@@ -14,9 +14,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.intake.ClearDeadzone;
+import frc.robot.commands.intake.SpinIntake;
+import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
 import frc.robot.commands.hood.DashPosition;
+import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.shooter.DashVelocity;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
@@ -30,8 +33,8 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.utils.BrownoutProtection;
-import frc.robot.utils.ButtonBox;
-import frc.robot.utils.CspController;
+import frc.robot.utils.components.ButtonBox;
+import frc.robot.utils.components.CspController;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
 
@@ -47,7 +50,7 @@ public class RobotContainer {
   private Hopper hopper = new Hopper(sensors);
   private Intake intake = new Intake();
   private Shooter shooter = new Shooter();
-  private Hood hood = new Hood();
+  private Hood hood = new Hood(sensors);
 
   // Subsystem Regulation
   private TempManager tempManager = new TempManager(drivetrain, shooter, turret, hopper, intake);
@@ -85,6 +88,9 @@ public class RobotContainer {
     return bop;
   }
 
+  /**
+   * Ends Notifier threads which feed the NetworkTables.
+   */
   public void closeNotifiers() {
     drivetrain.closeNotifier();
     hood.closeNotifier();
@@ -93,7 +99,10 @@ public class RobotContainer {
     turret.closeNotifier();
   }
 
-  public void openNotifier() {
+  /**
+   * Begins the Notifier threads which feed the NetworkTables.
+   */
+  public void openNotifiers() {
     drivetrain.openNotifier();
     hood.openNotifier();
     sensors.openNotifier();
@@ -112,6 +121,9 @@ public class RobotContainer {
     ));
     hood.setDefaultCommand(new DashPosition(hood));
     shooter.setDefaultCommand(new DashVelocity(shooter));
+    turret.setDefaultCommand(new TurretPower(turret, 0.0));
+    intake.setDefaultCommand(new SpinIntake(intake, 0.0));
+    hopper.setDefaultCommand(new SpinHopper(hopper, 0.0));
   }
 
   /**
@@ -129,21 +141,21 @@ public class RobotContainer {
     pilot.getBButtonObj().whenReleased(new AutoOuttake(intake, hopper, false));
 
     // Relative referenced intake command.
-    pilot.getRbButtonObj().whenPressed(new RunCommand(() -> intake.toggle()));
+    pilot.getRbButtonObj().whenPressed(new InstantCommand(() -> intake.toggle()));
 
     /*
     Copilot commands follow:
     */
 
     // Manually turn the turret.
-    copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5));
-    copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0));
-    copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5));
-    copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0));
+    copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5, true));
+    copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0, false));
+    copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5, true));
+    copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0, false));
 
     // Absolute referenced intake commands.
-    copilot.getDpadDownButtonObj().whenPressed(new RunCommand(() -> intake.lower()));
-    copilot.getDpadUpButtonObj().whenPressed(new RunCommand(() -> intake.raise()));
+    copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.lower()));
+    copilot.getDpadUpButtonObj().whenPressed(new InstantCommand(() -> intake.raise()));
 
     /*
     Button box commands follow:
@@ -156,12 +168,19 @@ public class RobotContainer {
     // Intake command.
     bBox.getButton3Obj().whenPressed(new ClearDeadzone(intake));
 
+    // NetworkTable commands.
+    bBox.getButton4Obj().whenPressed(new RunCommand(() -> openNotifiers()));
+    bBox.getButton5Obj().whenPressed(new RunCommand(() -> closeNotifiers()));
+
     /*
     SmartDashboard commands follow:
     */
 
     // Turret command.
-    SmartDashboard.putData("Zero Turret", new InstantCommand(() -> new ZeroTurret(turret)));
+    SmartDashboard.putData("Zero Turret", new ZeroTurret(turret));
+
+    // Drivetrain command.
+    SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
   }
 
   private void putChooser() {

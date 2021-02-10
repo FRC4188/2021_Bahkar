@@ -67,7 +67,7 @@ public class Turret extends SubsystemBase {
   }
 
   private void updateShuffleboard() {
-    SmartDashboard.putBoolean("Is Aimed", getIsAimed());
+    SmartDashboard.putBoolean("Is Aimed", isAimed());
     SmartDashboard.putNumber("Turret Angle", getPosition());
   }
 
@@ -143,7 +143,7 @@ public class Turret extends SubsystemBase {
    * Method to determine if the turret is aimed at the limelight target.
    * @return Whether the turret is correctly aimed.
    */
-  public boolean getIsAimed() {
+  public boolean isAimed() {
     double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset();
     boolean aimed = (Math.abs(angle - turretEncoder.getPosition()) < Constants.Turret.POS_TOLERANCE) ? true : false;
     return aimed;

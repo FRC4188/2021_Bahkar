@@ -84,9 +84,15 @@ public final class Constants {
     }
 
     public final class Shooter {
+        public static final double MAX_VELOCITY = 6000;
+        public static final double IDLE_VEL = 3500;
+        public static final double SHOOTING_VEL = 4500;
+        public static final double SHOOTING_TOLERANCE = 250;
+
         public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
+        public static final double kF = 1023 / ((MAX_VELOCITY * Robot.FALCON_ENCODER_TICKS) / 600);
 
         public static final double RAMP_RATE = 1.5;
     }

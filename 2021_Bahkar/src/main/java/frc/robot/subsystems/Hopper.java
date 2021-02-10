@@ -7,14 +7,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.components.CSPFalcon;
 
 public class Hopper extends SubsystemBase {
 
-  private final TalonFX hopperMotor = new TalonFX(9);
+  private final CSPFalcon hopperMotor = new CSPFalcon(9);
   private Sensors sensors;
 
   /**
@@ -35,7 +33,7 @@ public class Hopper extends SubsystemBase {
    * @param percentage power to set the motor to in a range of [-1.0, 1.0].
    */
   public void set(double percentage) {
-    hopperMotor.set(ControlMode.PercentOutput, percentage);
+    hopperMotor.set(percentage);
   }
 
   /**

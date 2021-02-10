@@ -14,12 +14,19 @@ import frc.robot.subsystems.Hood;
 public class DashPosition extends CommandBase {
 
   private Hood hood;
+  private boolean cont;
+
   /**
    * Creates a new DashPosition.
    */
-  public DashPosition(Hood hood) {
+  public DashPosition(Hood hood, boolean cont) {
     addRequirements(hood);
     this.hood = hood;
+    this.cont = cont;
+  }
+
+  public DashPosition(Hood hood) {
+    this(hood, true);
   }
 
   // Called when the command is initially scheduled.
@@ -36,11 +43,12 @@ public class DashPosition extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    hood.holdPos();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

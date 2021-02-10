@@ -2,6 +2,7 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -11,9 +12,9 @@ import frc.robot.utils.trajectory.Waypoints;
 
 public class FollowTrajectory extends SwerveControllerCommand {
 
-    public FollowTrajectory(Drivetrain drivetrain, Waypoints waypoints) {
+    public FollowTrajectory(Drivetrain drivetrain, Trajectory trajectory) {
         super(
-            TrajectoryGenerator.generateTrajectory(waypoints.getPoses(), drivetrain.getConfig().setReversed(waypoints.isReversed())),
+            trajectory,
             drivetrain::getPose,
             drivetrain.getKinematics(),
             new PIDController(1.0, 0.0, 0.0),
@@ -23,4 +24,8 @@ public class FollowTrajectory extends SwerveControllerCommand {
             drivetrain);
     }
 
+    public FollowTrajectory(Drivetrain drivetrain, Waypoints waypoints) {
+        this(drivetrain,
+        TrajectoryGenerator.generateTrajectory(waypoints.getPoses(), drivetrain.getConfig().setReversed(waypoints.isReversed())));
+    }
 }
