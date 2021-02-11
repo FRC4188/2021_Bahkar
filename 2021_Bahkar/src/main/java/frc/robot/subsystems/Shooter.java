@@ -1,41 +1,37 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.components.CSPFalcon;
 
 public class Shooter extends SubsystemBase {
 
-    private final TalonFX upperShooterMotor = new TalonFX(10);
-    private final TalonFX lowerShooterMotor = new TalonFX(11);
+    private final CSPFalcon upperShooterMotor = new CSPFalcon(10);
+    private final CSPFalcon lowerShooterMotor = new CSPFalcon(11);
+
+    Notifier shuffle;
     
     //https://www.omnicalculator.com/physics/projectile-motion
 
     public Shooter() {
-        controllerInit();
-
-        // setup encoders
-        upperShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
-        lowerShooterMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
+        motorInits();
 
         SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
+
+        shuffle = new Notifier(() -> updateShuffleboard());
     }
 
     @Override
     public void periodic() {
-
     }
 
-    public void controllerInit() {
-        lowerShooterMotor.config_kP(0, Constants.Shooter.kP, 10);
-        lowerShooterMotor.config_kI(0, Constants.Shooter.kI, 10);
-        lowerShooterMotor.config_kD(0, Constants.Shooter.kD, 10);
+    public void motorInits() {
+        lowerShooterMotor.setPIDF(Constants.Shooter.kP, Constants.Shooter.kI, Constants.Shooter.kD, Constants.Shooter.kF);
 
         lowerShooterMotor.setNeutralMode(NeutralMode.Coast);
 
@@ -48,34 +44,44 @@ public class Shooter extends SubsystemBase {
         upperShooterMotor.follow(lowerShooterMotor);
     }
 
+    private void updateShuffleboard() {
+        SmartDashboard.putNumber("Shooter Speed", getUpperVelocity());
+    }
+
+    public void closeNotifier() {
+        shuffle.close();
+    }
+
+    public void openNotifier() {
+        shuffle.startPeriodic(0.1);
+      }
+
     /**
      * Sets shooter motors to a given percentage [-1.0, 1.0].
      */
     public void setPercentage(double percent) {
-        lowerShooterMotor.set(ControlMode.PercentOutput, percent);
+        lowerShooterMotor.set(percent);
     }
 
     /**
      * Sets shooter motors to a given velocity in rpm.
      */
     public void setVelocity(double velocity) {
-        velocity *= (Constants.Robot.FALCON_ENCODER_TICKS) / 600;
-        lowerShooterMotor.set(ControlMode.Velocity, velocity);
+        lowerShooterMotor.setVelocity(velocity);
     }
 
     /**
      * Gets left shooter motor velocity in rpm.
      */
     public double getLowerVelocity() {
-        return (lowerShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
+        return lowerShooterMotor.getVelocity();
     }
 
     /**
      * Gets right shooter motor velocity in rpm.
      */
     public double getUpperVelocity() {
-        return (upperShooterMotor.getSelectedSensorVelocity() * 600) / Constants.Robot.FALCON_ENCODER_TICKS;
-        //check if formula is correct by running at max rpm and see if the returned velocity is equal to 6380 rpm
+        return upperShooterMotor.getVelocity();
     }
 
     /**
@@ -90,5 +96,9 @@ public class Shooter extends SubsystemBase {
      */
     public double getUpperTemp() {
         return upperShooterMotor.getTemperature();
+    }
+
+    public boolean isReady() {
+        return Math.abs(getLowerVelocity() - Constants.Shooter.SHOOTING_VEL) < Constants.Shooter.SHOOTING_TOLERANCE;
     }
 }

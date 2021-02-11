@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
    */
   public Intake() {
     resetEncoders();
-    controllerInit();
+    motorInits();
   }
 
   @Override
@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void controllerInit() {
+  public void motorInits() {
     intakeMotor.setInverted(true);
     intakeMotor.setIdleMode(IdleMode.kCoast);
     intakeMotor.setOpenLoopRampRate(Constants.Intake.RAMP_RATE);

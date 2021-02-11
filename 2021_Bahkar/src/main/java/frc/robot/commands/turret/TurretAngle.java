@@ -38,6 +38,7 @@ public class TurretAngle extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    turret.set(0.0);
   }
 
   // Returns true when the command should end.

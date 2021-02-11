@@ -7,9 +7,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
-
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -24,34 +21,17 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.WheelDrive;
+import frc.robot.utils.components.WheelDrive;
 
 public class Drivetrain extends SubsystemBase {
-
-  // device initialization
-  private final TalonFX LFAngleMotor = new TalonFX(1);
-  private final TalonFX LFSpeedMotor = new TalonFX(2);
-  private final CANCoder LFangleEncoder = new CANCoder(21);
-
-  private final TalonFX RFAngleMotor = new TalonFX(3);
-  private final TalonFX RFSpeedMotor = new TalonFX(4);
-  private final CANCoder RFangleEncoder = new CANCoder(22);
-
-  private final TalonFX LRAngleMotor = new TalonFX(5);
-  private final TalonFX LRSpeedMotor = new TalonFX(6);
-  private final CANCoder LRangleEncoder = new CANCoder(23);
-
-  private final TalonFX RRAngleMotor = new TalonFX(7);
-  private final TalonFX RRSpeedMotor = new TalonFX(8);
-  private final CANCoder RRangleEncoder = new CANCoder(24);
 
   private Sensors sensors;
 
   //Initialize WheelDrive objects
-  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor, LFangleEncoder, 73.125, false, false);
-  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor, RFangleEncoder, 172.7, true, false);
-  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor, LRangleEncoder, 4.3, false, true);
-  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder, 158.37, true, true);
+  private WheelDrive LeftFront = new WheelDrive(1, 2, 21, 73.125, false, false);
+  private WheelDrive RightFront = new WheelDrive(3, 4, 22, 172.7, true, false);
+  private WheelDrive LeftRear = new WheelDrive(5, 6, 23, 4.3, false, true);
+  private WheelDrive RightRear = new WheelDrive(7, 8, 24, 158.37, true, true);
 
   //Put together swerve module positions relative to the center of the robot.
   private Translation2d FrontLeftLocation = new Translation2d((Constants.Robot.A_LENGTH/2), -(Constants.Robot.A_WIDTH/2));
@@ -85,6 +65,7 @@ public class Drivetrain extends SubsystemBase {
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
   private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(CentAccel);
 
+  Notifier shuffle;
   /**
    * Creates a new Drivetrain.
    */
@@ -98,8 +79,7 @@ public class Drivetrain extends SubsystemBase {
 
     rotationPID.enableContinuousInput(-180, 180);
 
-    Notifier shuffle = new Notifier(() -> updateShuffleboard());
-    shuffle.startPeriodic(0.1);
+    shuffle = new Notifier(() -> updateShuffleboard());
   }
 
   /**
@@ -216,6 +196,16 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
+    SmartDashboard.putString("ChassisSpeeds", getChassisSpeeds().toString());
+    SmartDashboard.putNumber("Total Speed", Math.sqrt( Math.pow(getChassisSpeeds().vxMetersPerSecond, 2) + Math.pow(getChassisSpeeds().vyMetersPerSecond, 2)));
+  }
+
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
   }
 
   /**
@@ -249,7 +239,7 @@ public class Drivetrain extends SubsystemBase {
    * @return the ChassisSpeeds object.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return speeds;
+    return kinematics.toChassisSpeeds(getModuleStates());
   }
 
   /**
@@ -281,7 +271,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getFrontLeftDriveTemp() {
-    return LFSpeedMotor.getTemperature();
+    return LeftFront.getSpeedTemp();
   }
 
   /**
@@ -289,7 +279,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getFrontLeftAngleTemp() {
-    return LFAngleMotor.getTemperature();
+    return LeftFront.getAngleTemp();
   }
 
   /**
@@ -297,7 +287,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getFrontRightDriveTemp() {
-    return RFSpeedMotor.getTemperature();
+    return RightFront.getSpeedTemp();
   }
 
   /**
@@ -305,7 +295,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getFrontRightAngleTemp() {
-    return RFAngleMotor.getTemperature();
+    return RightFront.getAngleTemp();
   }
 
   /**
@@ -313,7 +303,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getRearLeftDriveTemp() {
-    return LRSpeedMotor.getTemperature();
+    return LeftRear.getSpeedTemp();
   }
 
   /**
@@ -321,7 +311,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getRearLeftAngleTemp() {
-    return LRAngleMotor.getTemperature();
+    return LeftRear.getAngleTemp();
   }
 
   /**
@@ -329,7 +319,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getRearRightDriveTemp() {
-    return RRSpeedMotor.getTemperature();
+    return RightRear.getSpeedTemp();
   }
   
   /**
@@ -337,6 +327,6 @@ public class Drivetrain extends SubsystemBase {
    * @return Temperature of the motor in celsius.
    */
   public double getRearRightAngleTemp() {
-    return RRAngleMotor.getTemperature();
+    return RightRear.getAngleTemp();
   }
 }

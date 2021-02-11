@@ -8,17 +8,28 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
 
 public class SpinShooter extends CommandBase {
   private Shooter shooter;
   private double velocity;
+
+  private boolean cont;
   /**
    * Creates a new SpinShooter.
    */
-  public SpinShooter(Shooter shooter, double velocity) {
+  public SpinShooter(Shooter shooter, double velocity, boolean cont) {
     addRequirements(shooter);
     this.velocity = velocity;
+    this.cont = cont;
+  }
+
+  /**
+   * Creates a new SpinShooter which will run until interrupted.
+   */
+  public SpinShooter(Shooter shooter, double velocity) {
+    this(shooter, velocity, true);
   }
 
   // Called when the command is initially scheduled.
@@ -35,11 +46,12 @@ public class SpinShooter extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    shooter.setVelocity(Constants.Shooter.IDLE_VEL);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

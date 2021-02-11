@@ -111,10 +111,10 @@ public class CSPMath {
     }
 
     /**
-     * Converts ft/s to RPM
+     * Converts m/s to RPM
      * @return velocity in RPM 
      */
-    public static double toRPM(double feetPerSec) {
-        return (30 * feetPerSec) / (Math.PI * (Constants.Shooter.WHEEL_DIAMETER / 2));
+    public static double toRPM(double mPerSec) {
+        return (30 * mPerSec) / (Math.PI * (Constants.Shooter.WHEEL_DIAMETER / 2));
     }
 }

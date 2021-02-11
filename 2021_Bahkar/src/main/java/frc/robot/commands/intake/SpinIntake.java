@@ -25,6 +25,13 @@ public class SpinIntake extends CommandBase {
     this.cont = cont;
   }
 
+  /**
+   * Creates a new SpinIntake which will run until interrupted.
+   */
+  public SpinIntake(Intake intake, double power) {
+    this(intake, power, true);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

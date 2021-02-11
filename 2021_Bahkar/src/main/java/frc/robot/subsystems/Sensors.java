@@ -37,6 +37,8 @@ public class Sensors extends SubsystemBase {
   private final DigitalInput topBeamA = new DigitalInput(0);
   private final DigitalInput topBeamB = new DigitalInput(1);
 
+  Notifier shuffle;
+
   /**
    * Creates a new Sensors.
    */
@@ -50,8 +52,7 @@ public class Sensors extends SubsystemBase {
     TlimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
     ClimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
 
-    Notifier shuffle = new Notifier(() -> updateShuffleBoard());
-    shuffle.startPeriodic(0.1);
+    shuffle = new Notifier(() -> updateShuffleBoard());
   }
 
   @Override
@@ -63,11 +64,17 @@ public class Sensors extends SubsystemBase {
    * Send updated values to NetworkTables; call in a Notifier
    */
   private void updateShuffleBoard() {
-    SmartDashboard.putNumber("Gyro Heading", getGyro());
-    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
     SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
     SmartDashboard.putBoolean("Top Beam A", topBeamA.get());
     SmartDashboard.putBoolean("Top Beam B", topBeamB.get());
+  }
+
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
   }
 
   /**
@@ -233,19 +240,28 @@ public class Sensors extends SubsystemBase {
     return (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
   }
 
-  public static double getHorizontalDistance() {
-    return (1.0); 
-  }
-
-  public double[] formulaRPMandAngle() {
+  
+  public double[] formulaVelocityAndAngle() {
     double vy = CSPMath.getVy();
-    double vx = CSPMath.getVx(getHorizontalDistance(), vy);
+    double vx = CSPMath.getVx(getDistance(), vy);
     double launchAngle = CSPMath.getLaunchAngle(vx, vy);
-    double[] angleAndRPM = {CSPMath.getVelocity(vx, vy, launchAngle), CSPMath.getLaunchAngle(vx, vy)};
+    double[] velocityAndAngle = {CSPMath.getVelocity(vx, vy, launchAngle), CSPMath.getLaunchAngle(vx, vy)};
 
-    return angleAndRPM;
+    return velocityAndAngle;
   }
 
+  /**
+   * Finds the correct RPM for the shooter to spin at to hit the shot.
+   * @return Shooter speed in RPM
+   */
+  public double formulaAngle() {
+    return formulaVelocityAndAngle()[1];
+  }
+
+  /**
+   * Returns the correction to score in the inner port.
+   * @return The angle offset from the target to aim at in order to hit inner port.
+   */
   public double getTurretOffset() {
     double a = Constants.Field.THREE_POINT_DEPTH;
     double b = getDistance();

@@ -13,13 +13,22 @@ import frc.robot.subsystems.Turret;
 public class TurretPower extends CommandBase {
   Turret turret;
   double power;
+  private boolean cont;
   /**
    * Creates a new TurretPower.
    */
-  public TurretPower(Turret turret, double power) {
+  public TurretPower(Turret turret, double power, boolean cont) {
     addRequirements(turret);
     this.turret = turret;
     this.power = power;
+    this.cont = cont;
+  }
+
+  /**
+   * Creates a new TurretPower which will run until interrupted.
+   */
+  public TurretPower (Turret turret, double power) {
+    this(turret, power, true);
   }
 
   // Called when the command is initially scheduled.
@@ -31,17 +40,17 @@ public class TurretPower extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    turret.set(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

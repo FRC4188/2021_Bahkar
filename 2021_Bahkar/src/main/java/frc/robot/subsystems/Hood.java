@@ -8,23 +8,27 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.components.DualServos;
+import frc.robot.utils.components.LinearActuator;
 
 public class Hood extends SubsystemBase {
-  DualServos servos = new DualServos(new Servo(0), new Servo(1));
+  DualServos servos = new DualServos(new LinearActuator(0), new LinearActuator(1));
+
+  Sensors sensors;
+
+  Notifier shuffle;
 
   /**
    * Creates a new Hood.
    */
-  public Hood() {
+  public Hood(Sensors sensors) {
     SmartDashboard.putNumber("Set Hood Position", 0.0);
-    servos.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
 
-    Notifier shuffle = new Notifier(() -> updateShuffleboard());
-    shuffle.startPeriodic(0.1);
+    shuffle = new Notifier(() -> updateShuffleboard());
+
+    this.sensors = sensors;
   }
 
   @Override
@@ -39,12 +43,24 @@ public class Hood extends SubsystemBase {
     SmartDashboard.putNumber("Hood Position", getPos());
   }
 
+  public void closeNotifier() {
+    shuffle.close();
+  }
+
+  public void openNotifier() {
+    shuffle.startPeriodic(0.1);
+  }
+
   /**
    * Set the position of the hood servos
    * @param pos Position in range [0.0, -1.0].
    */
   public void set(double pos) {
     servos.setPos(pos);
+  }
+
+  public void formulaAngle() {
+    servos.setPos(sensors.formulaAngle());
   }
 
   /**
@@ -60,5 +76,9 @@ public class Hood extends SubsystemBase {
    */
   public void holdPos() {
     servos.setPos(servos.getPos());
+  }
+
+  public boolean isAimed() {
+    return getPos() - sensors.formulaAngle() == 0.0;
   }
 }

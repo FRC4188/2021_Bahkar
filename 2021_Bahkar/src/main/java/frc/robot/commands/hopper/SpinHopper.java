@@ -14,22 +14,23 @@ public class SpinHopper extends CommandBase {
 
   Hopper hopper;
   double percentage;
-  boolean cont = true;
+  boolean cont;
 
   /**
    * Creates a new SpinHopper.
    */
-  public SpinHopper(Hopper hopper, double percentage) {
-    addRequirements(hopper);
-    this.hopper = hopper;
-    this.percentage = percentage;
-  }
-
   public SpinHopper(Hopper hopper, double percentage, boolean cont) {
     addRequirements(hopper);
     this.hopper = hopper;
     this.percentage = percentage;
     this.cont = cont;
+  }
+
+  /**
+   * Creates a new SpinHopper which will run until interrupted.
+   */
+  public SpinHopper(Hopper hopper, double percentage) {
+    this(hopper, percentage, true);
   }
 
   // Called when the command is initially scheduled.
