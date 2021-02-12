@@ -27,7 +27,7 @@ public class AutoShoot extends ParallelCommandGroup {
       new AutoMagazine(hopper, shooter, hood, turret, cont),
       new SpinIntake(intake, 0.75, cont),
       new FollowTarget(turret, cont),
-      new SpinShooter(shooter, Constants.Shooter.SHOOTING_VEL, cont),
+      //new SpinShooter(shooter, Constants.Shooter.SHOOTING_VEL, cont),
       new FormulaAngle(hood, cont)
     );
   }

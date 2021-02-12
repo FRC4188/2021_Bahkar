@@ -99,6 +99,6 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isReady() {
-        return Math.abs(getLowerVelocity() - Constants.Shooter.SHOOTING_VEL) < Constants.Shooter.SHOOTING_TOLERANCE;
+        return false; //Math.abs(getLowerVelocity() - Constants.Shooter.SHOOTING_VEL) < Constants.Shooter.SHOOTING_TOLERANCE;
     }
 }

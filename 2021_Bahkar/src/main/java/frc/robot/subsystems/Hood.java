@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.utils.CSPMath;
 import frc.robot.utils.components.DualServos;
 import frc.robot.utils.components.LinearActuator;
 
@@ -25,6 +27,7 @@ public class Hood extends SubsystemBase {
    */
   public Hood(Sensors sensors) {
     SmartDashboard.putNumber("Set Hood Position", 0.0);
+    SmartDashboard.putNumber("Set Hood Angle", 0.0);
 
     shuffle = new Notifier(() -> updateShuffleboard());
 
@@ -41,6 +44,7 @@ public class Hood extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Hood Position", getPos());
+    SmartDashboard.putNumber("Hood Angle", getAngle());
   }
 
   public void closeNotifier() {
@@ -59,8 +63,12 @@ public class Hood extends SubsystemBase {
     servos.setPos(pos);
   }
 
+  public void setAngle(double angle) {
+    servos.setPos(CSPMath.angleToSet(angle));
+  }
+
   public void formulaAngle() {
-    servos.setPos(sensors.formulaAngle());
+    setAngle(sensors.formulaAngle());
   }
 
   /**
@@ -69,6 +77,10 @@ public class Hood extends SubsystemBase {
    */
   public double getPos() {
     return servos.getPos();
+  }
+
+  public double getAngle() {
+    return CSPMath.hoodToAngle(servos.getPos());
   }
 
   /**

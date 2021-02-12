@@ -1,9 +1,8 @@
 package frc.robot.utils;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.Sensors;
 
-public class CSPMath {
+public final class CSPMath {
 
     public static double remainder(double a, double b) {
         return Math.IEEEremainder(a, b);
@@ -116,5 +115,13 @@ public class CSPMath {
      */
     public static double toRPM(double mPerSec) {
         return (30 * mPerSec) / (Math.PI * (Constants.Shooter.WHEEL_DIAMETER / 2));
+    }
+
+    public static double angleToSet(double angle) {
+        return -(Constants.Hood.ANGLE_TO_MILLIM * ((angle * Constants.Hood.SERVO_STROKE) - Constants.Hood.INITIAL_ANGLE)) / 360.0;
+    }
+
+    public static double hoodToAngle(double position) {
+        return -(360.0 * position) / Constants.Hood.ANGLE_TO_MILLIM + Constants.Hood.INITIAL_ANGLE;
     }
 }

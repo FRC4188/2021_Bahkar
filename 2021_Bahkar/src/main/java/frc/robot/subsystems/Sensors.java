@@ -234,7 +234,7 @@ public class Sensors extends SubsystemBase {
 
   /**
    * Return the distance from the robot to the goal; only for use on the hexagonal port goal.
-   * @return distance from the robot to the goal.
+   * @return distance from the robot to the goal in meters.
    */
   public double getDistance() {
     return (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
@@ -252,7 +252,7 @@ public class Sensors extends SubsystemBase {
 
   /**
    * Finds the correct RPM for the shooter to spin at to hit the shot.
-   * @return Shooter speed in RPM
+   * @return Shooter speed in RPM.
    */
   public double formulaAngle() {
     return formulaVelocityAndAngle()[1];

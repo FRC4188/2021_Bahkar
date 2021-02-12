@@ -18,6 +18,7 @@ import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
+import frc.robot.commands.hood.DashAngle;
 import frc.robot.commands.hood.DashPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.shooter.DashVelocity;
@@ -119,7 +120,7 @@ public class RobotContainer {
         pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)),
         drivetrain
     ));
-    hood.setDefaultCommand(new DashPosition(hood));
+    hood.setDefaultCommand(new DashAngle(hood));
     shooter.setDefaultCommand(new DashVelocity(shooter));
     turret.setDefaultCommand(new TurretPower(turret, 0.0));
     intake.setDefaultCommand(new SpinIntake(intake, 0.0));
