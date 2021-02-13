@@ -104,9 +104,10 @@ public final class Constants {
 
         public static final double MAIN_WHEEL_RADIUS = Units.inchesToMeters(2.0);
         public static final double MAIN_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(MAIN_WHEEL_RADIUS, 2.0);
+        public static final double MAIN_WHEEL_RATIO = 1.0;
         public static final double AUX_WHEEL_RADIUS = Units.inchesToMeters(0.75);
         public static final double AUX_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(AUX_WHEEL_RADIUS, 2.0);
-        public static final double RPM_TO_INITMS = (MAIN_WHEEL_CIRCUMFERENCE + AUX_WHEEL_CIRCUMFERENCE) / 120.0;
+        public static final double AUX_WHEEL_RATIO = 1.0;
 
         public static final double kP = 0.0;
         public static final double kI = 0.0;
@@ -120,9 +121,9 @@ public final class Constants {
 
     public static final class Hood {
         public static final double SERVO_STROKE = 100.0; // milimeters
-        public static final double AXEL_TO_SERVO = Math.cos(16.7) * 117.2972; // The length from the hood's pivot to the where the servo standoff is part of the line perpendicular to the arm. in milimeters.
-        public static final double ANGLE_TO_MILLIM = (1 / (2 * Math.PI * AXEL_TO_SERVO)) * 360.0; // Degrees of hood angle for every milimeter the servo extends. degrees.
-        public static final double INITIAL_ANGLE = 79.96239; // The angle the shooter starts at. degrees.
+        public static final double AXEL_TO_SERVO = Math.cos(Math.toDegrees(16.7)) * 117.2972; // The length from the hood's pivot to the where the servo standoff is part of the line perpendicular to the arm. in milimeters.
+        public static final double PIVOT_CIRCUMFERENCE = 2 * Math.PI * AXEL_TO_SERVO;
+        public static final double INITIAL_ANGLE = 77.473085; // The angle the shooter starts at. degrees.
     }
 
     public final class Intake {

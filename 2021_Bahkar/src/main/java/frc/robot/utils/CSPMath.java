@@ -109,19 +109,38 @@ public final class CSPMath {
         return isClearOuter && isClearInner;
     }
 
+    public static class Shooter {
+
+        public static double velToRPM(double velocity) {
+            return (120.0 * velocity) / ((Constants.Shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.Shooter.MAIN_WHEEL_RATIO) + (Constants.Shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.Shooter.AUX_WHEEL_RATIO));
+        }
+
+        public static double rpmToVel(double rpm) {
+            return (rpm * ((Constants.Shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.Shooter.MAIN_WHEEL_RATIO) + (Constants.Shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.Shooter.AUX_WHEEL_RATIO))) / 120.0;
+        }
+    }
+
     /**
-     * Converts m/s to RPM
-     * @return velocity in RPM 
+     * The math class for the shooter's hood
      */
-    public static double toRPM(double mPerSec) {
-        return (30 * mPerSec) / (Math.PI * (Constants.Shooter.WHEEL_DIAMETER / 2));
-    }
+    public static class Hood {
 
-    public static double angleToSet(double angle) {
-        return -(Constants.Hood.ANGLE_TO_MILLIM * ((angle * Constants.Hood.SERVO_STROKE) - Constants.Hood.INITIAL_ANGLE)) / 360.0;
-    }
+        /**
+         * Converts a release angle to the set position for the hood servos.
+         * @param angle Angle to be converted. degrees.
+         * @return Servo set position in range [0.0, 1.0].
+         */
+        public static double angleToSet(double angle) {
+            return (-Constants.Hood.PIVOT_CIRCUMFERENCE * (angle - Constants.Hood.INITIAL_ANGLE)) / (360.0 * Constants.Hood.SERVO_STROKE);
+        }
 
-    public static double hoodToAngle(double position) {
-        return -(360.0 * position) / Constants.Hood.ANGLE_TO_MILLIM + Constants.Hood.INITIAL_ANGLE;
+        /**
+         * Converts a servo set position to a release angle.
+         * @param position The set position of the hood servos in range [0.0, 1.0].
+         * @return Release angle. degrees.
+         */
+        public static double setToAngle(double position) {
+            return Constants.Hood.INITIAL_ANGLE - (360.0 * Constants.Hood.SERVO_STROKE * position) / Constants.Hood.PIVOT_CIRCUMFERENCE;
+        }
     }
 }
