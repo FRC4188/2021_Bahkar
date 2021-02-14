@@ -6,17 +6,14 @@ package frc.robot.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Sensors;
 
-public class FormulaAngle extends CommandBase {
+public class IdealAngle extends CommandBase {
 
-  Hood hood;
-  Sensors sensors;
-
+  private Hood hood;
   private boolean cont;
 
-  /** Creates a new FormulaAngle. */
-  public FormulaAngle(Hood hood, boolean cont) {
+  /** Creates a new IdealAngle. */
+  public IdealAngle(Hood hood, boolean cont) {
     addRequirements(hood);
 
     this.hood = hood;
@@ -30,7 +27,7 @@ public class FormulaAngle extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.formulaAngle();
+    hood.setIdealAngle();
   }
 
   // Called once the command ends or is interrupted.

@@ -79,10 +79,17 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setZoneVelocity() {
-        setVelocity(CSPMath.Shooter.rpmToVel( sensors.getDistance() < Constants.Shooter.CLOSE_SHOOTING_DIST ? Constants.Shooter.CLOSE_SHOOTING_VEL :
+        setVelocity(CSPMath.Shooter.velToRPM( sensors.getDistance() < Constants.Shooter.CLOSE_SHOOTING_DIST ? Constants.Shooter.CLOSE_SHOOTING_VEL :
                 (double) (sensors.getDistance() < Constants.Shooter.MID_SHOOTING_DIST
                         ? Constants.Shooter.MID_SHOOTING_VEL
                         : sensors.getDistance() < Constants.Shooter.CLOSE_SHOOTING_VEL)));
+    }
+
+    public  void setIdealVelocity() {
+        setVelocity(CSPMath.Shooter.velToRPM(
+            sensors.getDistance() < Constants.Shooter.MIN_IDEAL_DISTANCE ? Constants.Shooter.CLOSE_SHOOTING_VEL :
+            sensors.getDistance() < Constants.Shooter.MAX_IDEAL_DISTANCE ? CSPMath.Shooter.idealVelocityFormula(sensors.getDistance()) :
+                                                                           Constants.Shooter.FAR_SHOOTING_VEL));
     }
 
     /**

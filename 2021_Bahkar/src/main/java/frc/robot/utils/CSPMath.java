@@ -30,17 +30,9 @@ public final class CSPMath {
             return (rpm * ((Constants.Shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.Shooter.MAIN_WHEEL_RATIO) + (Constants.Shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.Shooter.AUX_WHEEL_RATIO))) / 120.0;
         }
 
-        public static double closeFormulaAngle(double distance) {
-            return 6.57143 * Math.pow(distance - 2.40652, 2.0) + 55.6397;
-        }
-
-        public static double midFormulaAngle(double distance) {
-            return 1.80714 * Math.pow(distance - 3.32036, 2.0) + 39.1587;
-        }
-
-        public static double farFormulaAngle(double distance) {
-            return 0.707293 * Math.pow(distance - 5.80819, 2.0) + 26.8696;
-        }
+        public static double idealVelocityFormula(double distance) {
+            return Math.pow(10549.7, 0.007449 * distance + 0.316313) - 12.0494;
+        } 
     }
 
     /**
@@ -64,6 +56,22 @@ public final class CSPMath {
          */
         public static double setToAngle(double position) {
             return Constants.Hood.INITIAL_ANGLE - (360.0 * Constants.Hood.SERVO_STROKE * position) / Constants.Hood.PIVOT_CIRCUMFERENCE;
+        }
+        
+        public static double closeFormulaAngle(double distance) {
+            return 6.57143 * Math.pow(distance - 2.40652, 2.0) + 55.6397;
+        }
+
+        public static double midFormulaAngle(double distance) {
+            return 1.80714 * Math.pow(distance - 3.32036, 2.0) + 39.1587;
+        }
+
+        public static double farFormulaAngle(double distance) {
+            return 0.707293 * Math.pow(distance - 5.80819, 2.0) + 26.8696;
+        }
+
+        public static double idealAngleFormula(double distance) {
+            return Math.pow(0.494469, 0.411179 * distance - 5.89085) + 14.5337;
         }
     }
 }

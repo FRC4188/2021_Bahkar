@@ -77,13 +77,23 @@ public class Hood extends SubsystemBase {
     double distance = sensors.getTurretHasTarget() ? sensors.getDistance() : CSPMath.findHypotenuse(drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS, drivetrain.getPose().getY());
 
     return distance > Constants.Shooter.MAX_DISTANCE ? Constants.Shooter.IDLE_VEL : 
-    distance < Constants.Shooter.CLOSE_SHOOTING_DIST ? CSPMath.Shooter.closeFormulaAngle(distance) : 
-      distance < Constants.Shooter.MID_SHOOTING_DIST ? CSPMath.Shooter.midFormulaAngle(distance) :
-                                                       CSPMath.Shooter.farFormulaAngle(distance);
+    distance < Constants.Shooter.CLOSE_SHOOTING_DIST ? CSPMath.Hood.closeFormulaAngle(distance) : 
+      distance < Constants.Shooter.MID_SHOOTING_DIST ? CSPMath.Hood.midFormulaAngle(distance) :
+                                                       CSPMath.Hood.farFormulaAngle(distance);
   }
 
   public void setFormulaAngle() {
     setAngle(formulaAngle());
+  }
+
+  public double idealAngleFormula() {
+      return sensors.getDistance() < Constants.Shooter.MIN_IDEAL_DISTANCE ? CSPMath.Hood.closeFormulaAngle(sensors.getDistance()) :
+             sensors.getDistance() < Constants.Shooter.MAX_IDEAL_DISTANCE ? CSPMath.Hood.idealAngleFormula(sensors.getDistance()) :
+                                                                            CSPMath.Hood.farFormulaAngle(sensors.getDistance());
+  }
+
+  public void setIdealAngle() {
+    setAngle(idealAngleFormula());
   }
 
   /**

@@ -96,12 +96,16 @@ public final class Constants {
     public static final class Shooter {
         public static final double MAX_VELOCITY = 5750.0;
         public static final double IDLE_VEL = 3500.0;
+
         public static final double MAX_DISTANCE = 9.7;
         public static final double FAR_SHOOTING_VEL = 15.6;
         public static final double MID_SHOOTING_VEL = 11.3; 
         public static final double MID_SHOOTING_DIST = 5.1; // Shoot with the mid velocity if the distance is between this and the short distance. in meters.
         public static final double CLOSE_SHOOTING_VEL = 8.55;
         public static final double CLOSE_SHOOTING_DIST = 2.6; // Shoot with the short velocity if the distance is less than this. In meters.
+
+        public static final double MAX_IDEAL_DISTANCE = 5.36;
+        public static final double MIN_IDEAL_DISTANCE = 1.83;
         public static final double SHOOTING_TOLERANCE = 250.0;
 
         public static final double MAIN_WHEEL_RADIUS = Units.inchesToMeters(2.0);
@@ -126,6 +130,7 @@ public final class Constants {
         public static final double AXEL_TO_SERVO = Math.cos(Math.toDegrees(16.7)) * 117.2972; // The length from the hood's pivot to the where the servo standoff is part of the line perpendicular to the arm. in milimeters.
         public static final double PIVOT_CIRCUMFERENCE = 2 * Math.PI * AXEL_TO_SERVO;
         public static final double INITIAL_ANGLE = 77.473085; // The angle the shooter starts at. degrees.
+        public static final double MIN_ANGLE = 26.475460;
     }
 
     public final class Intake {
