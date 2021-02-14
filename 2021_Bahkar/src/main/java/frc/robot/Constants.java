@@ -107,7 +107,7 @@ public final class Constants {
         public static final double MAIN_WHEEL_RATIO = 1.0;
         public static final double AUX_WHEEL_RADIUS = Units.inchesToMeters(0.75);
         public static final double AUX_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(AUX_WHEEL_RADIUS, 2.0);
-        public static final double AUX_WHEEL_RATIO = 1.0;
+        public static final double AUX_WHEEL_RATIO = 4.0 / 3.0;
 
         public static final double kP = 0.0;
         public static final double kI = 0.0;
