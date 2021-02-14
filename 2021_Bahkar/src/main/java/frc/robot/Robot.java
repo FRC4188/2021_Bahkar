@@ -7,10 +7,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.TempManager;
+import frc.robot.utils.components.LEDPanel;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -22,6 +24,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private LEDPanel ledPanel;
 
   private TempManager tempManager;
 
@@ -31,9 +34,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    ledPanel = new LEDPanel(2);
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    m_robotContainer = new RobotContainer(ledPanel);
+
     tempManager = m_robotContainer.getTempManager();
   }
 
@@ -52,6 +58,10 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     tempManager.run();
+
+    ledPanel.set(LEDPanel.SYSTEM.GENERAL, 0, RobotController.getBatteryVoltage() > 12.0 ? LEDPanel.BEHAVIOR.OFF :
+                                             RobotController.getBatteryVoltage() > 10.0 ? LEDPanel.BEHAVIOR.BLINK :
+                                                                                          LEDPanel.BEHAVIOR.ON);
   }
 
   /**

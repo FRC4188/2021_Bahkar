@@ -5,11 +5,10 @@
 package frc.robot.commands.groups;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.Constants;
 import frc.robot.commands.hood.FormulaAngle;
 import frc.robot.commands.hopper.AutoMagazine;
 import frc.robot.commands.intake.SpinIntake;
-import frc.robot.commands.shooter.SpinShooter;
+import frc.robot.commands.shooter.ZoneVelocity;
 import frc.robot.commands.turret.FollowTarget;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Hopper;
@@ -27,7 +26,7 @@ public class AutoShoot extends ParallelCommandGroup {
       new AutoMagazine(hopper, shooter, hood, turret, cont),
       new SpinIntake(intake, 0.75, cont),
       new FollowTarget(turret, cont),
-      //new SpinShooter(shooter, Constants.Shooter.SHOOTING_VEL, cont),
+      new ZoneVelocity(shooter, cont),
       new FormulaAngle(hood, cont)
     );
   }

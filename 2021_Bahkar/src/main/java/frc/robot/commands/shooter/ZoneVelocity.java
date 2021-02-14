@@ -5,11 +5,19 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Shooter;
 
 public class ZoneVelocity extends CommandBase {
+
+  Shooter shooter;
+  boolean cont;
+
   /** Creates a new ZoneVelocity. */
-  public ZoneVelocity() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public ZoneVelocity(Shooter shooter, boolean cont) {
+    addRequirements(shooter);
+
+    this.shooter = shooter;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
@@ -18,7 +26,9 @@ public class ZoneVelocity extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    shooter.setZoneVelocity();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -27,6 +37,6 @@ public class ZoneVelocity extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !cont;
   }
 }

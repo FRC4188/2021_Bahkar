@@ -15,16 +15,22 @@ public class Shooter extends SubsystemBase {
     private final CSPFalcon upperShooterMotor = new CSPFalcon(10);
     private final CSPFalcon lowerShooterMotor = new CSPFalcon(11);
 
-    Notifier shuffle;
+    private Notifier shuffle;
+
+    private Sensors sensors;
     
     //https://www.omnicalculator.com/physics/projectile-motion
 
-    public Shooter() {
+    public Shooter(Sensors sensors) {
         motorInits();
 
         SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
+        SmartDashboard.putNumber("Set Shooter Power", 0.0);
+        SmartDashboard.putNumber("Set Initial Velocty", 0.0);
 
         shuffle = new Notifier(() -> updateShuffleboard());
+
+        this.sensors = sensors;
     }
 
     @Override
@@ -70,6 +76,13 @@ public class Shooter extends SubsystemBase {
      */
     public void setVelocity(double velocity) {
         lowerShooterMotor.setVelocity(velocity);
+    }
+
+    public void setZoneVelocity() {
+        setVelocity(CSPMath.Shooter.rpmToVel( sensors.getDistance() < Constants.Shooter.CLOSE_SHOOTING_DIST ? Constants.Shooter.CLOSE_SHOOTING_VEL :
+                (double) (sensors.getDistance() < Constants.Shooter.MID_SHOOTING_DIST
+                        ? Constants.Shooter.MID_SHOOTING_VEL
+                        : sensors.getDistance() < Constants.Shooter.CLOSE_SHOOTING_VEL)));
     }
 
     /**

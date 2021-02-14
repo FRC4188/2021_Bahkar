@@ -69,6 +69,7 @@ public final class Constants {
         public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2.0))); //Limit for the skew against the 3-point goal (Degrees).
         public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0); //Diameter of the power cell (Meters).
         public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0); //Diameter of the inner port (Meters).
+        public static final double GOAL_X_POS = 0.0;
     }
 
     public final class Turret{
@@ -95,10 +96,11 @@ public final class Constants {
     public static final class Shooter {
         public static final double MAX_VELOCITY = 5750.0;
         public static final double IDLE_VEL = 3500.0;
-        public static final double FAR_SHOOTING_VEL = 5750.0;
-        public static final double MID_SHOOTING_VEL = 4000.0; 
+        public static final double MAX_DISTANCE = 9.7;
+        public static final double FAR_SHOOTING_VEL = 15.6;
+        public static final double MID_SHOOTING_VEL = 11.3; 
         public static final double MID_SHOOTING_DIST = 5.1; // Shoot with the mid velocity if the distance is between this and the short distance. in meters.
-        public static final double CLOSE_SHOOTING_VEL = 3149.0;
+        public static final double CLOSE_SHOOTING_VEL = 8.55;
         public static final double CLOSE_SHOOTING_DIST = 2.6; // Shoot with the short velocity if the distance is less than this. In meters.
         public static final double SHOOTING_TOLERANCE = 250.0;
 

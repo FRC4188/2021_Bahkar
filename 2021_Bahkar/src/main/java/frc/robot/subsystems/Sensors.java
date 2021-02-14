@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.enums.LedMode;
-import frc.robot.utils.CSPMath;
+import frc.robot.utils.components.LEDPanel;
 import frc.robot.utils.enums.CameraMode;
 import frc.robot.utils.enums.Pipeline;
 
@@ -38,11 +38,14 @@ public class Sensors extends SubsystemBase {
   private final DigitalInput topBeamB = new DigitalInput(1);
 
   Notifier shuffle;
+  LEDPanel ledPanel;
 
   /**
    * Creates a new Sensors.
    */
-  public Sensors() {
+  public Sensors(LEDPanel ledPanel) {
+    this.ledPanel = ledPanel;
+
     setupPigeon();
     setupGyro();
 
@@ -237,25 +240,7 @@ public class Sensors extends SubsystemBase {
    * @return distance from the robot to the goal in meters.
    */
   public double getDistance() {
-    return (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle())));
-  }
-
-  
-  public double[] formulaVelocityAndAngle() {
-    double vy = CSPMath.getVy();
-    double vx = CSPMath.getVx(getDistance(), vy);
-    double launchAngle = CSPMath.getLaunchAngle(vx, vy);
-    double[] velocityAndAngle = {CSPMath.getVelocity(vx, vy, launchAngle), CSPMath.getLaunchAngle(vx, vy)};
-
-    return velocityAndAngle;
-  }
-
-  /**
-   * Finds the correct RPM for the shooter to spin at to hit the shot.
-   * @return Shooter speed in RPM.
-   */
-  public double formulaAngle() {
-    return formulaVelocityAndAngle()[1];
+    return getTurretHasTarget() ? (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle()))) : 0.0;
   }
 
   /**

@@ -19,7 +19,6 @@ import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
 import frc.robot.commands.hood.DashAngle;
-import frc.robot.commands.hood.DashPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.shooter.DashVelocity;
 import frc.robot.commands.turret.TurretPower;
@@ -36,6 +35,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.components.ButtonBox;
 import frc.robot.utils.components.CspController;
+import frc.robot.utils.components.LEDPanel;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
 
@@ -45,13 +45,14 @@ import frc.robot.utils.TempManager;
 public class RobotContainer {
 
   // Create the subsystems; Sensors first to be fed into each of the others.
-  private Sensors sensors = new Sensors();
-  private Drivetrain drivetrain = new Drivetrain(sensors);
-  private Turret turret = new Turret(sensors);
-  private Hopper hopper = new Hopper(sensors);
-  private Intake intake = new Intake();
-  private Shooter shooter = new Shooter();
-  private Hood hood = new Hood(sensors);
+  private Sensors sensors;
+  private Drivetrain drivetrain;
+  private Turret turret;
+  private Hopper hopper;
+  private Intake intake;
+  private Shooter shooter;
+  private Hood hood;
+  private LEDPanel ledPanel;
 
   // Subsystem Regulation
   private TempManager tempManager = new TempManager(drivetrain, shooter, turret, hopper, intake);
@@ -69,7 +70,16 @@ public class RobotContainer {
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
-  public RobotContainer() {
+  public RobotContainer(LEDPanel ledPanel) {
+    ledPanel = new LEDPanel(2);
+    sensors = new Sensors(ledPanel);
+    drivetrain = new Drivetrain(sensors);
+    turret = new Turret(sensors, drivetrain);
+    hopper = new Hopper(sensors);
+    intake = new Intake();
+    shooter = new Shooter(sensors);
+    hood = new Hood(sensors, drivetrain);
+
     setDefaultCommands();
     configureButtonBindings();
     putChooser();

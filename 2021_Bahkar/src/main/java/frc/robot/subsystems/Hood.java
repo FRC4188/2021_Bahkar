@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.utils.CSPMath;
 import frc.robot.utils.components.DualServos;
 import frc.robot.utils.components.LinearActuator;
@@ -18,19 +19,21 @@ public class Hood extends SubsystemBase {
   DualServos servos = new DualServos(new LinearActuator(0), new LinearActuator(1));
 
   Sensors sensors;
+  Drivetrain drivetrain;
 
   Notifier shuffle;
 
   /**
    * Creates a new Hood.
    */
-  public Hood(Sensors sensors) {
+  public Hood(Sensors sensors, Drivetrain drivetrain) {
     SmartDashboard.putNumber("Set Hood Position", 0.0);
     SmartDashboard.putNumber("Set Hood Angle", 0.0);
 
     shuffle = new Notifier(() -> updateShuffleboard());
 
     this.sensors = sensors;
+    this.drivetrain = drivetrain;
   }
 
   @Override
@@ -66,8 +69,21 @@ public class Hood extends SubsystemBase {
     servos.setPos(CSPMath.Hood.angleToSet(angle));
   }
 
-  public void formulaAngle() {
-    setAngle(sensors.formulaAngle());
+  /**
+   * Finds the correct angle for the shooter for the current zone's RPM.
+   * @return Hood angle. degrees.
+   */
+  public double formulaAngle() {
+    double distance = sensors.getTurretHasTarget() ? sensors.getDistance() : CSPMath.findHypotenuse(drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS, drivetrain.getPose().getY());
+
+    return distance > Constants.Shooter.MAX_DISTANCE ? Constants.Shooter.IDLE_VEL : 
+    distance < Constants.Shooter.CLOSE_SHOOTING_DIST ? CSPMath.Shooter.closeFormulaAngle(distance) : 
+      distance < Constants.Shooter.MID_SHOOTING_DIST ? CSPMath.Shooter.midFormulaAngle(distance) :
+                                                       CSPMath.Shooter.farFormulaAngle(distance);
+  }
+
+  public void setFormulaAngle() {
+    setAngle(formulaAngle());
   }
 
   /**
@@ -90,6 +106,6 @@ public class Hood extends SubsystemBase {
   }
 
   public boolean isAimed() {
-    return getPos() - sensors.formulaAngle() == 0.0;
+    return getPos() - formulaAngle() == 0.0;
   }
 }

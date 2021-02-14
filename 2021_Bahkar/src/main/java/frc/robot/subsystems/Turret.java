@@ -22,6 +22,7 @@ import frc.robot.Constants;
 public class Turret extends SubsystemBase {
 
   Sensors sensors;
+  Drivetrain drivetrain;
 
   // Motor control components.
   CANSparkMax turretMotor = new CANSparkMax(22, MotorType.kBrushless);
@@ -34,13 +35,15 @@ public class Turret extends SubsystemBase {
   /**
    * Creates a new Turret.
    */
-  public Turret(Sensors sensors) {
+  public Turret(Sensors sensors, Drivetrain drivetrain) {
     this.sensors = sensors;
 
     motorInits();
     resetEncoders(); //added this to be in line with other subsystems, if stuff mess up here then remove 
 
     shuffle = new Notifier(() -> updateShuffleboard());
+
+    this.drivetrain = drivetrain;
   }
 
   @Override
@@ -83,11 +86,11 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-  * Sets turret motor to given percentage [-1.0, 1.0].
+  * Sets turret motor to given percentage [-1.0, 1.0]. Will not allow turret to spin past the software limit
   * @param percent The goal percentage to set the turret motor to.
   */
   public void set(double percent) {
-    turretMotor.set(percent);
+    turretMotor.set(getPosition() < Constants.Turret.MAX_ANG && getPosition() > Constants.Turret.MIN_ANG ? percent : percent > 0.0 ? percent : 0.0);
   }
 
   /**
@@ -104,11 +107,13 @@ public class Turret extends SubsystemBase {
    * @param cont whether to continue tracking or stop.
    */
   public void trackTarget(boolean cont) {
-    double angle = sensors.getTurretHorizontalAngle();
-    double offset = sensors.getTurretOffset();
+    double angle = sensors.getTurretHasTarget() ? sensors.getTurretHorizontalAngle() : getPosition() +
+      (sensors.getFusedHeading() - Math.toDegrees(
+      Math.atan2(drivetrain.getPose().getY(), drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS)));
+    double offset = sensors.getTurretHasTarget() ? sensors.getTurretOffset() : 0.0;
     double power = pid.calculate(angle - offset, 0.0);
     
-    set(power);
+    set(cont ? power : 0.0);
   }
   
   /**
