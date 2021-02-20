@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  CANSparkMax intakeMotor = new CANSparkMax(21, MotorType.kBrushless);
+  CANSparkMax intakeMotor = new CANSparkMax(41, MotorType.kBrushless);
   CANEncoder intakeEncoder = intakeMotor.getEncoder();
   Solenoid piston = new Solenoid(0);
 

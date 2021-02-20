@@ -19,7 +19,9 @@ import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
 import frc.robot.commands.hood.DashAngle;
+import frc.robot.commands.hood.DashPosition;
 import frc.robot.commands.hopper.SpinHopper;
+import frc.robot.commands.shooter.DashShooterPower;
 import frc.robot.commands.shooter.DashVelocity;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
@@ -46,39 +48,39 @@ public class RobotContainer {
 
   // Create the subsystems; Sensors first to be fed into each of the others.
   private Sensors sensors;
-  private Drivetrain drivetrain;
+  // private Drivetrain drivetrain;
   private Turret turret;
   private Hopper hopper;
   private Intake intake;
   private Shooter shooter;
   private Hood hood;
-  private LEDPanel ledPanel;
+  // private LEDPanel ledPanel;
 
   // Subsystem Regulation
-  private TempManager tempManager = new TempManager(drivetrain, shooter, turret, hopper, intake);
-  private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
+  // private TempManager tempManager = new TempManager(drivetrain, shooter,
+  // turret, hopper, intake);
+  // private BrownoutProtection bop = new BrownoutProtection(drivetrain, turret);
 
   // Input devices
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
   ButtonBox bBox = new ButtonBox(2);
-  
+
   // Auto chooser initialization
-  private final SendableChooser<CspSequentialCommandGroup> autoChooser =
-    new SendableChooser<CspSequentialCommandGroup>();
+  private final SendableChooser<CspSequentialCommandGroup> autoChooser = new SendableChooser<CspSequentialCommandGroup>();
 
   /**
-   * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(LEDPanel ledPanel) {
     ledPanel = new LEDPanel(2);
-    sensors = new Sensors(ledPanel);
-    drivetrain = new Drivetrain(sensors);
-    turret = new Turret(sensors, drivetrain);
+    // sensors = new Sensors(ledPanel);
+    // drivetrain = new Drivetrain(sensors);
+    turret = new Turret(sensors/* , drivetrain */);
     hopper = new Hopper(sensors);
     intake = new Intake();
     shooter = new Shooter(sensors);
-    hood = new Hood(sensors, drivetrain);
+    hood = new Hood(sensors/* , drivetrain */);
 
     setDefaultCommands();
     configureButtonBindings();
@@ -89,21 +91,21 @@ public class RobotContainer {
    * @return TempManager object.
    */
   public TempManager getTempManager() {
-    return tempManager;
+    return null; // tempManager;
   }
 
   /**
    * @return BrownoutProtection object.
    */
   public BrownoutProtection getBrownoutProtection() {
-    return bop;
+    return null; // bop;
   }
 
   /**
    * Ends Notifier threads which feed the NetworkTables.
    */
   public void closeNotifiers() {
-    drivetrain.closeNotifier();
+    // drivetrain.closeNotifier();
     hood.closeNotifier();
     sensors.closeNotifier();
     shooter.closeNotifier();
@@ -114,7 +116,7 @@ public class RobotContainer {
    * Begins the Notifier threads which feed the NetworkTables.
    */
   public void openNotifiers() {
-    drivetrain.openNotifier();
+    // drivetrain.openNotifier();
     hood.openNotifier();
     sensors.openNotifier();
     shooter.openNotifier();
@@ -125,16 +127,16 @@ public class RobotContainer {
    * Method which assigns default commands to different subsystems.
    */
   private void setDefaultCommands() {
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.drive(
-        pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight), pilot.getBumper(Hand.kRight)),
-        drivetrain
-    ));
-    hood.setDefaultCommand(new DashAngle(hood));
-    shooter.setDefaultCommand(new DashVelocity(shooter));
+    /*
+     * drivetrain.setDefaultCommand(new RunCommand( () -> drivetrain.drive(
+     * pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight),
+     * pilot.getBumper(Hand.kRight)), drivetrain ));
+     */
+    shooter.setDefaultCommand(new DashShooterPower(shooter));
     turret.setDefaultCommand(new TurretPower(turret, 0.0));
     intake.setDefaultCommand(new SpinIntake(intake, 0.0));
     hopper.setDefaultCommand(new SpinHopper(hopper, 0.0));
+    hood.setDefaultCommand(new DashPosition(hood, true));
   }
 
   /**
@@ -153,6 +155,7 @@ public class RobotContainer {
 
     // Relative referenced intake command.
     pilot.getRbButtonObj().whenPressed(new InstantCommand(() -> intake.toggle()));
+
 
     /*
     Copilot commands follow:
@@ -192,6 +195,9 @@ public class RobotContainer {
 
     // Drivetrain command.
     SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
+
+    //Hood command.
+    SmartDashboard.putData("Set Hood", new DashAngle(hood, true));
   }
 
   private void putChooser() {

@@ -121,8 +121,8 @@ public class CSPFalcon extends TalonFX{
         return countsToRPM(this.getSelectedSensorVelocity());
     }
 
-    private double RPMToCounts(double rpm) {
-        return (rpm / 600.0) * Constants.Robot.FALCON_ENCODER_TICKS;
+    private int RPMToCounts(double rpm) {
+        return (int) Math.round((rpm / 600.0) * Constants.Robot.FALCON_ENCODER_TICKS);
     }
 
     private double countsToRPM(double counts) {

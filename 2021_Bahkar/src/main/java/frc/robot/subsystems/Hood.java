@@ -16,24 +16,24 @@ import frc.robot.utils.components.DualServos;
 import frc.robot.utils.components.LinearActuator;
 
 public class Hood extends SubsystemBase {
-  DualServos servos = new DualServos(new LinearActuator(0), new LinearActuator(1));
+  DualServos servos = new DualServos(new LinearActuator(7), new LinearActuator(8));
 
   Sensors sensors;
-  Drivetrain drivetrain;
+  //Drivetrain drivetrain;
 
   Notifier shuffle;
 
   /**
    * Creates a new Hood.
    */
-  public Hood(Sensors sensors, Drivetrain drivetrain) {
+  public Hood(Sensors sensors/*, Drivetrain drivetrain*/) {
     SmartDashboard.putNumber("Set Hood Position", 0.0);
     SmartDashboard.putNumber("Set Hood Angle", 0.0);
 
     shuffle = new Notifier(() -> updateShuffleboard());
 
     this.sensors = sensors;
-    this.drivetrain = drivetrain;
+    //this.drivetrain = drivetrain;
   }
 
   @Override
@@ -74,7 +74,7 @@ public class Hood extends SubsystemBase {
    * @return Hood angle. degrees.
    */
   public double formulaAngle() {
-    double distance = sensors.getTurretHasTarget() ? sensors.getDistance() : CSPMath.findHypotenuse(drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS, drivetrain.getPose().getY());
+    double distance = sensors.getTurretHasTarget() ? sensors.getDistance() : sensors.getDistance(); //CSPMath.findHypotenuse(drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS, drivetrain.getPose().getY());
 
     return distance > Constants.Shooter.MAX_DISTANCE ? Constants.Shooter.IDLE_VEL : 
     distance < Constants.Shooter.CLOSE_SHOOTING_DIST ? CSPMath.Hood.closeFormulaAngle(distance) : 

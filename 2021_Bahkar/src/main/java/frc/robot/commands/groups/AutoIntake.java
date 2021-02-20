@@ -23,7 +23,7 @@ public class AutoIntake extends ParallelCommandGroup {
   public AutoIntake(Intake intake, Hopper hopper, boolean cont) {
     addCommands(
       new AutoHopper(hopper, cont),
-      new SpinIntake(intake, 0.75, cont)
+      new SpinIntake(intake, 0.25, cont)
     );
   }
 }
