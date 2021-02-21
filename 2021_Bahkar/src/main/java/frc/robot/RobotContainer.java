@@ -20,6 +20,7 @@ import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
 import frc.robot.commands.hood.DashAngle;
 import frc.robot.commands.hood.DashPosition;
+import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.shooter.DashShooterPower;
 import frc.robot.commands.shooter.DashVelocity;
@@ -48,7 +49,7 @@ public class RobotContainer {
 
   // Create the subsystems; Sensors first to be fed into each of the others.
   private Sensors sensors;
-  // private Drivetrain drivetrain;
+  private Drivetrain drivetrain;
   private Turret turret;
   private Hopper hopper;
   private Intake intake;
@@ -74,13 +75,13 @@ public class RobotContainer {
    */
   public RobotContainer(LEDPanel ledPanel) {
     ledPanel = new LEDPanel(2);
-    // sensors = new Sensors(ledPanel);
-    // drivetrain = new Drivetrain(sensors);
-    turret = new Turret(sensors/* , drivetrain */);
+    sensors = new Sensors(/*ledPanel*/);
+    drivetrain = new Drivetrain(sensors);
+    turret = new Turret(sensors, drivetrain);
     hopper = new Hopper(sensors);
     intake = new Intake();
     shooter = new Shooter(sensors);
-    hood = new Hood(sensors/* , drivetrain */);
+    hood = new Hood(sensors, drivetrain);
 
     setDefaultCommands();
     configureButtonBindings();
@@ -127,16 +128,14 @@ public class RobotContainer {
    * Method which assigns default commands to different subsystems.
    */
   private void setDefaultCommands() {
-    /*
-     * drivetrain.setDefaultCommand(new RunCommand( () -> drivetrain.drive(
-     * pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight),
-     * pilot.getBumper(Hand.kRight)), drivetrain ));
-     */
-    shooter.setDefaultCommand(new DashShooterPower(shooter));
+    
+    drivetrain.setDefaultCommand(new RunCommand( () -> drivetrain.drive(
+    pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight),
+    pilot.getBumper(Hand.kRight)), drivetrain ));
+     
     turret.setDefaultCommand(new TurretPower(turret, 0.0));
     intake.setDefaultCommand(new SpinIntake(intake, 0.0));
     hopper.setDefaultCommand(new SpinHopper(hopper, 0.0));
-    hood.setDefaultCommand(new DashPosition(hood, true));
   }
 
   /**
@@ -196,8 +195,18 @@ public class RobotContainer {
     // Drivetrain command.
     SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
 
+    // Shooter commands.
+    SmartDashboard.putData("Shooter PIDF", new RunCommand(() -> shooter.setPIDF(
+      SmartDashboard.getNumber("Shooter kP", 0.325),
+      SmartDashboard.getNumber("Shooter kI", 0.0),
+      SmartDashboard.getNumber("Shooter kD", 0.25),
+      SmartDashboard.getNumber("Shooter kF", 0.0)
+      )));
+    SmartDashboard.putData("Set Velocity", new RunCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)), shooter));
+
+
     //Hood command.
-    SmartDashboard.putData("Set Hood", new DashAngle(hood, true));
+    SmartDashboard.putData("Set Hood", new DashPosition(hood));
   }
 
   private void putChooser() {

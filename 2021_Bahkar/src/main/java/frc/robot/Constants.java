@@ -69,7 +69,7 @@ public final class Constants {
         public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2.0))); //Limit for the skew against the 3-point goal (Degrees).
         public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0); //Diameter of the power cell (Meters).
         public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0); //Diameter of the inner port (Meters).
-        public static final double GOAL_X_POS = 0.0;
+        public static final double GOAL_X_POS = 2.38;
     }
 
     public final class Turret{
@@ -115,9 +115,9 @@ public final class Constants {
         public static final double AUX_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(AUX_WHEEL_RADIUS, 2.0);
         public static final double AUX_WHEEL_RATIO = 4.0 / 3.0;
 
-        public static final double kP = 0.0;
+        public static final double kP = 0.325;
         public static final double kI = 0.0;
-        public static final double kD = 0.0;
+        public static final double kD = 0.55;
         public static final double kF = 1023.0 / ((Robot.FALCON_MAX_VEL / 600.0) * Robot.FALCON_ENCODER_TICKS);
 
         public static final double RAMP_RATE = 1.5;

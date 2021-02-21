@@ -31,7 +31,7 @@ public class AutoHopper extends CommandBase {
   @Override
   public void execute() {
     if (false/*hopper.getBeam()*/) hopper.set(0.0);
-    else hopper.set(0.35);
+    else hopper.set(0.75);
   }
 
   // Called once the command ends or is interrupted.

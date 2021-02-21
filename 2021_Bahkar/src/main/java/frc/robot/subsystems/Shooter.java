@@ -28,7 +28,13 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Set Shooter Power", 0.0);
         SmartDashboard.putNumber("Set Initial Velocty", 0.0);
 
+        SmartDashboard.putNumber("Shooter kP", 0.325);
+        SmartDashboard.putNumber("Shooter kI", 0.0);
+        SmartDashboard.putNumber("Shooter kD", 0.55);
+        SmartDashboard.putNumber("Shooter kF", 0.0);
+
         shuffle = new Notifier(() -> updateShuffleboard());
+        shuffle.startPeriodic(0.1);
 
         this.sensors = sensors;
     }
@@ -54,6 +60,10 @@ public class Shooter extends SubsystemBase {
     private void updateShuffleboard() {
         SmartDashboard.putNumber("Shooter Speed", getLowerVelocity());
         SmartDashboard.putNumber("Initial Velocity", CSPMath.Shooter.rpmToVel(getLowerVelocity()));
+    }
+
+    public void setPIDF(double kP, double kI, double kD, double kF) {
+        lowerShooterMotor.setPIDF(kP, kI, kD, kF);
     }
 
     public void closeNotifier() {

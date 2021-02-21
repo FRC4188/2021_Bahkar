@@ -7,7 +7,16 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
+
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -18,12 +27,33 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.CSPMath;
+import frc.robot.utils.components.CspController;
 import frc.robot.utils.components.WheelDrive;
+import frc.robot.utils.components.CspController.Scaling;
 
 public class Drivetrain extends SubsystemBase {
+
+  // device initialization
+  private final TalonFX LFAngleMotor = new TalonFX(1);
+  private final TalonFX LFSpeedMotor = new TalonFX(2);
+  private final CANCoder LFangleEncoder = new CANCoder(21);
+
+  private final TalonFX RFAngleMotor = new TalonFX(3);
+  private final TalonFX RFSpeedMotor = new TalonFX(4);
+  private final CANCoder RFangleEncoder = new CANCoder(22);
+
+  private final TalonFX LRAngleMotor = new TalonFX(5);
+  private final TalonFX LRSpeedMotor = new TalonFX(6);
+  private final CANCoder LRangleEncoder = new CANCoder(23);
+
+  private final TalonFX RRAngleMotor = new TalonFX(7);
+  private final TalonFX RRSpeedMotor = new TalonFX(8);
+  private final CANCoder RRangleEncoder = new CANCoder(24);
 
   private Sensors sensors;
 
@@ -59,13 +89,12 @@ public class Drivetrain extends SubsystemBase {
 
   //Create initial odometry
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
-  new Rotation2d(), new Pose2d(0.0, 0.0, new Rotation2d()));
+  new Rotation2d(), new Pose2d());
 
   //Create a configuration for trajectories.
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
   private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(CentAccel);
 
-  Notifier shuffle;
   /**
    * Creates a new Drivetrain.
    */
@@ -79,7 +108,12 @@ public class Drivetrain extends SubsystemBase {
 
     rotationPID.enableContinuousInput(-180, 180);
 
-    shuffle = new Notifier(() -> updateShuffleboard());
+    SmartDashboard.putNumber("Correction P", 0.0);
+    SmartDashboard.putNumber("Correction I", 0.0);
+    SmartDashboard.putNumber("Correction D", 0.0);
+
+    Notifier shuffle = new Notifier(() -> updateShuffleboard());
+    shuffle.startPeriodic(0.1);
   }
 
   /**
@@ -90,7 +124,8 @@ public class Drivetrain extends SubsystemBase {
     updateOdometry();
   }
 
-  double Angle;
+  boolean lastNoAngle = true;
+  double Angle = 0.0;
   /**
    * Method for field oriented drive using kinematics
    * @param pilot CspController of the pilot
@@ -106,15 +141,18 @@ public class Drivetrain extends SubsystemBase {
     double currentAngle = sensors.getFusedHeading();
 
     double angleCorrection = 0.0;
+    /*
+    if (Rotation != 0) Angle = currentAngle;
+    else if (Speed != 0 || Strafe != 0) rotationPID.calculate(currentAngle, Angle);
+*/
 
-    // When moving in plane without rotation, holds the angle at the last set angle.
     if(rotation != 0){
       Angle = currentAngle;
-    }else{
+      }else{
       if( Math.abs(speed) > 0 || Math.abs(strafe) > 0 ){
-        angleCorrection = rotationPID.calculate(currentAngle, Angle);
+      angleCorrection = rotationPID.calculate(currentAngle, Angle);
       }
-    }
+      }
 
     boolean fieldRelative = !FO;
 
@@ -152,11 +190,6 @@ public class Drivetrain extends SubsystemBase {
     RightRear.convertedDrive(backRight);
   }
 
-  /**
-   * Set the angle and speed of the swerve modules (for testing and diagnostic purposes).
-   * @param angle The angle to set the modules to in degrees within the range [-180.0, 180.0].
-   * @param velocity The speed to set the motor to in meters per second.
-   */
   public void rawSet(double angle, double velocity) {
     LeftFront.setAngle(angle);
     RightFront.setAngle(angle);
@@ -183,40 +216,44 @@ public class Drivetrain extends SubsystemBase {
     odometry.update(Rotation2d.fromDegrees(sensors.getFusedHeading()), frontLeft, frontRight, backLeft, backRight);
   }
 
-  /**
-   * Reset the odometry to a given position.
-   * @param pose Position to set the odometry to.
-   */
   public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(pose, Rotation2d.fromDegrees(sensors.getFusedHeading()));
+    odometry.resetPosition(pose, sensors.getRotation2d());
   }
 
-  /**
+  /**p
    * Publish value from the drivetrain to the Smart Dashboard.
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
-    SmartDashboard.putString("ChassisSpeeds", getChassisSpeeds().toString());
-    SmartDashboard.putNumber("Total Speed", Math.sqrt( Math.pow(getChassisSpeeds().vxMetersPerSecond, 2) + Math.pow(getChassisSpeeds().vyMetersPerSecond, 2)));
+    SmartDashboard.putNumber("Left Front Angle", LeftFront.getAbsoluteAngle());
   }
 
-  public void closeNotifier() {
-    shuffle.close();
-  }
-
-  public void openNotifier() {
-    shuffle.startPeriodic(0.1);
-  }
-
-  /**
-   * Reset all of the swerve modules' encoders.
-   */
   public void reset() {
     LeftFront.resetEncoders();
     RightFront.resetEncoders();
     LeftRear.resetEncoders();
     RightRear.resetEncoders();
   }
+
+
+  public void setPIDs() {
+    rotationPID.setPID(SmartDashboard.getNumber("Correction P", 0.0), SmartDashboard.getNumber("Correction I", 0.0), SmartDashboard.getNumber("Correction D", 0.0));
+  }
+
+  private void setAnglePID(double kP, double kI, double kD) {
+    LeftFront.setAnglePID(kP, kI, kD);
+    RightFront.setAnglePID(kP, kI, kD);
+    LeftRear.setAnglePID(kP, kI, kD);
+    RightRear.setAnglePID(kP, kI, kD);
+  }
+
+  private void setSpeedPID(double kP, double kI, double kD) {
+    LeftFront.setSpeedPID(kP, kI, kD);
+    RightFront.setSpeedPID(kP, kI, kD);
+    LeftRear.setSpeedPID(kP, kI, kD);
+    RightRear.setSpeedPID(kP, kI, kD);
+  }
+
 
   /**
    * The object for converting motion to individual motor states.
@@ -239,7 +276,7 @@ public class Drivetrain extends SubsystemBase {
    * @return the ChassisSpeeds object.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return kinematics.toChassisSpeeds(getModuleStates());
+    return speeds;
   }
 
   /**
@@ -266,67 +303,28 @@ public class Drivetrain extends SubsystemBase {
     return trajectoryConfig;
   }
 
-  /**
-   * Return the Front-Left speed motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getFrontLeftDriveTemp() {
-    return LeftFront.getSpeedTemp();
+    return LFSpeedMotor.getTemperature();
   }
-
-  /**
-   * Return the Front-Left angle motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getFrontLeftAngleTemp() {
-    return LeftFront.getAngleTemp();
+    return LFAngleMotor.getTemperature();
   }
-
-  /**
-   * Return the Front-Right speed motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getFrontRightDriveTemp() {
-    return RightFront.getSpeedTemp();
+    return RFSpeedMotor.getTemperature();
   }
-
-  /**
-   * Return the Front-Right angle motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getFrontRightAngleTemp() {
-    return RightFront.getAngleTemp();
+    return RFAngleMotor.getTemperature();
   }
-
-  /**
-   * Return the Rear-Left speed motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getRearLeftDriveTemp() {
-    return LeftRear.getSpeedTemp();
+    return LRSpeedMotor.getTemperature();
   }
-
-  /**
-   * Return the Rear-Left angle motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getRearLeftAngleTemp() {
-    return LeftRear.getAngleTemp();
+    return LRAngleMotor.getTemperature();
   }
-
-  /**
-   * Return the Rear-Right speed motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getRearRightDriveTemp() {
-    return RightRear.getSpeedTemp();
+    return RRSpeedMotor.getTemperature();
   }
-  
-  /**
-   * Return the Rear-Right angle motor's temperature.
-   * @return Temperature of the motor in celsius.
-   */
   public double getRearRightAngleTemp() {
-    return RightRear.getAngleTemp();
+    return RRAngleMotor.getTemperature();
   }
 }

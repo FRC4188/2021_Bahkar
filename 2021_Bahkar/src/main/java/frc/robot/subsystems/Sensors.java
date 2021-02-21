@@ -38,13 +38,13 @@ public class Sensors extends SubsystemBase {
   private final DigitalInput topBeamB = new DigitalInput(1);
 
   Notifier shuffle;
-  LEDPanel ledPanel;
+  //LEDPanel ledPanel;
 
   /**
    * Creates a new Sensors.
    */
-  public Sensors(LEDPanel ledPanel) {
-    this.ledPanel = ledPanel;
+  public Sensors(/*LEDPanel ledPanel*/) {
+    //this.ledPanel = ledPanel;
 
     setupPigeon();
     setupGyro();

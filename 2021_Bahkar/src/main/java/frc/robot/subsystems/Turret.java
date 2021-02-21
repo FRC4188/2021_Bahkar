@@ -22,7 +22,7 @@ import frc.robot.Constants;
 public class Turret extends SubsystemBase {
 
   Sensors sensors;
-  //Drivetrain drivetrain;
+  Drivetrain drivetrain;
 
   // Motor control components.
   CANSparkMax turretMotor = new CANSparkMax(42, MotorType.kBrushless);
@@ -35,7 +35,7 @@ public class Turret extends SubsystemBase {
   /**
    * Creates a new Turret.
    */
-  public Turret(Sensors sensors /*Drivetrain drivetrain*/) {
+  public Turret(Sensors sensors, Drivetrain drivetrain) {
     this.sensors = sensors;
 
     motorInits();
@@ -43,7 +43,7 @@ public class Turret extends SubsystemBase {
 
     shuffle = new Notifier(() -> updateShuffleboard());
 
-    //this.drivetrain = drivetrain;
+    this.drivetrain = drivetrain;
   }
 
   @Override
@@ -107,9 +107,9 @@ public class Turret extends SubsystemBase {
    * @param cont whether to continue tracking or stop.
    */
   public void trackTarget(boolean cont) {
-    double angle = sensors.getTurretHasTarget() ? sensors.getTurretHorizontalAngle() : sensors.getTurretHorizontalAngle() /*getPosition() +
+    double angle = sensors.getTurretHasTarget() ? sensors.getTurretHorizontalAngle() : getPosition() +
       (sensors.getFusedHeading() - Math.toDegrees(
-      Math.atan2(drivetrain.getPose().getY(), drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS)))*/;
+      Math.atan2(drivetrain.getPose().getY(), drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS)));
     double offset = sensors.getTurretHasTarget() ? sensors.getTurretOffset() : 0.0;
     double power = pid.calculate(angle - offset, 0.0);
     
