@@ -196,7 +196,7 @@ public class RobotContainer {
     SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
 
     // Shooter commands.
-    SmartDashboard.putData("Shooter PIDF", new RunCommand(() -> shooter.setPIDF(
+    SmartDashboard.putData("Shooter PIDF", new InstantCommand(() -> shooter.setPIDF(
       SmartDashboard.getNumber("Shooter kP", 0.325),
       SmartDashboard.getNumber("Shooter kI", 0.0),
       SmartDashboard.getNumber("Shooter kD", 0.25),

@@ -97,15 +97,17 @@ public final class Constants {
         public static final double MAX_VELOCITY = 5750.0;
         public static final double IDLE_VEL = 3500.0;
 
-        public static final double MAX_DISTANCE = 9.7;
-        public static final double FAR_SHOOTING_VEL = 15.6;
-        public static final double MID_SHOOTING_VEL = 11.3; 
-        public static final double MID_SHOOTING_DIST = 5.1; // Shoot with the mid velocity if the distance is between this and the short distance. in meters.
-        public static final double CLOSE_SHOOTING_VEL = 8.55;
-        public static final double CLOSE_SHOOTING_DIST = 2.6; // Shoot with the short velocity if the distance is less than this. In meters.
+        public static final double MAX_DISTANCE = 12.2;
 
-        public static final double MAX_IDEAL_DISTANCE = 5.36;
-        public static final double MIN_IDEAL_DISTANCE = 1.83;
+        public static final double HAIL_MARY_VEL = 5750.0;
+        public static final double[] HAIL_MARY_RANGE = {8.5, MAX_DISTANCE};
+        public static final double FAR_SHOOTING_VEL = 5000.0;
+        public static final double[] FAR_SHOOTING_RANGE = {5.0, 9.0};
+        public static final double MID_SHOOTING_VEL = 3750.0; 
+        public static final double[] MID_SHOOTING_RANGE = {2.0, 5.5}; // Shoot with the mid velocity if the distance is between this and the short distance. in meters.
+        public static final double CLOSE_SHOOTING_VEL = 3000.0;
+        public static final double[] CLOSE_SHOOTING_RANGE = {0.5, 2.5}; // Shoot with the short velocity if the distance is less than this. In meters.
+
         public static final double SHOOTING_TOLERANCE = 250.0;
 
         public static final double MAIN_WHEEL_RADIUS = Units.inchesToMeters(2.0);

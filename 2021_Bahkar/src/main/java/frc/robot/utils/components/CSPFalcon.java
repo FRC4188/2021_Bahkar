@@ -69,8 +69,8 @@ public class CSPFalcon extends TalonFX{
      * @param maxAcceleration Maximum acceleration in delta RPM.
      */
     public void setConstraints(double maxVelocity, double maxAcceleration) {
-        this.configMotionCruiseVelocity(RPMToCounts(maxVelocity));
-        this.configMotionAcceleration(RPMToCounts(maxAcceleration));
+        this.configMotionCruiseVelocity((int) Math.round(RPMToCounts(maxVelocity)));
+        this.configMotionAcceleration((int) Math.round(RPMToCounts(maxAcceleration)));
     }
 
     /**
@@ -121,12 +121,12 @@ public class CSPFalcon extends TalonFX{
         return countsToRPM(this.getSelectedSensorVelocity());
     }
 
-    private int RPMToCounts(double rpm) {
-        return (int) Math.round((rpm / 600.0) * Constants.Robot.FALCON_ENCODER_TICKS);
+    private double RPMToCounts(double rpm) {
+        return rpm * (Constants.Robot.FALCON_ENCODER_TICKS / 600.0);
     }
 
     private double countsToRPM(double counts) {
-        return (counts / Constants.Robot.FALCON_ENCODER_TICKS) / 600.0;
+        return (counts * 600.0) / Constants.Robot.FALCON_ENCODER_TICKS;
     }
 
     private double degreesToCounts(double degrees) {
