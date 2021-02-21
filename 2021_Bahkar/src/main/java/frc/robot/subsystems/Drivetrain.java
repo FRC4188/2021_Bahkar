@@ -32,9 +32,9 @@ import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstr
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.CSPMath;
-import frc.robot.utils.CspController;
-import frc.robot.utils.WheelDrive;
-import frc.robot.utils.CspController.Scaling;
+import frc.robot.utils.components.CspController;
+import frc.robot.utils.components.WheelDrive;
+import frc.robot.utils.components.CspController.Scaling;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -58,10 +58,10 @@ public class Drivetrain extends SubsystemBase {
   private Sensors sensors;
 
   //Initialize WheelDrive objects
-  private WheelDrive LeftFront = new WheelDrive(LFAngleMotor, LFSpeedMotor, LFangleEncoder, 73.125, false, false);
-  private WheelDrive RightFront = new WheelDrive(RFAngleMotor, RFSpeedMotor, RFangleEncoder, 172.7, true, false);
-  private WheelDrive LeftRear = new WheelDrive(LRAngleMotor, LRSpeedMotor, LRangleEncoder, 4.3, false, true);
-  private WheelDrive RightRear = new WheelDrive(RRAngleMotor, RRSpeedMotor, RRangleEncoder, 158.37, true, true);
+  private WheelDrive LeftFront = new WheelDrive(1, 2, 21, 73.125, false, false);
+  private WheelDrive RightFront = new WheelDrive(3, 4, 22, 172.7, true, false);
+  private WheelDrive LeftRear = new WheelDrive(5, 6, 23, 4.3, false, true);
+  private WheelDrive RightRear = new WheelDrive(7, 8, 24, 158.37, true, true);
 
   //Put together swerve module positions relative to the center of the robot.
   private Translation2d FrontLeftLocation = new Translation2d((Constants.Robot.A_LENGTH/2), -(Constants.Robot.A_WIDTH/2));
@@ -90,6 +90,10 @@ public class Drivetrain extends SubsystemBase {
   //Create initial odometry
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
   new Rotation2d(), new Pose2d());
+
+  //Create a configuration for trajectories.
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -120,7 +124,8 @@ public class Drivetrain extends SubsystemBase {
     updateOdometry();
   }
 
-  double Angle;
+  boolean lastNoAngle = true;
+  double Angle = 0.0;
   /**
    * Method for field oriented drive using kinematics
    * @param pilot CspController of the pilot
@@ -143,11 +148,11 @@ public class Drivetrain extends SubsystemBase {
 
     if(rotation != 0){
       Angle = currentAngle;
-    }else{
+      }else{
       if( Math.abs(speed) > 0 || Math.abs(strafe) > 0 ){
-        angleCorrection = rotationPID.calculate(currentAngle, Angle);
+      angleCorrection = rotationPID.calculate(currentAngle, Angle);
       }
-    }
+      }
 
     boolean fieldRelative = !FO;
 
@@ -212,7 +217,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(pose, Rotation2d.fromDegrees(sensors.getFusedHeading()));
+    odometry.resetPosition(pose, sensors.getRotation2d());
   }
 
   /**p
@@ -220,6 +225,7 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
+    SmartDashboard.putNumber("Left Front Angle", LeftFront.getAbsoluteAngle());
   }
 
   public void reset() {
@@ -255,6 +261,10 @@ public class Drivetrain extends SubsystemBase {
    */
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
+  }
+
+  public TrajectoryConfig getConfig() {
+    return trajectoryConfig;
   }
 
   /**

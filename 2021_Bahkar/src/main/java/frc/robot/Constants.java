@@ -20,19 +20,24 @@ import edu.wpi.first.wpilibj.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class Robot {
-        public static final double MIN_VOLTS = 6.0; //Minimum available battery volts before things get really bad.
-        public static final double MID_VOLTS = 8.0; //Battery voltage where we start getting a little bit worried.
-
-        public static final double A_LENGTH = 0.59055; // Axel length (Meters).
-        public static final double A_WIDTH = 0.48895; // Axel width (Meters).
-        public static final double A_CROSSLENGTH = Math.sqrt(Math.pow(A_LENGTH, 2) + Math.pow(A_WIDTH, 2)); // Axel crosslength (Meters).
-
-        public static final double FIVEFIFTY_MAX_TEMP = 50.0; //Maximum preferred temperature of a neo550 (Celsius.)
-        public static final double FALCON_ENCODER_TICKS = 2048; //Counts per revolution of the Falcon 500 motor.
-        public static final double FALCON_MAX_TEMP = 50.0; //Max temperature of Falcon 500 (Celsius).
+    public final class Physics {
+        public static final double ACCEL_GRAVITY = 9.8;
     }
-    
+
+    public final class Robot {
+            public static final double MIN_VOLTS = 6.0; //Minimum available battery volts before things get really bad.
+            public static final double MID_VOLTS = 8.0; //Battery voltage where we start getting a little bit worried.
+
+            public static final double A_LENGTH = 0.59055; // Axel length (Meters).
+            public static final double A_WIDTH = 0.48895; // Axel width (Meters).
+            public final double A_CROSSLENGTH = Math.sqrt(Math.pow(A_LENGTH, 2.0) + Math.pow(A_WIDTH, 2.0));
+
+            public static final double FIVEFIFTY_MAX_TEMP = 50.0; //Maximum preferred temperature of a neo550 (Celsius.)
+            public static final double FALCON_ENCODER_TICKS = 2048.0; //Counts per revolution of the Falcon 500 motor.
+            public static final double FALCON_MAX_TEMP = 50.0; //Max temperature of Falcon 500 (Celsius).
+            public static final double FALCON_MAX_VEL = 6380.0;
+        }
+
     public final class Drive {
         public static final double DRIVE_GEARING = 6.54545454545; //Gear ratio of the drive motor.
         public static final double WHEEL_DIAMETER = 0.1016;//Units.inchesToMeters(4); //Diameter of the drive wheels (Meters).
@@ -40,15 +45,15 @@ public final class Constants {
         public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; //Rotations per meter of the drive wheels.
         public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * Robot.FALCON_ENCODER_TICKS; //Encoder counts per revolution of the drive wheel.
         public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; //Encoder ticks per meter of the drive wheels.
-    
+
         public static final double ANGLE_GEARING = 12.0;
-        public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * Robot.FALCON_ENCODER_TICKS) / 360;
-    
+        public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * Robot.FALCON_ENCODER_TICKS) / 360.0;
+
         public static final double MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
         public static final double MAX_VELOCITY = 5.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
         public static final double MAX_ACCEL = 10.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
         public static final double MAX_CACCEL = 8.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
-        public static final double MAX_RADIANS = 3 * Math.PI; //Maximum rotational velocity (Radians per Second).
+        public static final double MAX_RADIANS = 3.0 * Math.PI; //Maximum rotational velocity (Radians per Second).
 
         public final class Auto {
             public static final double MAX_VELOCITY = 1.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
@@ -57,26 +62,82 @@ public final class Constants {
         }
     }
 
-    public static final class Field {
-        public static final double GOAL_HEIGHT = Units.feetToMeters(8.1875); //Height of the goal from the ground (Meters).
-        public static final double THREE_POINT_DEPTH = Units.feetToMeters(2 + (5.25/12.0)); //Depth of the 3 point goal inside the 2 point goal (Meters).
-        public static final double PORT_SIDE_LENGTH = Units.feetToMeters(2.5 / (2 * Math.sin(Math.toRadians(60)))); //Side length of the port (Meters).
-        public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2))); //Limit for the skew against the 3-point goal (Degrees).
+    public final static class Field {
+        public static final double GOAL_HEIGHT = Units.feetToMeters(8.0 + 2.25/12.0); //Height of the goal from the ground (Meters).
+        public static final double PORT_HEIGHT = 2.5; //feet
+        public static final double THREE_POINT_DEPTH = Units.feetToMeters(2.0 + (5.25/12.0)); //Depth of the 3 point goal inside the 2 point goal (Meters).
+        public static final double PORT_SIDE_LENGTH = Units.feetToMeters(PORT_HEIGHT / (2.0 * Math.sin(Math.toRadians(60.0)))); //Side length of the port (Meters).
+        public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2.0))); //Limit for the skew against the 3-point goal (Degrees).
+        public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0); //Diameter of the power cell (Meters).
+        public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0); //Diameter of the inner port (Meters).
+        public static final double GOAL_X_POS = 2.38;
     }
 
-    public static final class Turret {
+    public final class Turret{
         public static final double LIMELIGHT_HEIGHT = 1.0; //Height fromt the ground of the limelight (Meters).
         public static final double MOUNTING_ANGLE = 0.0; //Verticle angle which the limelight sits at on the turret (Degrees).
 
-        public static final double MAX_VELOCITY = 11000; // rpm
-        public static final double MAX_ACCELERATION = 22000; // rpm / sec
-        public static final double GEAR_RATIO = 300; // angular velocity will be divided by this amount
+        public static final double MAX_VELOCITY = 11000.0; // rpm
+        public static final double MAX_ACCELERATION = 22000.0; // rpm per sec
+
+        public static final double GEAR_RATIO = 300.0; // angular velocity will be divided by this amount
         public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO; // degrees
-        public static final double MAX_ANG = 370; //Farthest bound of the turret's roation in degrees.
-        public static final double MIN_ANG = -10; //Other farthers bound of the turret's rotation in degrees.
+
+        public static final double kP = 2.4e-2;
+        public static final double kI = 3.0e-3;
+        public static final double kD = 1.0e-2;
+
+        public static final double POS_TOLERANCE = 0.1; // degrees
+        public static final double VEL_TOLERANCE = 2.0; // degrees per second
+
+        public static final double MAX_ANG = 370.0; //Farthest bound of the turret's roation in degrees.
+        public static final double MIN_ANG = -10.0; //Other farthest bound of the turret's rotation in degrees.
     }
 
     public static final class Shooter {
-        public static final double CRUISING_VELOCITY = 3000;
+        public static final double MAX_VELOCITY = 5750.0;
+        public static final double IDLE_VEL = 3500.0;
+
+        public static final double MAX_DISTANCE = 12.2;
+
+        public static final double HAIL_MARY_VEL = 5750.0;
+        public static final double[] HAIL_MARY_RANGE = {8.5, MAX_DISTANCE};
+        public static final double FAR_SHOOTING_VEL = 5000.0;
+        public static final double[] FAR_SHOOTING_RANGE = {5.0, 9.0};
+        public static final double MID_SHOOTING_VEL = 3750.0; 
+        public static final double[] MID_SHOOTING_RANGE = {2.0, 5.5}; // Shoot with the mid velocity if the distance is between this and the short distance. in meters.
+        public static final double CLOSE_SHOOTING_VEL = 3000.0;
+        public static final double[] CLOSE_SHOOTING_RANGE = {0.5, 2.5}; // Shoot with the short velocity if the distance is less than this. In meters.
+
+        public static final double SHOOTING_TOLERANCE = 250.0;
+
+        public static final double MAIN_WHEEL_RADIUS = Units.inchesToMeters(2.0);
+        public static final double MAIN_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(MAIN_WHEEL_RADIUS, 2.0);
+        public static final double MAIN_WHEEL_RATIO = 1.0;
+        public static final double AUX_WHEEL_RADIUS = Units.inchesToMeters(0.75);
+        public static final double AUX_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(AUX_WHEEL_RADIUS, 2.0);
+        public static final double AUX_WHEEL_RATIO = 4.0 / 3.0;
+
+        public static final double kP = 0.325;
+        public static final double kI = 0.0;
+        public static final double kD = 0.55;
+        public static final double kF = 1023.0 / ((Robot.FALCON_MAX_VEL / 600.0) * Robot.FALCON_ENCODER_TICKS);
+
+        public static final double RAMP_RATE = 1.5;
+        public static final double SHOOTER_HEIGHT = Units.feetToMeters(2.0);
+        public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
+    }
+
+    public static final class Hood {
+        public static final double SERVO_STROKE = 100.0; // milimeters
+        public static final double AXEL_TO_SERVO = Math.cos(Math.toDegrees(16.7)) * 117.2972; // The length from the hood's pivot to the where the servo standoff is part of the line perpendicular to the arm. in milimeters.
+        public static final double PIVOT_CIRCUMFERENCE = 2 * Math.PI * AXEL_TO_SERVO;
+        public static final double INITIAL_ANGLE = 77.473085; // The angle the shooter starts at. degrees.
+        public static final double MIN_ANGLE = 26.475460;
+    }
+
+    public final class Intake {
+        public static final double FLOP_RATE = 0.5;
+        public static final double RAMP_RATE = 0.5;
     }
 }

@@ -5,24 +5,31 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.turret;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Intake;
 
-public class FollowTarget extends CommandBase {
-  Turret turret;
-
-  boolean cont;
+public class SpinIntake extends CommandBase {
+  private Intake intake;
+  private double power;
+  private boolean cont;
 
   /**
-   * Creates a new FollowTarget.
+   * Creates a new SpinIntake.
    */
-  public FollowTarget(Turret turret, boolean cont) {
-    addRequirements(turret);
-
-    this.turret = turret;
+  public SpinIntake(Intake intake, double power, boolean cont) {
+    addRequirements(intake);
+    this.intake = intake;
+    this.power = power;
     this.cont = cont;
+  }
+
+  /**
+   * Creates a new SpinIntake which will run until interrupted.
+   */
+  public SpinIntake(Intake intake, double power) {
+    this(intake, power, true);
   }
 
   // Called when the command is initially scheduled.
@@ -33,13 +40,13 @@ public class FollowTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.trackTarget(cont);
+    intake.set(power);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    turret.trackTarget(false);
+    intake.set(0.0);
   }
 
   // Returns true when the command should end.

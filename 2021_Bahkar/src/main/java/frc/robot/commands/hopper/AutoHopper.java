@@ -5,23 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.turret;
+package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Hopper;
 
-public class FollowTarget extends CommandBase {
-  Turret turret;
-
+public class AutoHopper extends CommandBase {
+  Hopper hopper;
   boolean cont;
-
   /**
-   * Creates a new FollowTarget.
+   * Creates a new AutoHopper.
    */
-  public FollowTarget(Turret turret, boolean cont) {
-    addRequirements(turret);
-
-    this.turret = turret;
+  public AutoHopper(Hopper hopper, boolean cont) {
+    addRequirements(hopper);
+    this.hopper = hopper;
     this.cont = cont;
   }
 
@@ -33,13 +30,14 @@ public class FollowTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.trackTarget(cont);
+    if (false/*hopper.getBeam()*/) hopper.set(0.0);
+    else hopper.set(0.75);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    turret.trackTarget(false);
+    hopper.set(0.0);
   }
 
   // Returns true when the command should end.

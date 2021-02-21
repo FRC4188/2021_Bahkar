@@ -5,24 +5,31 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.turret;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.Constants;
+import frc.robot.subsystems.Shooter;
 
-public class FollowTarget extends CommandBase {
-  Turret turret;
+public class SpinShooter extends CommandBase {
+  private Shooter shooter;
+  private double velocity;
 
-  boolean cont;
+  private boolean cont;
+  /**
+   * Creates a new SpinShooter.
+   */
+  public SpinShooter(Shooter shooter, double velocity, boolean cont) {
+    addRequirements(shooter);
+    this.velocity = velocity;
+    this.cont = cont;
+  }
 
   /**
-   * Creates a new FollowTarget.
+   * Creates a new SpinShooter which will run until interrupted.
    */
-  public FollowTarget(Turret turret, boolean cont) {
-    addRequirements(turret);
-
-    this.turret = turret;
-    this.cont = cont;
+  public SpinShooter(Shooter shooter, double velocity) {
+    this(shooter, velocity, true);
   }
 
   // Called when the command is initially scheduled.
@@ -33,13 +40,13 @@ public class FollowTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.trackTarget(cont);
+    shooter.setVelocity(velocity);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    turret.trackTarget(false);
+    shooter.setVelocity(Constants.Shooter.IDLE_VEL);
   }
 
   // Returns true when the command should end.
