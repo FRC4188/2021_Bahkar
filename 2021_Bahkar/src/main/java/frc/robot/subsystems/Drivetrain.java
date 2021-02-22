@@ -7,16 +7,7 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
-
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -27,33 +18,12 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.CSPMath;
-import frc.robot.utils.components.CspController;
 import frc.robot.utils.components.WheelDrive;
-import frc.robot.utils.components.CspController.Scaling;
 
 public class Drivetrain extends SubsystemBase {
-
-  // device initialization
-  private final TalonFX LFAngleMotor = new TalonFX(1);
-  private final TalonFX LFSpeedMotor = new TalonFX(2);
-  private final CANCoder LFangleEncoder = new CANCoder(21);
-
-  private final TalonFX RFAngleMotor = new TalonFX(3);
-  private final TalonFX RFSpeedMotor = new TalonFX(4);
-  private final CANCoder RFangleEncoder = new CANCoder(22);
-
-  private final TalonFX LRAngleMotor = new TalonFX(5);
-  private final TalonFX LRSpeedMotor = new TalonFX(6);
-  private final CANCoder LRangleEncoder = new CANCoder(23);
-
-  private final TalonFX RRAngleMotor = new TalonFX(7);
-  private final TalonFX RRSpeedMotor = new TalonFX(8);
-  private final CANCoder RRangleEncoder = new CANCoder(24);
 
   private Sensors sensors;
 
@@ -300,27 +270,27 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getFrontLeftDriveTemp() {
-    return LFSpeedMotor.getTemperature();
+    return LeftFront.getSpeedTemp();
   }
   public double getFrontLeftAngleTemp() {
-    return LFAngleMotor.getTemperature();
+    return LeftFront.getAngleTemp();
   }
   public double getFrontRightDriveTemp() {
-    return RFSpeedMotor.getTemperature();
+    return RightFront.getSpeedTemp();
   }
   public double getFrontRightAngleTemp() {
-    return RFAngleMotor.getTemperature();
+    return RightFront.getAngleTemp();
   }
   public double getRearLeftDriveTemp() {
-    return LRSpeedMotor.getTemperature();
+    return LeftRear.getSpeedTemp();
   }
   public double getRearLeftAngleTemp() {
-    return LRAngleMotor.getTemperature();
+    return LeftRear.getAngleTemp();
   }
   public double getRearRightDriveTemp() {
-    return RRSpeedMotor.getTemperature();
+    return RightRear.getSpeedTemp();
   }
   public double getRearRightAngleTemp() {
-    return RRAngleMotor.getTemperature();
+    return RightRear.getAngleTemp();
   }
 }

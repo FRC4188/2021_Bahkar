@@ -10,16 +10,14 @@ import java.util.List;
 public class Waypoints {
 
     private final List<Pose2d> poses;
-    private final boolean isReversed;
 
     /**
      * Constructs a Waypoints object.
      * @param poses - poses to store in object.
      * @param isReversed - whether or not the poses are intended to be followed in reverse.
      */
-    public Waypoints(List<Pose2d> poses, boolean isReversed) {
+    public Waypoints(List<Pose2d> poses) {
         this.poses = poses;
-        this.isReversed = isReversed;
     }
 
     /**
@@ -28,12 +26,4 @@ public class Waypoints {
     public List<Pose2d> getPoses() {
         return poses;
     }
-
-    /**
-     * Returns whether or not the poses are intended to be followed in reverse.
-     */
-    public boolean isReversed() {
-        return isReversed;
-    }
-
 }

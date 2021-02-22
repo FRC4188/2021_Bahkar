@@ -43,7 +43,7 @@ def process(frame):
 
     product = [frame, (cx, cy), hasTarget]
     
-    return frame
+    return product
 
 while(True):
     # Capture frame-by-frame
@@ -52,7 +52,9 @@ while(True):
     product = process(frame)
 
     # Display the resulting frame
-    cv2.imshow('frame', product)
+    cv2.imshow('frame', product[0])
+    print(str(product[1][0]) + ", " + str(product[1][1]))
+
 
     k = cv2.waitKey(5) & 0xFF
     if k == 27:

@@ -41,15 +41,15 @@ public class TempManager {
         StringBuilder sb = new StringBuilder();
 
         // check all the motors and append their temperature to the String Builder.
-        //if (drivetrain.getFrontLeftDriveTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FLDrive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
-        //if (drivetrain.getFrontLeftAngleTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FLAngle: " + drivetrain.getFrontLeftAngleTemp() + ", ");
-        /*if (drivetrain.getFrontRightDriveTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FRDrive: " + drivetrain.getFrontRightDriveTemp() + ", ");
+        if (drivetrain.getFrontLeftDriveTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FLDrive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
+        if (drivetrain.getFrontLeftAngleTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FLAngle: " + drivetrain.getFrontLeftAngleTemp() + ", ");
+        if (drivetrain.getFrontRightDriveTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FRDrive: " + drivetrain.getFrontRightDriveTemp() + ", ");
         if (drivetrain.getFrontRightAngleTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("FRAngle: " + drivetrain.getFrontRightAngleTemp() + ", ");
         if (drivetrain.getRearLeftDriveTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("RLDrive: " + drivetrain.getRearLeftDriveTemp() + ", ");
         if (drivetrain.getRearLeftAngleTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("RLAngle: " + drivetrain.getRearLeftAngleTemp() + ", ");
         if (drivetrain.getRearRightDriveTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("RRDrive: " + drivetrain.getRearRightDriveTemp() + ", ");
         if (drivetrain.getRearRightAngleTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("RRAngle: " + drivetrain.getRearRightAngleTemp() + ", ");
-        */if (shooter.getUpperTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("Upper Shooter: " + shooter.getUpperTemp() + ",");
+        if (shooter.getUpperTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("Upper Shooter: " + shooter.getUpperTemp() + ",");
         if (shooter.getLowerTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("Lower Shooter: " + shooter.getLowerTemp() + ",");
         if (turret.getTemp() > Constants.Robot.FIVEFIFTY_MAX_TEMP) sb.append("Turret: " + turret.getTemp());
         if (hopper.getTemp() > Constants.Robot.FALCON_MAX_TEMP) sb.append("Hopper: " + hopper.getTemp() + ",");

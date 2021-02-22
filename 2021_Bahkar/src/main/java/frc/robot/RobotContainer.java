@@ -16,14 +16,11 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.intake.ClearDeadzone;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.drive.trajectorycontrol.CSPSwerveControl;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
-import frc.robot.commands.hood.DashAngle;
 import frc.robot.commands.hood.DashPosition;
-import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
-import frc.robot.commands.shooter.DashShooterPower;
-import frc.robot.commands.shooter.DashVelocity;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
 import frc.robot.commands.turret.TurretToZero;
@@ -39,6 +36,7 @@ import frc.robot.utils.BrownoutProtection;
 import frc.robot.utils.components.ButtonBox;
 import frc.robot.utils.components.CspController;
 import frc.robot.utils.components.LEDPanel;
+import frc.robot.utils.trajectory.TrajectoryList;
 import frc.robot.utils.CspSequentialCommandGroup;
 import frc.robot.utils.TempManager;
 
@@ -182,8 +180,8 @@ public class RobotContainer {
     bBox.getButton3Obj().whenPressed(new ClearDeadzone(intake));
 
     // NetworkTable commands.
-    bBox.getButton4Obj().whenPressed(new RunCommand(() -> openNotifiers()));
-    bBox.getButton5Obj().whenPressed(new RunCommand(() -> closeNotifiers()));
+    bBox.getButton4Obj().whenPressed(new InstantCommand(() -> openNotifiers()));
+    bBox.getButton5Obj().whenPressed(new InstantCommand(() -> closeNotifiers()));
 
     /*
     SmartDashboard commands follow:
@@ -202,7 +200,7 @@ public class RobotContainer {
       SmartDashboard.getNumber("Shooter kD", 0.25),
       SmartDashboard.getNumber("Shooter kF", 0.0)
       )));
-    SmartDashboard.putData("Set Velocity", new RunCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)), shooter));
+    SmartDashboard.putData("Set Velocity", new InstantCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)), shooter));
 
 
     //Hood command.
@@ -211,6 +209,7 @@ public class RobotContainer {
 
   private void putChooser() {
     autoChooser.addOption("Do Nothing", null);
+    autoChooser.addOption("CSPSwerveTrajectory test", new CSPSwerveControl(drivetrain, TrajectoryList.TestAuto.motionOne));
   }
 
   /**

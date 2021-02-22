@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.utils.CSPMath;
 import frc.robot.utils.components.DualServos;
 import frc.robot.utils.components.LinearActuator;

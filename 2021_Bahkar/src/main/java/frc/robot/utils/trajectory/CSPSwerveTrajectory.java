@@ -2,51 +2,41 @@ package frc.robot.utils.trajectory;
 
 import java.util.List;
 
-import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
-import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
 
 public class CSPSwerveTrajectory {
-    Trajectory trajectory;
-    List<Double> times;
-    List<Double> angles;
+    List<Trajectory> trajectories;
+    List<Rotation2d> angles;
     
-        
+    public CSPSwerveTrajectory(Waypoints[] waypointsArray, Rotation2d[] angleArray) {
+        CentripetalAccelerationConstraint centrip = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
+        TrajectoryConfig config = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(centrip);
 
-
-    public CSPSwerveTrajectory(Trajectory trajectory, List<Double> times, List<Double> angles) {
-        this.trajectory = trajectory;
-        this.times = times;
-        this.angles = angles;
-    }
-
-    public CSPSwerveTrajectory(List<Pose2d> poses, List<Double> times, List<Double> angles) {
-        TrajectoryConfig config = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL)
-        .addConstraint(
-            new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL));
-        
-        this.trajectory = TrajectoryGenerator.generateTrajectory(poses, config);
-        this.times = times;
-        this.angles = angles;
+        for (Waypoints path : waypointsArray) {
+            trajectories.add(TrajectoryGenerator.generateTrajectory(path.getPoses(), config));
+        }
+        for (Rotation2d angle : angleArray) {
+            angles.add(angle);
+        }
     }
 
     /**
      * @return the trajectory
      */
-    public Trajectory getTrajectory() {
-        return trajectory;
+    public Trajectory getTrajectory(int index) {
+        return trajectories.get(index);
     }
 
-    public List<Double> getTimes() {
-        return times;
+    public Rotation2d getAngle(int index) {
+        return angles.get(index);
     }
 
-    public List<Double> getAngles() {
-        return angles;
+    public int getLength() {
+        return trajectories.size();
     }
 }

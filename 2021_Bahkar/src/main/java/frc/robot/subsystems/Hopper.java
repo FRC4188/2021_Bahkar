@@ -41,7 +41,7 @@ public class Hopper extends SubsystemBase {
    * @return True if the beam is unbroken, false if the beam is broken.
    */
   public boolean getBeam() {
-    return true;//(sensors.getTopBeam());
+    return sensors.getTopBeam();
   }
 
   /**

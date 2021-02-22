@@ -47,7 +47,7 @@ def process(frame):
 
 NetworkTables.initialize(server='10.41.88.2')
 
-table = NetworkTables.getTable("BallTracker")
+table = NetworkTables.create("BallTracker")
 
 cs = CameraServer.getInstance()
 

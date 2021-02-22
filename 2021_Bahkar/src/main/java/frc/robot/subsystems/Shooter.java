@@ -54,6 +54,8 @@ public class Shooter extends SubsystemBase {
         lowerShooterMotor.setInverted(true);
         upperShooterMotor.setInverted(InvertType.FollowMaster);
 
+        lowerShooterMotor.configClosedloopRamp(Constants.Shooter.RAMP_RATE);
+
         upperShooterMotor.follow(lowerShooterMotor);
     }
 

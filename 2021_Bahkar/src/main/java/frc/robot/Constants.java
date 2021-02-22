@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 
 /**
@@ -123,7 +121,7 @@ public final class Constants {
         public static final double kD = 0.55;
         public static final double kF = 1023.0 / ((Robot.FALCON_MAX_VEL / 600.0) * Robot.FALCON_ENCODER_TICKS);
 
-        public static final double RAMP_RATE = 1.5;
+        public static final double RAMP_RATE = 0.75;
         public static final double SHOOTER_HEIGHT = Units.feetToMeters(2.0);
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
     }
@@ -132,8 +130,8 @@ public final class Constants {
         public static final double SERVO_STROKE = 100.0; // milimeters
         public static final double AXEL_TO_SERVO = Math.cos(Math.toDegrees(16.7)) * 117.2972; // The length from the hood's pivot to the where the servo standoff is part of the line perpendicular to the arm. in milimeters.
         public static final double PIVOT_CIRCUMFERENCE = 2 * Math.PI * AXEL_TO_SERVO;
-        public static final double INITIAL_ANGLE = 77.473085; // The angle the shooter starts at. degrees.
-        public static final double MIN_ANGLE = 26.475460;
+        public static final double INITIAL_ANGLE = 77.473085; // The angle the shooter starts at (Degrees).
+        public static final double MIN_ANGLE = 26.475460; // The minimum angle the shooter can point to (Degrees).
     }
 
     public final class Intake {
