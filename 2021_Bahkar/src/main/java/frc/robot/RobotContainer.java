@@ -202,7 +202,7 @@ public class RobotContainer {
       SmartDashboard.getNumber("Shooter kD", 0.25),
       SmartDashboard.getNumber("Shooter kF", 0.0)
       )));
-    SmartDashboard.putData("Set Velocity", new RunCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)), shooter));
+    SmartDashboard.putData("Set Velocity", new DashVelocity(shooter));
 
 
     //Hood command.

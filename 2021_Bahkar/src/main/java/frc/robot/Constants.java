@@ -139,4 +139,46 @@ public final class Constants {
         public static final double FLOP_RATE = 0.5;
         public static final double RAMP_RATE = 0.5;
     }
+
+    public final class LCDPanel {
+        public static final int CLEAR_DISPLAY = 0x01;
+        public static final int RETURN_HOME = 0x02;
+        public static final int ENTRY_MODE_SET = 0x04;
+        public static final int DISPLAY_CONTROL = 0x08;
+        public static final int CURSOR_SHIFT = 0x10;
+        public static final int FUNCTION_SET = 0x20;
+        public static final int SETCGRAMADDR = 0x40;
+        public static final int SETDDRAMADDR = 0x80;
+
+        public static final int DISPLAY_ON = 0x04;
+        public static final int DISPLAY_OFF = 0x00;
+        public static final int CURSOR_ON = 0x02;
+        public static final int CURSOR_OFF = 0x00;
+        public static final int BLINK_ON = 0x01;
+        public static final int BLINK_OFF = 0x00;
+
+        // public static final int ENTRYRIGHT = 0x00;
+        public static final int ENTRY_LEFT = 0x02;
+        public static final int ENTRY_SHIFT_INCREMENT = 0x01;
+        public static final int ENTRY_SHIFT_DECREMENT = 0x00;
+
+        public static final int DISPLAY_MOVE = 0x08;
+        public static final int CURSOR_MOVE = 0x00;
+        public static final int MOVE_RIGHT = 0x04;
+        public static final int MOVE_LEFT = 0x00;
+
+        public static final int EIGHT_BIT_MODE = 0x10;
+        public static final int FOUR_BIT_MODE = 0x00;
+        public static final int TWO_LINE = 0x08;	//for 2 or 4 lines actually
+        public static final int ONE_LINE = 0x00;
+        public static final int FIVExTEN_DOTS = 0x04;	//seldom used!!
+        public static final int FIVExEIGHT_DOTS = 0x00;	
+
+        public static final int BACKLIGHT_ON = 0x08;
+        public static final int BACKLIGHT_OFF = 0x00;
+
+        public static final int ENABLE = 0b00000100; 
+        public static final int READ_WRITE = 0b00000010;
+        public static final int REGISTER_SELECT = 0b00000001; 
+    }
 }
