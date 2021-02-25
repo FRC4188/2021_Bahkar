@@ -34,10 +34,10 @@ public class Drivetrain extends SubsystemBase {
   private WheelDrive RightRear = new WheelDrive(7, 8, 24, 158.37, true, true);
 
   //Put together swerve module positions relative to the center of the robot.
-  private Translation2d FrontLeftLocation = new Translation2d((Constants.Robot.A_LENGTH/2), -(Constants.Robot.A_WIDTH/2));
-  private Translation2d FrontRightLocation = new Translation2d((Constants.Robot.A_LENGTH/2), (Constants.Robot.A_WIDTH/2));
-  private Translation2d BackLeftLocation = new Translation2d(-(Constants.Robot.A_LENGTH/2), -(Constants.Robot.A_WIDTH/2));
-  private Translation2d BackRightLocation = new Translation2d(-(Constants.Robot.A_LENGTH/2), (Constants.Robot.A_WIDTH/2));
+  private Translation2d FrontLeftLocation = new Translation2d((Constants.robot.A_LENGTH/2), -(Constants.robot.A_WIDTH/2));
+  private Translation2d FrontRightLocation = new Translation2d((Constants.robot.A_LENGTH/2), (Constants.robot.A_WIDTH/2));
+  private Translation2d BackLeftLocation = new Translation2d(-(Constants.robot.A_LENGTH/2), -(Constants.robot.A_WIDTH/2));
+  private Translation2d BackRightLocation = new Translation2d(-(Constants.robot.A_LENGTH/2), (Constants.robot.A_WIDTH/2));
 
   //Create a kinematics withe the swerve module positions
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -62,8 +62,8 @@ public class Drivetrain extends SubsystemBase {
   new Rotation2d(), new Pose2d());
 
   //Create a configuration for trajectories.
-  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(CentAccel);
+  private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.drive.auto.MAX_CACCEL);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -103,10 +103,10 @@ public class Drivetrain extends SubsystemBase {
   public void drive (double speed, double strafe, double rotation, boolean FO) {
 
     //Convert controller input to M/S and Rad/S
-    speed = speed * Constants.Drive.MAX_VELOCITY;
-    strafe = strafe * Constants.Drive.MAX_VELOCITY;
+    speed = speed * Constants.drive.MAX_VELOCITY;
+    strafe = strafe * Constants.drive.MAX_VELOCITY;
 
-    rotation = rotation * Constants.Drive.MAX_RADIANS;
+    rotation = rotation * Constants.drive.MAX_RADIANS;
 
     double currentAngle = sensors.getFusedHeading();
 

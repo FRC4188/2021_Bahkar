@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -44,17 +45,17 @@ public class Shooter extends SubsystemBase {
     }
 
     public void motorInits() {
-        lowerShooterMotor.setPIDF(Constants.Shooter.kP, Constants.Shooter.kI, Constants.Shooter.kD, Constants.Shooter.kF);
+        lowerShooterMotor.setPIDF(Constants.shooter.kP, Constants.shooter.kI, Constants.shooter.kD, Constants.shooter.kF);
 
         lowerShooterMotor.setNeutralMode(NeutralMode.Coast);
 
-        lowerShooterMotor.configClosedloopRamp(Constants.Shooter.RAMP_RATE);
-        lowerShooterMotor.configOpenloopRamp(Constants.Shooter.RAMP_RATE);
+        lowerShooterMotor.configClosedloopRamp(Constants.shooter.RAMP_RATE);
+        lowerShooterMotor.configOpenloopRamp(Constants.shooter.RAMP_RATE);
 
         lowerShooterMotor.setInverted(true);
         upperShooterMotor.setInverted(InvertType.FollowMaster);
 
-        lowerShooterMotor.configClosedloopRamp(Constants.Shooter.RAMP_RATE);
+        lowerShooterMotor.configClosedloopRamp(Constants.shooter.RAMP_RATE);
 
         upperShooterMotor.follow(lowerShooterMotor);
     }
@@ -62,6 +63,7 @@ public class Shooter extends SubsystemBase {
     private void updateShuffleboard() {
         SmartDashboard.putNumber("Shooter Speed", getLowerVelocity());
         SmartDashboard.putNumber("Initial Velocity", CSPMath.Shooter.rpmToVel(getLowerVelocity()));
+        SmartDashboard.putNumber("Shooter Voltage", lowerShooterMotor.get() * RobotController.getInputVoltage());
     }
 
     public void setPIDF(double kP, double kI, double kD, double kF) {

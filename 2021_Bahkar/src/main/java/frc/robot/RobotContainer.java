@@ -126,7 +126,6 @@ public class RobotContainer {
    * Method which assigns default commands to different subsystems.
    */
   private void setDefaultCommands() {
-    
     drivetrain.setDefaultCommand(new RunCommand( () -> drivetrain.drive(
     pilot.getY(Hand.kLeft), pilot.getX(Hand.kLeft), pilot.getX(Hand.kRight),
     pilot.getBumper(Hand.kRight)), drivetrain ));
@@ -201,6 +200,7 @@ public class RobotContainer {
       SmartDashboard.getNumber("Shooter kF", 0.0)
       )));
     SmartDashboard.putData("Set Velocity", new InstantCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)), shooter));
+    SmartDashboard.putData("Set Power", new InstantCommand(() -> shooter.setPercentage(SmartDashboard.getNumber("Set Shooter Power", 0.0)), shooter));
 
 
     //Hood command.

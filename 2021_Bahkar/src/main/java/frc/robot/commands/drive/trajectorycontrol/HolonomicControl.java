@@ -27,7 +27,7 @@ public class HolonomicControl extends CommandBase {
 
   Timer timer = new Timer();
 
-  ProfiledPIDController thetaController = new ProfiledPIDController(1.0, 0.0, 0.0, new Constraints(Constants.Drive.MAX_RADIANS, 2.0 * Constants.Drive.MAX_RADIANS));
+  ProfiledPIDController thetaController = new ProfiledPIDController(1.0, 0.0, 0.0, new Constraints(Constants.drive.MAX_RADIANS, 2.0 * Constants.drive.MAX_RADIANS));
   PIDController xController = new PIDController(1.0, 0.0, 0.0);
   PIDController yController = new PIDController(1.0, 0.0, 0.0);
 

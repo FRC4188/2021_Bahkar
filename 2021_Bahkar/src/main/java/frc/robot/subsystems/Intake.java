@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
   public void motorInits() {
     intakeMotor.setInverted(true);
     intakeMotor.setIdleMode(IdleMode.kCoast);
-    intakeMotor.setOpenLoopRampRate(Constants.Intake.RAMP_RATE);
+    intakeMotor.setOpenLoopRampRate(Constants.intake.RAMP_RATE);
   }
 
   /**

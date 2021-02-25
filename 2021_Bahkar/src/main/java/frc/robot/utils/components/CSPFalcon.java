@@ -2,7 +2,7 @@ package frc.robot.utils.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import frc.robot.Constants;
 
@@ -10,7 +10,7 @@ import frc.robot.Constants;
  * Class extending TalonFX handling encoder conversions and motor configuration.
  * Simplifies and cleans code.
  */
-public class CSPFalcon extends TalonFX{
+public class CSPFalcon extends WPI_TalonFX{
 
     /**
      * Constructs a CSPFalcon object to control a Falcon500 motor.
@@ -122,18 +122,18 @@ public class CSPFalcon extends TalonFX{
     }
 
     private double RPMToCounts(double rpm) {
-        return rpm * (Constants.Robot.FALCON_ENCODER_TICKS / 600.0);
+        return rpm * (Constants.robot.FALCON_ENCODER_TICKS / 600.0);
     }
 
     private double countsToRPM(double counts) {
-        return (counts * 600.0) / Constants.Robot.FALCON_ENCODER_TICKS;
+        return (counts * 600.0) / Constants.robot.FALCON_ENCODER_TICKS;
     }
 
     private double degreesToCounts(double degrees) {
-        return (degrees / 360) * Constants.Robot.FALCON_ENCODER_TICKS;
+        return (degrees / 360) * Constants.robot.FALCON_ENCODER_TICKS;
     }
 
     private double countsToDegrees(double counts) {
-        return (counts / Constants.Robot.FALCON_ENCODER_TICKS) * 360;
+        return (counts / Constants.robot.FALCON_ENCODER_TICKS) * 360;
     }
 }

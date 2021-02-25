@@ -223,7 +223,7 @@ public class Sensors extends SubsystemBase {
    * @return Real angle from the target to the limelight, with correction.
    */
   public double getTurretVerticleAngle() {
-    return getTurretXYAngle()[1] + Constants.Turret.MOUNTING_ANGLE;
+    return getTurretXYAngle()[1] + Constants.turret.MOUNTING_ANGLE;
   }
 
   /**
@@ -239,7 +239,7 @@ public class Sensors extends SubsystemBase {
    * @return distance from the robot to the goal in meters.
    */
   public double getDistance() {
-    return getTurretHasTarget() ? (Constants.Field.GOAL_HEIGHT - Constants.Turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle()))) : 0.0;
+    return getTurretHasTarget() ? (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle()))) : 0.0;
   }
 
   /**
@@ -247,14 +247,14 @@ public class Sensors extends SubsystemBase {
    * @return The angle offset from the target to aim at in order to hit inner port.
    */
   public double getTurretOffset() {
-    double a = Constants.Field.THREE_POINT_DEPTH;
+    double a = Constants.field.THREE_POINT_DEPTH;
     double b = getDistance();
     double c = getTurretSkew();
 
 
     double offset =  Math.toDegrees(Math.asin((a * Math.sin(Math.toRadians(180-c))) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - (2 * a * b * Math.cos(Math.toRadians(180 - c))))));
     double check = c - offset;
-    if (check <= Constants.Field.OFFSET_LIMIT) return offset;
+    if (check <= Constants.field.OFFSET_LIMIT) return offset;
     else return 0.0;
   }
 

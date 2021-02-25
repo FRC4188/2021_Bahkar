@@ -27,8 +27,8 @@ public class Turret extends SubsystemBase {
   // Motor control components.
   CANSparkMax turretMotor = new CANSparkMax(42, MotorType.kBrushless);
   CANEncoder turretEncoder = new CANEncoder(turretMotor);
-  ProfiledPIDController pid = new ProfiledPIDController(Constants.Turret.kP, Constants.Turret.kI, Constants.Turret.kD,
-                              new Constraints(Constants.Turret.MAX_VELOCITY, Constants.Turret.MAX_ACCELERATION));
+  ProfiledPIDController pid = new ProfiledPIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD,
+                              new Constraints(Constants.turret.MAX_VELOCITY, Constants.turret.MAX_ACCELERATION));
 
   Notifier shuffle;
 
@@ -55,9 +55,9 @@ public class Turret extends SubsystemBase {
   * Configures gains for Spark closed loop controller.
   */
   private void motorInits() {
-    pid.setP(Constants.Turret.kP);
-    pid.setI(Constants.Turret.kI);
-    pid.setD(Constants.Turret.kD);
+    pid.setP(Constants.turret.kP);
+    pid.setI(Constants.turret.kI);
+    pid.setD(Constants.turret.kD);
 
     turretMotor.setClosedLoopRampRate(0.0);
     turretMotor.setOpenLoopRampRate(0.5);
@@ -90,7 +90,7 @@ public class Turret extends SubsystemBase {
   * @param percent The goal percentage to set the turret motor to.
   */
   public void set(double percent) {
-    turretMotor.set(getPosition() < Constants.Turret.MAX_ANG && getPosition() > Constants.Turret.MIN_ANG ? percent : percent > 0.0 ? percent : 0.0);
+    turretMotor.set(getPosition() < Constants.turret.MAX_ANG && getPosition() > Constants.turret.MIN_ANG ? percent : percent > 0.0 ? percent : 0.0);
   }
 
   /**
@@ -98,7 +98,7 @@ public class Turret extends SubsystemBase {
    * @param angle Angle for the turret to move to.
    */
   public void setAngle(double angle) {
-      angle /= Constants.Turret.ENCODER_TO_DEGREES;
+      angle /= Constants.turret.ENCODER_TO_DEGREES;
       turretMotor.set(pid.calculate(turretEncoder.getPosition(), angle));
   }
 
@@ -109,7 +109,7 @@ public class Turret extends SubsystemBase {
   public void trackTarget(boolean cont) {
     double angle = sensors.getTurretHasTarget() ? sensors.getTurretHorizontalAngle() : getPosition() +
       (sensors.getFusedHeading() - Math.toDegrees(
-      Math.atan2(drivetrain.getPose().getY(), drivetrain.getPose().getX() - Constants.Field.GOAL_X_POS)));
+      Math.atan2(drivetrain.getPose().getY(), drivetrain.getPose().getX() - Constants.field.GOAL_Y_POS)));
     double offset = sensors.getTurretHasTarget() ? sensors.getTurretOffset() : 0.0;
     double power = pid.calculate(angle - offset, 0.0);
     
@@ -121,7 +121,7 @@ public class Turret extends SubsystemBase {
    * @return Degrees of the turret's current rotation.
    */
   public double getPosition() {
-    return turretEncoder.getPosition() * Constants.Turret.ENCODER_TO_DEGREES;
+    return turretEncoder.getPosition() * Constants.turret.ENCODER_TO_DEGREES;
   }
 
   /**
@@ -129,7 +129,7 @@ public class Turret extends SubsystemBase {
    * @return Velocity of the turret in degrees per second.
    */
   public double getVelocity() {
-      return turretEncoder.getVelocity() * Constants.Turret.ENCODER_TO_DEGREES / 60.0;
+      return turretEncoder.getVelocity() * Constants.turret.ENCODER_TO_DEGREES / 60.0;
   }
 
   public double getTemperature() {
@@ -151,7 +151,7 @@ public class Turret extends SubsystemBase {
    */
   public boolean isAimed() {
     double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset();
-    boolean aimed = (Math.abs(angle - turretEncoder.getPosition()) < Constants.Turret.POS_TOLERANCE) ? true : false;
+    boolean aimed = (Math.abs(angle - turretEncoder.getPosition()) < Constants.turret.POS_TOLERANCE) ? true : false;
     return aimed;
   }
 }

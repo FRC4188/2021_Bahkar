@@ -31,7 +31,7 @@ public class DashInitialVelocity extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setVelocity(Constants.Shooter.IDLE_VEL);
+    shooter.setVelocity(Constants.shooter.IDLE_VEL);
   }
 
   // Returns true when the command should end.

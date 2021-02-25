@@ -34,7 +34,7 @@ public class ClearDeadzone extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double current = timer.get() % (Constants.Intake.FLOP_RATE / 2);
+    double current = timer.get() % (Constants.intake.FLOP_RATE / 2);
   
     if (current < lastRef) {
       intake.toggle();

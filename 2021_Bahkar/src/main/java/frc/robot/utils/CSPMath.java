@@ -23,11 +23,11 @@ public final class CSPMath {
     public static class Shooter {
 
         public static double velToRPM(double velocity) {
-            return (120.0 * velocity) / ((Constants.Shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.Shooter.MAIN_WHEEL_RATIO) + (Constants.Shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.Shooter.AUX_WHEEL_RATIO));
+            return (120.0 * velocity) / ((Constants.shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.shooter.MAIN_WHEEL_RATIO) + (Constants.shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.shooter.AUX_WHEEL_RATIO));
         }
 
         public static double rpmToVel(double rpm) {
-            return (rpm * ((Constants.Shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.Shooter.MAIN_WHEEL_RATIO) + (Constants.Shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.Shooter.AUX_WHEEL_RATIO))) / 120.0;
+            return (rpm * ((Constants.shooter.MAIN_WHEEL_CIRCUMFERENCE / Constants.shooter.MAIN_WHEEL_RATIO) + (Constants.shooter.AUX_WHEEL_CIRCUMFERENCE / Constants.shooter.AUX_WHEEL_RATIO))) / 120.0;
         }
 
         public static double idealVelocityFormula(double distance) {
@@ -46,7 +46,7 @@ public final class CSPMath {
          * @return Servo set position in range [0.0, 1.0].
          */
         public static double angleToSet(double angle) {
-            return (-Constants.Hood.PIVOT_CIRCUMFERENCE * (angle - Constants.Hood.INITIAL_ANGLE)) / (360.0 * Constants.Hood.SERVO_STROKE);
+            return (-Constants.hood.PIVOT_CIRCUMFERENCE * (angle - Constants.hood.INITIAL_ANGLE)) / (360.0 * Constants.hood.SERVO_STROKE);
         }
 
         /**
@@ -55,7 +55,7 @@ public final class CSPMath {
          * @return Release angle. degrees.
          */
         public static double setToAngle(double position) {
-            return Constants.Hood.INITIAL_ANGLE - (360.0 * Constants.Hood.SERVO_STROKE * position) / Constants.Hood.PIVOT_CIRCUMFERENCE;
+            return Constants.hood.INITIAL_ANGLE - (360.0 * Constants.hood.SERVO_STROKE * position) / Constants.hood.PIVOT_CIRCUMFERENCE;
         }
         
         public static double closeFormulaAngle(double distance) {

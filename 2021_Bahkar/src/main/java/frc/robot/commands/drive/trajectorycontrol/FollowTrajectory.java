@@ -24,7 +24,7 @@ public class FollowTrajectory extends SwerveControllerCommand {
             drivetrain.getKinematics(),
             new PIDController(1.0, 0.0, 0.0),
             new PIDController(1.0, 0.0, 0.0),
-            new ProfiledPIDController(1.0, 0.0, 0.0, new Constraints(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL)),
+            new ProfiledPIDController(1.0, 0.0, 0.0, new Constraints(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL)),
             drivetrain::setModuleStates,
             drivetrain);
     }

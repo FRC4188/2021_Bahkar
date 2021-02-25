@@ -44,7 +44,7 @@ public class TurretAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(turret.getPosition() - angle) < Constants.Turret.POS_TOLERANCE
-           && Math.abs(turret.getVelocity()) < Constants.Turret.VEL_TOLERANCE;
+    return Math.abs(turret.getPosition() - angle) < Constants.turret.POS_TOLERANCE
+           && Math.abs(turret.getVelocity()) < Constants.turret.VEL_TOLERANCE;
   }
 }

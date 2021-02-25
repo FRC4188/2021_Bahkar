@@ -12,8 +12,8 @@ public class BrownoutProtection {
     Drivetrain drivetrain;
     Turret turret;
 
-    double min_volts = Constants.Robot.MIN_VOLTS;
-    double mid_volts = Constants.Robot.MID_VOLTS;
+    double min_volts = Constants.robot.MIN_VOLTS;
+    double mid_volts = Constants.robot.MID_VOLTS;
     
     public BrownoutProtection(Drivetrain drivetrain, Turret turret) {
         this.drivetrain = drivetrain;

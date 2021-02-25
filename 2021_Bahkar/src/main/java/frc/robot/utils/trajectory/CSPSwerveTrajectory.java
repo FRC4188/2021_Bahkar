@@ -14,8 +14,8 @@ public class CSPSwerveTrajectory {
     List<Rotation2d> angles;
     
     public CSPSwerveTrajectory(Waypoints[] waypointsArray, Rotation2d[] angleArray) {
-        CentripetalAccelerationConstraint centrip = new CentripetalAccelerationConstraint(Constants.Drive.Auto.MAX_CACCEL);
-        TrajectoryConfig config = new TrajectoryConfig(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL).addConstraint(centrip);
+        CentripetalAccelerationConstraint centrip = new CentripetalAccelerationConstraint(Constants.drive.auto.MAX_CACCEL);
+        TrajectoryConfig config = new TrajectoryConfig(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL).addConstraint(centrip);
 
         for (Waypoints path : waypointsArray) {
             trajectories.add(TrajectoryGenerator.generateTrajectory(path.getPoses(), config));

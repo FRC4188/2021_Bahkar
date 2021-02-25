@@ -79,7 +79,7 @@ public class WheelDrive {
     angleMotor.set(anglePID.calculate(currentAngle, state.angle.getDegrees()));
 
     // Convert M/S to RPM and set that as the velocity.
-    speedMotor.setVelocity(state.speedMetersPerSecond * Constants.Drive.DRIVE_ROTATIONS_PER_METER * 60.0);
+    speedMotor.setVelocity(state.speedMetersPerSecond * Constants.drive.DRIVE_ROTATIONS_PER_METER * 60.0);
   }
 
   /**
@@ -87,7 +87,7 @@ public class WheelDrive {
    * @return The updated module state with mesured rather than set values.
    */
   public SwerveModuleState updateModuleState() {
-    double speed = (speedMotor.getVelocity() / Constants.Drive.DRIVE_ROTATIONS_PER_METER) / 60;
+    double speed = (speedMotor.getVelocity() / Constants.drive.DRIVE_ROTATIONS_PER_METER) / 60;
     double angle = angleEncoder.getAbsolutePosition();
 
     return new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle)));
@@ -114,7 +114,7 @@ public class WheelDrive {
    * @param speed Target Velocity.
    */
   public void setVelocity(double speed) {
-    speedMotor.setVelocity(speed / (Constants.Drive.DRIVE_ROTATIONS_PER_METER * 60));
+    speedMotor.setVelocity(speed / (Constants.drive.DRIVE_ROTATIONS_PER_METER * 60));
   }
 
   /**
@@ -168,7 +168,7 @@ public class WheelDrive {
    * @return Measured meters per second.
    */
   public double getMS() {
-    return speedMotor.getVelocity() / (Constants.Drive.DRIVE_ROTATIONS_PER_METER * 60);
+    return speedMotor.getVelocity() / (Constants.drive.DRIVE_ROTATIONS_PER_METER * 60);
   }
 
   /**

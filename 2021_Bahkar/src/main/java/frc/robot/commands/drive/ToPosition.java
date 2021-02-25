@@ -20,9 +20,9 @@ public class ToPosition extends CommandBase {
 
   double x, y, Angle;
 
-  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.Drive.MAX_RADIANS, 2.0 * Constants.Drive.MAX_RADIANS));
-  ProfiledPIDController xController = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL));
-  ProfiledPIDController yController = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(Constants.Drive.Auto.MAX_VELOCITY, Constants.Drive.Auto.MAX_ACCEL));
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.drive.MAX_RADIANS, 2.0 * Constants.drive.MAX_RADIANS));
+  ProfiledPIDController xController = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL));
+  ProfiledPIDController yController = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL));
 
   /**
    * Creates a new ToPosition.
@@ -49,8 +49,8 @@ public class ToPosition extends CommandBase {
   @Override
   public void execute() {
     Pose2d pose = drivetrain.getPose();
-    double xVel = xController.calculate(pose.getTranslation().getX()) * Constants.Drive.Auto.MAX_VELOCITY;
-    double yVel = -yController.calculate(pose.getTranslation().getY()) * Constants.Drive.Auto.MAX_VELOCITY;
+    double xVel = xController.calculate(pose.getTranslation().getX()) * Constants.drive.auto.MAX_VELOCITY;
+    double yVel = -yController.calculate(pose.getTranslation().getY()) * Constants.drive.auto.MAX_VELOCITY;
     double thetaVel = thetaController.calculate(pose.getRotation().getDegrees());
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel, pose.getRotation());
