@@ -1,6 +1,8 @@
 package frc.robot.utils.trajectory;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+
 import java.util.List;
 
 /**
@@ -10,14 +12,16 @@ import java.util.List;
 public class Waypoints {
 
     private final List<Pose2d> poses;
+    private final TrajectoryConfig config;
 
     /**
      * Constructs a Waypoints object.
      * @param poses - poses to store in object.
      * @param isReversed - whether or not the poses are intended to be followed in reverse.
      */
-    public Waypoints(List<Pose2d> poses) {
+    public Waypoints(List<Pose2d> poses, TrajectoryConfig config) {
         this.poses = poses;
+        this.config = config;
     }
 
     /**
@@ -25,5 +29,9 @@ public class Waypoints {
      */
     public List<Pose2d> getPoses() {
         return poses;
+    }
+
+    public TrajectoryConfig getConfig() {
+        return config;
     }
 }
