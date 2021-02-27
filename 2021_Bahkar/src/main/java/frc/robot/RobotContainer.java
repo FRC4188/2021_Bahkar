@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.intake.ClearDeadzone;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.auto.TuningAuto;
+import frc.robot.commands.drive.ResetOdometry;
+import frc.robot.commands.drive.test.SetPIDS;
 import frc.robot.commands.drive.trajectorycontrol.CSPSwerveControl;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoOuttake;
@@ -144,10 +147,15 @@ public class RobotContainer {
     */
 
     // Trigger the intaking and outtaking commands.
+    /*
     pilot.getAButtonObj().whenPressed(new AutoIntake(intake, hopper, true));
     pilot.getAButtonObj().whenReleased(new AutoIntake(intake, hopper, false));
     pilot.getBButtonObj().whenPressed(new AutoOuttake(intake, hopper, true));
     pilot.getBButtonObj().whenReleased(new AutoOuttake(intake, hopper, false));
+    */
+
+    pilot.getAButtonObj().whenPressed(new SpinIntake(intake, 1.0, true));
+    pilot.getAButtonObj().whenReleased(new SpinIntake(intake, 0.0, true));
 
     // Relative referenced intake command.
     pilot.getRbButtonObj().whenPressed(new InstantCommand(() -> intake.toggle()));
@@ -191,6 +199,8 @@ public class RobotContainer {
 
     // Drivetrain command.
     SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
+    SmartDashboard.putData("Set Drive PIDs", new SetPIDS(drivetrain));
+    SmartDashboard.putData("Reset Pose", new ResetOdometry(drivetrain));
 
     // Shooter commands.
     SmartDashboard.putData("Shooter PIDF", new InstantCommand(() -> shooter.setPIDF(
@@ -210,6 +220,7 @@ public class RobotContainer {
   private void putChooser() {
     autoChooser.addOption("Do Nothing", null);
     autoChooser.addOption("CSPSwerveTrajectory test", new CSPSwerveControl(drivetrain, TrajectoryList.TestAuto.motionOne));
+    //autoChooser.addOption("Meter", new TuningAuto(drivetrain));
   }
 
   /**
@@ -220,6 +231,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return autoCommand;
+    return new TuningAuto(drivetrain);
   }
 }

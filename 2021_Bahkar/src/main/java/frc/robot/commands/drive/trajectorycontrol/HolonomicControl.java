@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -44,7 +45,6 @@ public class HolonomicControl extends CommandBase {
     this.angle = angle;
 
     controller.setEnabled(true);
-    controller.setTolerance(new Pose2d(0.1, 0.1, new Rotation2d(0.1)));
   }
 
   // Called when the command is initially scheduled.
@@ -57,17 +57,22 @@ public class HolonomicControl extends CommandBase {
   @Override
   public void execute() {
     Pose2d pose = drivetrain.getPose();
-    drivetrain.setChassisSpeeds(controller.calculate(pose, trajectory.sample(timer.get()), angle));
+    drivetrain.setChassisSpeeds(controller.calculate(new Pose2d(pose.getX(), -pose.getY(), pose.getRotation()), trajectory.sample(timer.get()), angle));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drivetrain.setChassisSpeeds(new ChassisSpeeds());
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.get() == trajectory.getTotalTimeSeconds() && controller.atReference();
+    Pose2d endPose = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters;
+
+    return timer.get() == trajectory.getTotalTimeSeconds() && 
+    Math.abs(drivetrain.getPose().getX() - endPose.getX()) < 0.2 &&
+    Math.abs(drivetrain.getPose().getY() - endPose.getY()) < 0.2;
   }
 }

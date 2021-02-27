@@ -29,9 +29,9 @@ public class LEDPanel {
     public LEDPanel(int minChannel) {
         for (int row = 0; row < 4; row++) {
             for (int column = 0; column < 5; column++) {
-                ledMatrix[row][column] = new DigitalOutput(minChannel + 4 * row + column);
-                ledMatrix[row][column].setPWMRate(5e3);
-                ledMatrix[row][column].set(false);
+                //ledMatrix[row][column] = new DigitalOutput(minChannel + 4 * row + column);
+                //ledMatrix[row][column].setPWMRate(5e3);
+                //ledMatrix[row][column].set(false);
             }
         }
 

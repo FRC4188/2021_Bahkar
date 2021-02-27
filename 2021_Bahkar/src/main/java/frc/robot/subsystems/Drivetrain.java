@@ -48,15 +48,6 @@ public class Drivetrain extends SubsystemBase {
 
   private PIDController rotationPID = new PIDController(0.2, 0.0, 0.001);
 
-  //Initialize a list of module states and assign the kinematic results to them
-  private SwerveModuleState[]  moduleStates = kinematics.toSwerveModuleStates(speeds);
-
-  //Assign module states to modules
-  private SwerveModuleState frontLeft = moduleStates[0];
-  private SwerveModuleState frontRight = moduleStates[1];
-  private SwerveModuleState backLeft = moduleStates[2];
-  private SwerveModuleState backRight = moduleStates[3];
-
   //Create initial odometry
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
   new Rotation2d(), new Pose2d());
@@ -81,6 +72,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Correction P", 0.0);
     SmartDashboard.putNumber("Correction I", 0.0);
     SmartDashboard.putNumber("Correction D", 0.0);
+
+    SmartDashboard.putNumber("Set Speed kP", 0.0);
+    SmartDashboard.putNumber("Set Angle kP", 0.0);
 
     Notifier shuffle = new Notifier(() -> updateShuffleboard());
     shuffle.startPeriodic(0.1);
@@ -127,7 +121,7 @@ public class Drivetrain extends SubsystemBase {
     boolean fieldRelative = !FO;
 
     //Get a chassis speed and rotation from input.
-    speeds = (fieldRelative) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
+    ChassisSpeeds speeds = (fieldRelative) ? (ChassisSpeeds.fromFieldRelativeSpeeds(
       speed, strafe, rotation + angleCorrection, Rotation2d.fromDegrees(currentAngle))) :
       (new ChassisSpeeds(speed, strafe, rotation));
 
@@ -141,17 +135,18 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setChassisSpeeds(ChassisSpeeds speeds) {
     //get an array of module states from the ChassisSpeeds.
-    moduleStates = kinematics.toSwerveModuleStates(speeds);
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.normalizeWheelSpeeds(states, Constants.drive.MAX_VELOCITY);
 
-    setModuleStates(moduleStates);
+    setModuleStates(states);
   }
 
   public void setModuleStates(SwerveModuleState[] moduleStates) {
     //Seperate the elements of the array.
-    frontLeft = moduleStates[0];
-    frontRight = moduleStates[1];
-    backLeft = moduleStates[2];
-    backRight = moduleStates[3];
+    SwerveModuleState frontLeft = moduleStates[0];
+    SwerveModuleState frontRight = moduleStates[1];
+    SwerveModuleState backLeft = moduleStates[2];
+    SwerveModuleState backRight = moduleStates[3];
 
     //Set the modules in the WheelDrive objects to the kinematic results.
     LeftFront.convertedDrive(frontLeft);
@@ -160,30 +155,19 @@ public class Drivetrain extends SubsystemBase {
     RightRear.convertedDrive(backRight);
   }
 
-  public void rawSet(double angle, double velocity) {
-    LeftFront.setAngle(angle);
-    RightFront.setAngle(angle);
-    LeftRear.setAngle(angle);
-    RightRear.setAngle(angle);
-
-    LeftFront.setVelocity(velocity);
-    RightFront.setVelocity(velocity);
-    LeftRear.setVelocity(velocity);
-    RightRear.setVelocity(velocity);
-  }
-
   /**
    * Method to update the odometry of the robot.
    */
   public void updateOdometry() {
     //get the module state from each motor
-    frontLeft = LeftFront.updateModuleState();
-    frontRight = RightFront.updateModuleState();
-    backLeft = LeftRear.updateModuleState();
-    backRight = RightRear.updateModuleState();
+    SwerveModuleState frontLeft = LeftFront.updateModuleState();
+    SwerveModuleState frontRight = RightFront.updateModuleState();
+    SwerveModuleState backLeft = LeftRear.updateModuleState();
+    SwerveModuleState backRight = RightRear.updateModuleState();
 
     //update odometry using the new module states.
     odometry.update(Rotation2d.fromDegrees(sensors.getFusedHeading()), frontLeft, frontRight, backLeft, backRight);
+    speeds = kinematics.toChassisSpeeds(new SwerveModuleState[] {frontLeft, frontRight, backLeft, backRight});
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -196,6 +180,7 @@ public class Drivetrain extends SubsystemBase {
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
     SmartDashboard.putNumber("Left Front Angle", LeftFront.getAbsoluteAngle());
+    SmartDashboard.putNumber("Chassis Velocity", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2.0) + Math.pow(speeds.vyMetersPerSecond, 2.0)));
   }
 
   public void reset() {
@@ -210,14 +195,14 @@ public class Drivetrain extends SubsystemBase {
     rotationPID.setPID(SmartDashboard.getNumber("Correction P", 0.0), SmartDashboard.getNumber("Correction I", 0.0), SmartDashboard.getNumber("Correction D", 0.0));
   }
 
-  private void setAnglePID(double kP, double kI, double kD) {
+  public void setAnglePID(double kP, double kI, double kD) {
     LeftFront.setAnglePID(kP, kI, kD);
     RightFront.setAnglePID(kP, kI, kD);
     LeftRear.setAnglePID(kP, kI, kD);
     RightRear.setAnglePID(kP, kI, kD);
   }
 
-  private void setSpeedPID(double kP, double kI, double kD) {
+  public void setSpeedPID(double kP, double kI, double kD) {
     LeftFront.setSpeedPID(kP, kI, kD);
     RightFront.setSpeedPID(kP, kI, kD);
     LeftRear.setSpeedPID(kP, kI, kD);
@@ -258,7 +243,12 @@ public class Drivetrain extends SubsystemBase {
    * @return SwerveModuleStates array.
    */
   public SwerveModuleState[] getModuleStates() {
-    return moduleStates;
+    return new SwerveModuleState[] {
+      LeftFront.updateModuleState(),
+      RightFront.updateModuleState(),
+      LeftRear.updateModuleState(),
+      RightRear.updateModuleState()
+    };
   }
 
   /**

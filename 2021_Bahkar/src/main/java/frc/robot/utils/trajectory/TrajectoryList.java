@@ -19,4 +19,17 @@ public final class TrajectoryList {
             ))
         );
     }
+
+    public static final class TuningAuto {
+        public static CSPSwerveTrajectory meter = new CSPSwerveTrajectory(
+            new Waypoints[] {
+                WaypointsList.tuning.stuff,
+                WaypointsList.tuning.stuff2
+            },
+            new ArrayList<Rotation2d>(List.of(
+                new Rotation2d(),
+                new Rotation2d(-Math.PI/  2.0)
+            ))
+        );
+    }
 }

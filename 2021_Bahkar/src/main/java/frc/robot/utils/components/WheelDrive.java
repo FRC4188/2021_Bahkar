@@ -1,6 +1,8 @@
 package frc.robot.utils.components;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
@@ -12,8 +14,8 @@ import frc.robot.Constants;
 public class WheelDrive {
 
   //Unassigned motor objects.
-  private CSPFalcon angleMotor;
-  private CSPFalcon speedMotor;
+  private WPI_TalonFX angleMotor;
+  private WPI_TalonFX speedMotor;
   private CANCoder angleEncoder;
 
   private PIDController anglePID = new PIDController(0.00600, 0.0, 0.0);
@@ -55,6 +57,7 @@ public class WheelDrive {
   public void resetEncoders() {
     angleEncoder.configFactoryDefault();
 
+    angleEncoder.configSensorDirection(false);
     angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     angleEncoder.configMagnetOffset(magOffset);
 
@@ -68,7 +71,9 @@ public class WheelDrive {
    */
   public void PIDConfig() {
     //Assign the values.
-    speedMotor.setP(0.23);
+    speedMotor.config_kP(0, 0.2, 10);
+    speedMotor.config_kI(0, 0.0, 10);
+    speedMotor.config_kD(0, 0.0, 10);
 
     anglePID.enableContinuousInput(-180, 180);
   }
@@ -79,7 +84,7 @@ public class WheelDrive {
     angleMotor.set(anglePID.calculate(currentAngle, state.angle.getDegrees()));
 
     // Convert M/S to RPM and set that as the velocity.
-    speedMotor.setVelocity(state.speedMetersPerSecond * Constants.drive.DRIVE_ROTATIONS_PER_METER * 60.0);
+    speedMotor.set(ControlMode.Velocity, (state.speedMetersPerSecond * (Constants.drive.DRIVE_COUNTS_PER_METER / 10.0)));
   }
 
   /**
@@ -87,7 +92,7 @@ public class WheelDrive {
    * @return The updated module state with mesured rather than set values.
    */
   public SwerveModuleState updateModuleState() {
-    double speed = (speedMotor.getVelocity() / Constants.drive.DRIVE_ROTATIONS_PER_METER) / 60;
+    double speed = (speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.drive.DRIVE_COUNTS_PER_METER;
     double angle = angleEncoder.getAbsolutePosition();
 
     return new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle)));
@@ -99,22 +104,6 @@ public class WheelDrive {
    */
   public void setInverted(boolean invert) {
     angleMotor.setInverted(invert);
-  }
-
-  /**
-   * Runs just the angle motor to a specific angle.
-   * @param angle Target angle.
-   */
-  public void setAngle(double angle) {
-    angleMotor.setPosition(angle);
-  }
-
-  /**
-   * Runs just the velocity motor to a specific velocity.
-   * @param speed Target Velocity.
-   */
-  public void setVelocity(double speed) {
-    speedMotor.setVelocity(speed / (Constants.drive.DRIVE_ROTATIONS_PER_METER * 60));
   }
 
   /**
@@ -152,7 +141,7 @@ public class WheelDrive {
    * @return The relative measurement (degrees).
    */
   public double getRelativeAngle() {
-    return angleMotor.getPosition();
+    return angleMotor.getSelectedSensorPosition();
   }
 
   /**
@@ -160,7 +149,7 @@ public class WheelDrive {
    * @return Measured RPM.
    */
   public double getRPM() {
-    return speedMotor.getVelocity();
+    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.robot.FALCON_ENCODER_TICKS;
   }
 
   /**
@@ -168,7 +157,7 @@ public class WheelDrive {
    * @return Measured meters per second.
    */
   public double getMS() {
-    return speedMotor.getVelocity() / (Constants.drive.DRIVE_ROTATIONS_PER_METER * 60);
+    return ((double) speedMotor.getSelectedSensorVelocity() * 10.0) / Constants.drive.DRIVE_COUNTS_PER_METER;
   }
 
   /**

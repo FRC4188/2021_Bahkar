@@ -37,7 +37,7 @@ public final class Constants {
         }
 
     public final class drive {
-        public static final double DRIVE_GEARING = 6.54545454545; //Gear ratio of the drive motor.
+        public static final double DRIVE_GEARING = 6.0; //Gear ratio of the drive motor.
         public static final double WHEEL_DIAMETER = 0.1016;//Units.inchesToMeters(4); //Diameter of the drive wheels (Meters).
         public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER; //Circumfrence of the drive wheels (Meters).
         public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; //Rotations per meter of the drive wheels.
