@@ -255,13 +255,14 @@ public class Sensors extends SubsystemBase {
    * Returns the correction to score in the inner port.
    * @return The angle offset from the target to aim at in order to hit inner port.
    */
-  public double getTurretOffset() {
+  public double getTurretOffset(double turretAngle) {
     double a = Constants.field.THREE_POINT_DEPTH;
     double b = getDistance();
-    double c = getTurretSkew();
+    Pose2d pose = getVisionPose(turretAngle);
+    double c = Math.atan2(pose.getY(), pose.getX());
 
 
-    double offset =  Math.toDegrees(Math.asin((a * Math.sin(Math.toRadians(180-c))) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - (2 * a * b * Math.cos(Math.toRadians(180 - c))))));
+    double offset =  Math.toDegrees(Math.asin((a * Math.sin(Math.PI - c)) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - (2 * a * b * Math.cos(Math.PI - c)))));
     double check = c - offset;
     if (check <= Constants.field.OFFSET_LIMIT) return offset;
     else return 0.0;
@@ -284,7 +285,7 @@ public class Sensors extends SubsystemBase {
     return rawVal;  }
 
   public boolean getChassisHasTarget() {
-    boolean HasTarget = (ClimelightTable.getEntry("tv").getDouble(0.0) == 1.0) ? true : false;
+    boolean HasTarget = (ClimelightTable.getEntry("tv").getDouble(0.0) > 0.0) ? true : false;
     return HasTarget;
   }
 

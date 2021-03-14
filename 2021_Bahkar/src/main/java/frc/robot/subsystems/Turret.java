@@ -108,7 +108,7 @@ public class Turret extends SubsystemBase {
    */
   public void trackTarget(boolean cont) {
     double angle = sensors.getTurretHorizontalAngle();
-    double offset = sensors.getTurretOffset();
+    double offset = sensors.getTurretOffset(getPosition());
     double power = pid.calculate(angle - offset, 0.0);
     
     set(cont ? power : 0.0);
@@ -148,7 +148,7 @@ public class Turret extends SubsystemBase {
    * @return Whether the turret is correctly aimed.
    */
   public boolean isAimed() {
-    double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset();
+    double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset(getPosition());
     boolean aimed = (Math.abs(angle - turretEncoder.getPosition()) < Constants.turret.POS_TOLERANCE) ? true : false;
     return aimed;
   }

@@ -20,7 +20,7 @@ public class PoseTracking {
     private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(new Rotation2d(), new Pose2d(), Constants.drive.KINEMATICS,
     VecBuilder.fill(0.5, 0.5, 0.5),
     VecBuilder.fill(0.2),
-    VecBuilder.fill(0.05, 0.05, 0.05));
+    VecBuilder.fill(0.01, 0.01, 0.01));
     
     public PoseTracking(Drivetrain drivetrain, Turret turret, Sensors sensors, Pose2d initPose) {
         setPose(pose);

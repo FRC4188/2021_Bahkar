@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -10,12 +11,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.CSPMath;
-import frc.robot.utils.components.CSPFalcon;
 
 public class Shooter extends SubsystemBase {
 
-    private final CSPFalcon upperShooterMotor = new CSPFalcon(10);
-    private final CSPFalcon lowerShooterMotor = new CSPFalcon(11);
+    private final WPI_TalonFX upperShooterMotor = new WPI_TalonFX(10);
+    private final WPI_TalonFX lowerShooterMotor = new WPI_TalonFX(11);
 
     private Notifier shuffle;
 
@@ -46,7 +46,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public void motorInits() {
-        lowerShooterMotor.setPIDF(Constants.shooter.kP, Constants.shooter.kI, Constants.shooter.kD, Constants.shooter.kF);
+        lowerShooterMotor.config_kP(0, Constants.shooter.kP);
+        lowerShooterMotor.config_kI(0, Constants.shooter.kI);
+        lowerShooterMotor.config_kD(0, Constants.shooter.kD);
+        lowerShooterMotor.config_kF(0, Constants.shooter.kF);
 
         lowerShooterMotor.setNeutralMode(NeutralMode.Coast);
 
@@ -68,7 +71,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setPIDF(double kP, double kI, double kD, double kF) {
-        lowerShooterMotor.setPIDF(kP, kI, kD, kF);
+        lowerShooterMotor.config_kP(0, kP);
+        lowerShooterMotor.config_kI(0, kI);
+        lowerShooterMotor.config_kD(0, kD);
+        lowerShooterMotor.config_kF(0, kF);
     }
 
     public void closeNotifier() {
@@ -90,7 +96,7 @@ public class Shooter extends SubsystemBase {
      * Sets shooter motors to a given velocity in rpm.
      */
     public void setVelocity(double velocity) {
-        lowerShooterMotor.setVelocity(velocity);
+        lowerShooterMotor.set(ControlMode.Velocity, velocity);
     }
 
     public void setZoneVelocity() {
@@ -100,14 +106,14 @@ public class Shooter extends SubsystemBase {
      * Gets left shooter motor velocity in rpm.
      */
     public double getLowerVelocity() {
-        return lowerShooterMotor.getVelocity();
+        return (lowerShooterMotor.getSelectedSensorVelocity() / 2048.0) * 600.0;
     }
 
     /**
      * Gets right shooter motor velocity in rpm.
      */
     public double getUpperVelocity() {
-        return upperShooterMotor.getVelocity();
+        return (upperShooterMotor.getSelectedSensorVelocity() / 2048.0) * 600.0;
     }
 
     /**
