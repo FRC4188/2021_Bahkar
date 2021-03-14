@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.util.Units;
 
 /**
@@ -36,29 +38,63 @@ public final class Constants {
             public static final double FALCON_MAX_VEL = 6380.0;
         }
 
-    public final class drive {
-        public static final double DRIVE_GEARING = 6.0; //Gear ratio of the drive motor.
-        public static final double WHEEL_DIAMETER = 0.1016;//Units.inchesToMeters(4); //Diameter of the drive wheels (Meters).
-        public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER; //Circumfrence of the drive wheels (Meters).
-        public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; //Rotations per meter of the drive wheels.
-        public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * robot.FALCON_ENCODER_TICKS; //Encoder counts per revolution of the drive wheel.
-        public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; //Encoder ticks per meter of the drive wheels.
+        public final static class drive {
+            public static final double DRIVE_GEARING = 6.0; // Gear ratio of the drive motor.
+            public static final double WHEEL_DIAMETER = 0.1016;// Units.inchesToMeters(4); //Diameter of the drive
+                                                               // wheels (Meters).
+            public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER; // Circumfrence of the drive
+                                                                                      // wheels (Meters).
+            public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; // Rotations per meter of
+                                                                                             // the drive wheels.
+            public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * robot.FALCON_ENCODER_TICKS; // Encoder
+                                                                                                               // counts
+                                                                                                               // per
+                                                                                                               // revolution
+                                                                                                               // of the
+                                                                                                               // drive
+                                                                                                               // wheel.
+            public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; // Encoder
+                                                                                                                       // ticks
+                                                                                                                       // per
+                                                                                                                       // meter
+                                                                                                                       // of
+                                                                                                                       // the
+                                                                                                                       // drive
+                                                                                                                       // wheels.
 
-        public static final double ANGLE_GEARING = 12.0;
-        public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * robot.FALCON_ENCODER_TICKS) / 360.0;
+            public static final double ANGLE_GEARING = 12.0;
+            public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * robot.FALCON_ENCODER_TICKS) / 360.0;
 
-        public static final double MAX_VOLTS = 12.0; //Maximum voltage allowed in the drivetrain.
-        public static final double MAX_VELOCITY = 5.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
-        public static final double MAX_ACCEL = 10.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
-        public static final double MAX_CACCEL = 8.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
-        public static final double MAX_RADIANS = 3.0 * Math.PI; //Maximum rotational velocity (Radians per Second).
+            public static final double MAX_VOLTS = 12.0; // Maximum voltage allowed in the drivetrain.
+            public static final double MAX_VELOCITY = 5.0; // Maximum velocity allowed in the drivetrain (Meters per
+                                                           // Second).
+            public static final double MAX_ACCEL = 10.0; // Maximum acceleration of the drivetrain in (Meters per Second
+                                                         // Squared).
+            public static final double MAX_CACCEL = 8.0; // Maximum centripital acceleration of the robot (Meters per
+                                                         // Second Squared).
+            public static final double MAX_RADIANS = 3.0 * Math.PI; // Maximum rotational velocity (Radians per Second).
 
-        public final class auto {
-            public static final double MAX_VELOCITY = 1.0; //Maximum velocity allowed in the drivetrain (Meters per Second).
-            public static final double MAX_ACCEL = 3.0; //Maximum acceleration of the drivetrain in (Meters per Second Squared).
-            public static final double MAX_CACCEL = 5.0; //Maximum centripital acceleration of the robot (Meters per Second Squared).
+            // Put together swerve module positions relative to the center of the robot.
+            private static final Translation2d FrontLeftLocation = new Translation2d((Constants.robot.A_LENGTH / 2),
+                    -(Constants.robot.A_WIDTH / 2));
+            private static final Translation2d FrontRightLocation = new Translation2d((Constants.robot.A_LENGTH / 2),
+                    (Constants.robot.A_WIDTH / 2));
+            private static final Translation2d BackLeftLocation = new Translation2d(-(Constants.robot.A_LENGTH / 2),
+                    -(Constants.robot.A_WIDTH / 2));
+            private static final Translation2d BackRightLocation = new Translation2d(-(Constants.robot.A_LENGTH / 2),
+                    (Constants.robot.A_WIDTH / 2));
+            public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(FrontLeftLocation,
+                    FrontRightLocation, BackLeftLocation, BackRightLocation);
+
+            public final class auto {
+                public static final double MAX_VELOCITY = 1.0; // Maximum velocity allowed in the drivetrain (Meters per
+                                                               // Second).
+                public static final double MAX_ACCEL = 3.0; // Maximum acceleration of the drivetrain in (Meters per
+                                                            // Second Squared).
+                public static final double MAX_CACCEL = 5.0; // Maximum centripital acceleration of the robot (Meters
+                                                             // per Second Squared).
+            }
         }
-    }
 
     public final static class field {
         public static final double GOAL_HEIGHT = Units.feetToMeters(8.0 + 2.25/12.0); //Height of the goal from the ground (Meters).
@@ -68,7 +104,9 @@ public final class Constants {
         public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2.0))); //Limit for the skew against the 3-point goal (Degrees).
         public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0); //Diameter of the power cell (Meters).
         public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0); //Diameter of the inner port (Meters).
-        public static final double GOAL_Y_POS = 2.38;
+        public static final double GOAL_Y_POS = 9.27; //5.77
+        public static final double GOAL_SCALE = 0.5;
+		public static final double GOAL_X_POS = 2.25; //0.0
     }
 
     public final class turret{

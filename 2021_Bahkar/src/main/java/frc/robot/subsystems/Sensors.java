@@ -13,8 +13,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.enums.LedMode;
@@ -48,7 +50,7 @@ public class Sensors extends SubsystemBase {
     setupPigeon();
     setupGyro();
 
-    TlimelightTable = NetworkTableInstance.getDefault().getTable("turret_limelight");
+    TlimelightTable = NetworkTableInstance.getDefault().getTable("limelight");
     ClimelightTable = NetworkTableInstance.getDefault().getTable("chassis_limelight");
 
     TlimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
@@ -69,6 +71,7 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
     SmartDashboard.putBoolean("Top Beam A", topBeamA.get());
     SmartDashboard.putBoolean("Top Beam B", topBeamB.get());
+    SmartDashboard.putNumber("Skew", getTurretSkew());
   }
 
   public void closeNotifier() {
@@ -181,12 +184,12 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getTurretSkew() {
-    double rawVal = TlimelightTable.getEntry("ts").getDouble(0.0);
+    return TlimelightTable.getEntry("ts").getDouble(1.0);
 
-    rawVal *= -4;
-    rawVal = (rawVal > 180) ? (180-rawVal) : rawVal;
+    //rawVal *= -4;
+    //rawVal = (rawVal > 180) ? (180-rawVal) : rawVal;
 
-    return rawVal;
+    //return rawVal;
   }
 
   /**
@@ -240,6 +243,12 @@ public class Sensors extends SubsystemBase {
    */
   public double getDistance() {
     return getTurretHasTarget() ? (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT) / (Math.tan(Math.toRadians(getTurretVerticleAngle()))) : 0.0;
+  }
+
+  public Pose2d getVisionPose(double turretAngle) {
+    Number[] array = TlimelightTable.getEntry("camtran").getNumberArray(new Number[] {0,0,0,0,0,0});
+
+    return new Pose2d(Units.inchesToMeters(-array[0].doubleValue() * Constants.field.GOAL_SCALE) + Constants.field.GOAL_X_POS, Units.inchesToMeters(-array[2].doubleValue() * Constants.field.GOAL_SCALE) + Constants.field.GOAL_Y_POS, getRotation2d());
   }
 
   /**

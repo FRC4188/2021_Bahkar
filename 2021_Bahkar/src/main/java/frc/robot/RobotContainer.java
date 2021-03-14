@@ -7,7 +7,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,10 +22,9 @@ import frc.robot.commands.auto.TuningAuto;
 import frc.robot.commands.drive.ResetOdometry;
 import frc.robot.commands.drive.test.SetPIDS;
 import frc.robot.commands.drive.trajectorycontrol.CSPSwerveControl;
-import frc.robot.commands.groups.AutoIntake;
-import frc.robot.commands.groups.AutoOuttake;
 import frc.robot.commands.hood.DashPosition;
 import frc.robot.commands.hopper.SpinHopper;
+import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
 import frc.robot.commands.turret.TurretToZero;
@@ -41,6 +42,7 @@ import frc.robot.utils.components.CspController;
 import frc.robot.utils.components.LEDPanel;
 import frc.robot.utils.trajectory.TrajectoryList;
 import frc.robot.utils.CspSequentialCommandGroup;
+import frc.robot.utils.PoseTracking;
 import frc.robot.utils.TempManager;
 
 /**
@@ -56,6 +58,7 @@ public class RobotContainer {
   private Intake intake;
   private Shooter shooter;
   private Hood hood;
+  private PoseTracking tracker;
   // private LEDPanel ledPanel;
 
   // Subsystem Regulation
@@ -83,6 +86,11 @@ public class RobotContainer {
     intake = new Intake();
     shooter = new Shooter(sensors);
     hood = new Hood(sensors, drivetrain);
+
+    tracker = new PoseTracking(drivetrain, turret, sensors, new Pose2d());
+
+    Notifier shuffle = new Notifier(() -> updateShuffleboard());
+    shuffle.startPeriodic(0.1);
 
     setDefaultCommands();
     configureButtonBindings();
@@ -175,6 +183,9 @@ public class RobotContainer {
     copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.lower()));
     copilot.getDpadUpButtonObj().whenPressed(new InstantCommand(() -> intake.raise()));
 
+    copilot.getAButtonObj().whileHeld(new FollowTarget(turret, true));
+    copilot.getAButtonObj().whileHeld(new FollowTarget(turret, false));
+
     /*
     Button box commands follow:
     */
@@ -221,6 +232,14 @@ public class RobotContainer {
     autoChooser.addOption("Do Nothing", null);
     autoChooser.addOption("CSPSwerveTrajectory test", new CSPSwerveControl(drivetrain, TrajectoryList.TestAuto.motionOne));
     //autoChooser.addOption("Meter", new TuningAuto(drivetrain));
+  }
+
+  public void updateOdometry() {
+    tracker.update();
+  }
+
+  public void updateShuffleboard() {
+    SmartDashboard.putString("Estimated Pose", tracker.getPose().toString());
   }
 
   /**

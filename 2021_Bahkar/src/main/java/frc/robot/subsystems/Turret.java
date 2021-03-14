@@ -107,10 +107,8 @@ public class Turret extends SubsystemBase {
    * @param cont whether to continue tracking or stop.
    */
   public void trackTarget(boolean cont) {
-    double angle = sensors.getTurretHasTarget() ? sensors.getTurretHorizontalAngle() : getPosition() +
-      (sensors.getFusedHeading() - Math.toDegrees(
-      Math.atan2(drivetrain.getPose().getY(), drivetrain.getPose().getX() - Constants.field.GOAL_Y_POS)));
-    double offset = sensors.getTurretHasTarget() ? sensors.getTurretOffset() : 0.0;
+    double angle = sensors.getTurretHorizontalAngle();
+    double offset = sensors.getTurretOffset();
     double power = pid.calculate(angle - offset, 0.0);
     
     set(cont ? power : 0.0);

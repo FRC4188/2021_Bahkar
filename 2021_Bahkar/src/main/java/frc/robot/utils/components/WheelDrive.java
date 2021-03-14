@@ -25,8 +25,8 @@ public class WheelDrive {
 
   public WheelDrive(int angleMotorID, int speedMotorID, int angleEncoderID, double magOffset, boolean right, boolean back) {
     //Assign the motor objects.
-    this.angleMotor = new CSPFalcon(angleMotorID);
-    this.speedMotor = new CSPFalcon(speedMotorID);
+    this.angleMotor = new WPI_TalonFX(angleMotorID);
+    this.speedMotor = new WPI_TalonFX(speedMotorID);
     this.angleEncoder = new CANCoder(angleEncoderID);
     this.magOffset = magOffset;
     this.right = right;

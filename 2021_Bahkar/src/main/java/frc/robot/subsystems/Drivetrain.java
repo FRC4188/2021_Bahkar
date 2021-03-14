@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.VecBuilder;
 import frc.robot.Constants;
 import frc.robot.utils.components.WheelDrive;
 
@@ -28,29 +30,23 @@ public class Drivetrain extends SubsystemBase {
   private Sensors sensors;
 
   //Initialize WheelDrive objects
-  private WheelDrive LeftFront = new WheelDrive(1, 2, 21, 73.125, false, false);
-  private WheelDrive RightFront = new WheelDrive(3, 4, 22, 172.7, true, false);
-  private WheelDrive LeftRear = new WheelDrive(5, 6, 23, 4.3, false, true);
-  private WheelDrive RightRear = new WheelDrive(7, 8, 24, 158.37, true, true);
+  private WheelDrive LeftFront = new WheelDrive(1, 2, 21, -138.691406, false, false);
+  private WheelDrive RightFront = new WheelDrive(3, 4, 22, 171.562500, true, false);
+  private WheelDrive LeftRear = new WheelDrive(5, 6, 23, 4.833984, false, true);
+  private WheelDrive RightRear = new WheelDrive(7, 8, 24, 157.412109, true, true);
 
-  //Put together swerve module positions relative to the center of the robot.
-  private Translation2d FrontLeftLocation = new Translation2d((Constants.robot.A_LENGTH/2), -(Constants.robot.A_WIDTH/2));
-  private Translation2d FrontRightLocation = new Translation2d((Constants.robot.A_LENGTH/2), (Constants.robot.A_WIDTH/2));
-  private Translation2d BackLeftLocation = new Translation2d(-(Constants.robot.A_LENGTH/2), -(Constants.robot.A_WIDTH/2));
-  private Translation2d BackRightLocation = new Translation2d(-(Constants.robot.A_LENGTH/2), (Constants.robot.A_WIDTH/2));
+  //Create initial odometry
+  private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(new Rotation2d(), new Pose2d(), Constants.drive.KINEMATICS,
+  VecBuilder.fill(0.5, 0.5, 0.5),
+  VecBuilder.fill(0.2),
+  VecBuilder.fill(0.0, 0.0, 0.0));
 
-  //Create a kinematics withe the swerve module positions
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-    FrontLeftLocation, FrontRightLocation, BackLeftLocation, BackRightLocation);
+  private SwerveDriveKinematics kinematics = Constants.drive.KINEMATICS;
 
   //Initialize a ChassisSpeeds object and start it with default values
   private ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
 
   private PIDController rotationPID = new PIDController(0.2, 0.0, 0.001);
-
-  //Create initial odometry
-  private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics,
-  new Rotation2d(), new Pose2d());
 
   //Create a configuration for trajectories.
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.drive.auto.MAX_CACCEL);
@@ -178,9 +174,13 @@ public class Drivetrain extends SubsystemBase {
    * Publish value from the drivetrain to the Smart Dashboard.
    */
   private void updateShuffleboard() {
-    SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
+    SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
     SmartDashboard.putNumber("Left Front Angle", LeftFront.getAbsoluteAngle());
+    SmartDashboard.putNumber("Right Front Angle", RightFront.getAbsoluteAngle());
+    SmartDashboard.putNumber("Left Rear Angle", LeftRear.getAbsoluteAngle());
+    SmartDashboard.putNumber("Right Rear Angle", RightRear.getAbsoluteAngle());
     SmartDashboard.putNumber("Chassis Velocity", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2.0) + Math.pow(speeds.vyMetersPerSecond, 2.0)));
+
   }
 
   public void reset() {
@@ -226,7 +226,7 @@ public class Drivetrain extends SubsystemBase {
    * The object for locating the robot on the field.
    * @return the Odometry object
    */
-  public SwerveDriveOdometry getOdometry() {
+  public SwerveDrivePoseEstimator getOdometry() {
     return odometry;
   }
 
@@ -256,7 +256,7 @@ public class Drivetrain extends SubsystemBase {
    * @return Pose2d position.
    */
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return odometry.getEstimatedPosition();
   }
 
   public double getFrontLeftDriveTemp() {
