@@ -12,10 +12,8 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -175,10 +173,12 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
+    /*
     SmartDashboard.putNumber("Left Front Angle", LeftFront.getAbsoluteAngle());
     SmartDashboard.putNumber("Right Front Angle", RightFront.getAbsoluteAngle());
     SmartDashboard.putNumber("Left Rear Angle", LeftRear.getAbsoluteAngle());
     SmartDashboard.putNumber("Right Rear Angle", RightRear.getAbsoluteAngle());
+    */
     SmartDashboard.putNumber("Chassis Velocity", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2.0) + Math.pow(speeds.vyMetersPerSecond, 2.0)));
 
   }

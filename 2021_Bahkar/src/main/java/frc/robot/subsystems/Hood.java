@@ -27,7 +27,6 @@ public class Hood extends SubsystemBase {
    */
   public Hood(Sensors sensors, Drivetrain drivetrain) {
     SmartDashboard.putNumber("Set Hood Position", 0.0);
-    SmartDashboard.putNumber("Set Hood Angle", 0.0);
 
     shuffle = new Notifier(() -> updateShuffleboard());
     shuffle.startPeriodic(0.1);
@@ -46,7 +45,6 @@ public class Hood extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Hood Position", getPos());
-    SmartDashboard.putNumber("Hood Angle", getAngle());
   }
 
   public void closeNotifier() {

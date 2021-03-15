@@ -68,10 +68,6 @@ public class Sensors extends SubsystemBase {
    * Send updated values to NetworkTables; call in a Notifier
    */
   private void updateShuffleBoard() {
-    SmartDashboard.putNumber("Pigeon Fused Heading", getFusedHeading());
-    SmartDashboard.putBoolean("Top Beam A", topBeamA.get());
-    SmartDashboard.putBoolean("Top Beam B", topBeamB.get());
-    SmartDashboard.putNumber("Skew", getTurretSkew());
   }
 
   public void closeNotifier() {

@@ -28,7 +28,6 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
         SmartDashboard.putNumber("Set Shooter Power", 0.0);
-        SmartDashboard.putNumber("Set Initial Velocty", 0.0);
 
         SmartDashboard.putNumber("Shooter kP", 0.325);
         SmartDashboard.putNumber("Shooter kI", 0.0);

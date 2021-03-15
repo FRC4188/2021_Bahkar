@@ -73,7 +73,6 @@ public class Turret extends SubsystemBase {
   }
 
   private void updateShuffleboard() {
-    SmartDashboard.putBoolean("Is Aimed", isAimed());
     SmartDashboard.putNumber("Turret Angle", getPosition());
   }
 
