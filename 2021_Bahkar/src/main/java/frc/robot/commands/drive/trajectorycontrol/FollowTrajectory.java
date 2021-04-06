@@ -2,6 +2,7 @@ package frc.robot.commands.drive.trajectorycontrol;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
@@ -9,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.trajectory.Waypoints;
+import frc.robot.utils.trajectory.WaypointsList;
 
 public class FollowTrajectory extends SwerveControllerCommand {
 
@@ -17,16 +19,11 @@ public class FollowTrajectory extends SwerveControllerCommand {
      * @param drivetrain Drivetrain object.
      * @param trajectory Trajectory to be followed.
      */
-    public FollowTrajectory(Drivetrain drivetrain, Trajectory trajectory) {
-        super(
-            trajectory,
-            drivetrain::getPose,
-            drivetrain.getKinematics(),
-            new PIDController(1.0, 0.0, 0.0),
-            new PIDController(1.0, 0.0, 0.0),
-            new ProfiledPIDController(1.0, 0.0, 0.0, new Constraints(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL)),
-            drivetrain::setModuleStates,
-            drivetrain);
+    public FollowTrajectory(Drivetrain drivetrain, Trajectory trajectory, Rotation2d angle) {
+        super(trajectory, drivetrain::getPose, Constants.drive.KINEMATICS,
+        new PIDController(5.2, 0.0, 0.0), new PIDController(-5.2, 0.0, 0.0),
+        new ProfiledPIDController(0.08, 0.0, 0.02, new Constraints(Constants.drive.MAX_RADIANS, Constants.drive.MAX_RADIANS * 2)),
+        () -> angle, drivetrain::setModuleStates, drivetrain);
     }
 
     /**
@@ -35,7 +32,12 @@ public class FollowTrajectory extends SwerveControllerCommand {
      * @param waypoints Waypoint object for trajectory to be followed.
      */
     public FollowTrajectory(Drivetrain drivetrain, Waypoints waypoints) {
+        this(drivetrain, waypoints, new Rotation2d());
+    }
+
+    public FollowTrajectory(Drivetrain drivetrain, Waypoints waypoints, Rotation2d angle) {
         this(drivetrain,
-        TrajectoryGenerator.generateTrajectory(waypoints.getPoses(), drivetrain.getConfig()));
+        TrajectoryGenerator.generateTrajectory(waypoints.getPoses(), drivetrain.getConfig()),
+        angle);
     }
 }

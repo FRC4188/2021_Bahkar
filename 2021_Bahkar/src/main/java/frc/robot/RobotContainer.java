@@ -7,11 +7,17 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -20,8 +26,11 @@ import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.auto.TuningAuto;
 import frc.robot.commands.drive.ResetOdometry;
+import frc.robot.commands.drive.test.FaceHeading;
 import frc.robot.commands.drive.test.SetPIDS;
+import frc.robot.commands.drive.test.SetRotPID;
 import frc.robot.commands.drive.trajectorycontrol.CSPSwerveControl;
+import frc.robot.commands.drive.trajectorycontrol.FollowTrajectory;
 import frc.robot.commands.hood.DashPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.turret.FollowTarget;
@@ -41,8 +50,8 @@ import frc.robot.utils.components.ButtonBox;
 import frc.robot.utils.components.CspController;
 import frc.robot.utils.components.LEDPanel;
 import frc.robot.utils.trajectory.TrajectoryList;
+import frc.robot.utils.trajectory.WaypointsList;
 import frc.robot.utils.CspSequentialCommandGroup;
-import frc.robot.utils.PoseTracking;
 import frc.robot.utils.TempManager;
 
 /**
@@ -58,7 +67,6 @@ public class RobotContainer {
   private Intake intake;
   private Shooter shooter;
   private Hood hood;
-  private PoseTracking tracker;
   // private LEDPanel ledPanel;
 
   // Subsystem Regulation
@@ -86,8 +94,6 @@ public class RobotContainer {
     intake = new Intake();
     shooter = new Shooter(sensors);
     hood = new Hood(sensors, drivetrain);
-
-    tracker = new PoseTracking(drivetrain, turret, sensors, new Pose2d());
 
     Notifier shuffle = new Notifier(() -> updateShuffleboard());
     shuffle.startPeriodic(0.1);
@@ -212,6 +218,8 @@ public class RobotContainer {
     SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
     SmartDashboard.putData("Set Drive PIDs", new SetPIDS(drivetrain));
     SmartDashboard.putData("Reset Pose", new ResetOdometry(drivetrain));
+    SmartDashboard.putData("To Set Heading", new FaceHeading(drivetrain));
+    SmartDashboard.putData("Set Rotation PIDs", new SetRotPID(drivetrain));
 
     // Shooter commands.
     SmartDashboard.putData("Shooter PIDF", new InstantCommand(() -> shooter.setPIDF(
@@ -234,12 +242,12 @@ public class RobotContainer {
     //autoChooser.addOption("Meter", new TuningAuto(drivetrain));
   }
 
-  public void updateOdometry() {
-    tracker.update();
+  public void updateShuffleboard() {
   }
 
-  public void updateShuffleboard() {
-    SmartDashboard.putString("Estimated Pose", tracker.getPose().toString());
+  public void resetRobot() {
+    sensors.resetGyro();
+    drivetrain.resetOdometry(new Pose2d());
   }
 
   /**
@@ -250,6 +258,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return new TuningAuto(drivetrain);
+    return new FollowTrajectory(drivetrain, TrajectoryGenerator.generateTrajectory(
+      new Pose2d(),
+      List.of(
+        new Translation2d(1.0, 0.0)
+      ), new Pose2d(2.0, 0.0, new Rotation2d()),
+      drivetrain.getConfig()),
+      new Rotation2d()).andThen(new InstantCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds()), drivetrain));
   }
 }

@@ -129,7 +129,7 @@ public final class Constants {
 
         public static final double kP = 0.325;
         public static final double kI = 0.0;
-        public static final double kD = 0.55;
+        public static final double kD = 32.5;
         public static final double kF = 1023.0 / ((robot.FALCON_MAX_VEL / 600.0) * robot.FALCON_ENCODER_TICKS);
 
         public static final double RAMP_RATE = 0.75;

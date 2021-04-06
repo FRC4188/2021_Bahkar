@@ -28,7 +28,6 @@ import frc.robot.utils.enums.Pipeline;
  */
 public class Sensors extends SubsystemBase {
 
-  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   private final PigeonIMU pigeon = new PigeonIMU(31);
 
   private NetworkTable TlimelightTable = null;
@@ -108,24 +107,14 @@ public class Sensors extends SubsystemBase {
    * Calibrate the gyro to fix variability in returns; requires a few seconds idle.
    */
   private void calibrateGyro() {
-    gyro.calibrate();
   }
 
   /**
    * Send the gyro/pigeon to 0 degrees.
    */
   public void resetGyro() {
-    gyro.reset();
     pigeon.setYaw(0.0);
     pigeon.setFusedHeading(0.0);
-  }
-
-  /**
-   * value read from the Analog Devices Gyro (innacurate after very fast spinning).
-   * @return Degree value of the gyro in degrees.
-   */
-  public double getGyro() {
-    return Math.IEEEremainder(-gyro.getAngle(), 360);
   }
 
   /**
@@ -143,7 +132,7 @@ public class Sensors extends SubsystemBase {
    * @return Rotation2d measured by pigeon.
    */
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(getYaw());
+    return Rotation2d.fromDegrees(getFusedHeading());
   }
 
   /**

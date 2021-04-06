@@ -10,13 +10,12 @@ import frc.robot.Constants;
 
 public final class WaypointsList {
     public static final class Testing {
-        public static final Pose2d INIT_POSE = new Pose2d();
+        public static final Pose2d INIT_POSE = new Pose2d(0, 0, new Rotation2d(Math.PI/2));
 
         public static final Waypoints partA = new Waypoints(
             List.of(
                 INIT_POSE,
-                new Pose2d(3.0, -1.7, new Rotation2d()),
-                new Pose2d(7.0, -1.7, new Rotation2d())
+                new Pose2d(0.0, 1.0, new Rotation2d(Math.PI/2))
             ),
             new TrajectoryConfig(
                 Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL)

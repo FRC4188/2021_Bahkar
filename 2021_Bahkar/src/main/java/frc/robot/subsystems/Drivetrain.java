@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -21,6 +22,9 @@ import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstr
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
 import frc.robot.Constants;
+import frc.robot.utils.CSPOdometry;
+import frc.robot.utils.Derivative;
+import frc.robot.utils.Integral;
 import frc.robot.utils.components.WheelDrive;
 
 public class Drivetrain extends SubsystemBase {
@@ -33,10 +37,13 @@ public class Drivetrain extends SubsystemBase {
   private WheelDrive LeftRear = new WheelDrive(5, 6, 23, 4.833984, false, true);
   private WheelDrive RightRear = new WheelDrive(7, 8, 24, 157.412109, true, true);
 
+  private Integral heading = new Integral(0.0);
+  private Derivative headingRate = new Derivative(0.0);
+
   //Create initial odometry
   private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(new Rotation2d(), new Pose2d(), Constants.drive.KINEMATICS,
-  VecBuilder.fill(0.5, 0.5, 0.5),
-  VecBuilder.fill(0.2),
+  VecBuilder.fill(0.2, 0.2, 0.3),
+  VecBuilder.fill(1.0),
   VecBuilder.fill(0.0, 0.0, 0.0));
 
   private SwerveDriveKinematics kinematics = Constants.drive.KINEMATICS;
@@ -44,11 +51,11 @@ public class Drivetrain extends SubsystemBase {
   //Initialize a ChassisSpeeds object and start it with default values
   private ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, new Rotation2d());
 
-  private PIDController rotationPID = new PIDController(0.2, 0.0, 0.001);
+  private PIDController rotationPID = new PIDController(0.08, 0.0, 0.02);
 
   //Create a configuration for trajectories.
   private CentripetalAccelerationConstraint CentAccel = new CentripetalAccelerationConstraint(Constants.drive.auto.MAX_CACCEL);
-  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL).addConstraint(CentAccel);
+  private TrajectoryConfig trajectoryConfig = new TrajectoryConfig(1, Constants.drive.auto.MAX_ACCEL).addConstraint(CentAccel);
 
   /**
    * Creates a new Drivetrain.
@@ -63,13 +70,6 @@ public class Drivetrain extends SubsystemBase {
 
     rotationPID.enableContinuousInput(-180, 180);
 
-    SmartDashboard.putNumber("Correction P", 0.0);
-    SmartDashboard.putNumber("Correction I", 0.0);
-    SmartDashboard.putNumber("Correction D", 0.0);
-
-    SmartDashboard.putNumber("Set Speed kP", 0.0);
-    SmartDashboard.putNumber("Set Angle kP", 0.0);
-
     Notifier shuffle = new Notifier(() -> updateShuffleboard());
     shuffle.startPeriodic(0.1);
   }
@@ -80,6 +80,10 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
+  }
+
+  public void faceHeading(double heading) {
+    drive(0.0, 0.0, rotationPID.calculate(getPose().getRotation().getDegrees(), heading), false);
   }
 
   boolean lastNoAngle = true;
@@ -159,9 +163,11 @@ public class Drivetrain extends SubsystemBase {
     SwerveModuleState backLeft = LeftRear.updateModuleState();
     SwerveModuleState backRight = RightRear.updateModuleState();
 
-    //update odometry using the new module states.
-    odometry.update(Rotation2d.fromDegrees(sensors.getFusedHeading()), frontLeft, frontRight, backLeft, backRight);
-    speeds = kinematics.toChassisSpeeds(new SwerveModuleState[] {frontLeft, frontRight, backLeft, backRight});
+    double rate = headingRate.getRate(sensors.getRotation2d().getRadians());
+    heading.sample(
+      (rate < 0.07) ? speeds.omegaRadiansPerSecond : Math.toRadians(rate)
+    );
+    odometry.update(sensors.getRotation2d(), frontLeft, frontRight, backLeft, backRight);
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -173,12 +179,7 @@ public class Drivetrain extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
-    /*
-    SmartDashboard.putNumber("Left Front Angle", LeftFront.getAbsoluteAngle());
-    SmartDashboard.putNumber("Right Front Angle", RightFront.getAbsoluteAngle());
-    SmartDashboard.putNumber("Left Rear Angle", LeftRear.getAbsoluteAngle());
-    SmartDashboard.putNumber("Right Rear Angle", RightRear.getAbsoluteAngle());
-    */
+    SmartDashboard.putString("Chassis Speeds", getChassisSpeeds().toString());
     SmartDashboard.putNumber("Chassis Velocity", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2.0) + Math.pow(speeds.vyMetersPerSecond, 2.0)));
 
   }
@@ -235,7 +236,7 @@ public class Drivetrain extends SubsystemBase {
    * @return the ChassisSpeeds object.
    */
   public ChassisSpeeds getChassisSpeeds() {
-    return speeds;
+    return kinematics.toChassisSpeeds(getModuleStates());
   }
 
   /**
