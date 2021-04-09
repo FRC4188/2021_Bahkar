@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.intake.ClearDeadzone;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
@@ -258,12 +259,10 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command autoCommand = autoChooser.getSelected();
 
-    return new FollowTrajectory(drivetrain, TrajectoryGenerator.generateTrajectory(
-      new Pose2d(),
-      List.of(
-        new Translation2d(1.0, 0.0)
-      ), new Pose2d(2.0, 0.0, new Rotation2d()),
-      drivetrain.getConfig()),
-      new Rotation2d()).andThen(new InstantCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds()), drivetrain));
+    return new SequentialCommandGroup(
+      new ResetOdometry(drivetrain),
+      new FollowTrajectory(drivetrain, WaypointsList.SixBall.DOWN, new Rotation2d()),
+      new FollowTrajectory(drivetrain, WaypointsList.SixBall.BACK, new Rotation2d())
+    );
   }
 }

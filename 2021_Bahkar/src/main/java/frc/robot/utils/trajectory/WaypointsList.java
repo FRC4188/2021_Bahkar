@@ -67,4 +67,26 @@ public final class WaypointsList {
             .addConstraint(new CentripetalAccelerationConstraint(1.0)
             ));
     }
+
+    public static final class SixBall {
+        public static final Pose2d INIT_POSE = new Pose2d();
+
+        public static final Waypoints DOWN = new Waypoints(
+            List.of(
+                INIT_POSE,
+                new Pose2d(0.0, 6.1, new Rotation2d())
+            ),
+            new TrajectoryConfig(2.0, 1.0)
+            .addConstraint(new CentripetalAccelerationConstraint(1.0))
+        );
+
+        public static final Waypoints BACK = new Waypoints(
+            List.of(
+                new Pose2d(0.0, 6.1, new Rotation2d(Math.PI)),
+                new Pose2d(INIT_POSE.getTranslation(), new Rotation2d(Math.PI))
+            ),
+            new TrajectoryConfig(2.0, 1.0)
+            .addConstraint(new CentripetalAccelerationConstraint(1.0))
+        );
+    }
 }

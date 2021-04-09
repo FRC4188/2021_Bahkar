@@ -89,7 +89,7 @@ public class Turret extends SubsystemBase {
   * @param percent The goal percentage to set the turret motor to.
   */
   public void set(double percent) {
-    turretMotor.set(getPosition() < Constants.turret.MAX_ANG && getPosition() > Constants.turret.MIN_ANG ? percent : percent > 0.0 ? percent : 0.0);
+    turretMotor.set(percent);
   }
 
   /**
