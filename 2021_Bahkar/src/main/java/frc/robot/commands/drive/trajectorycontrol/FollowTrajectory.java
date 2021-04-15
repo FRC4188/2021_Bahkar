@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.trajectory.Waypoints;
-import frc.robot.utils.trajectory.WaypointsList;
 
 public class FollowTrajectory extends SwerveControllerCommand {
 

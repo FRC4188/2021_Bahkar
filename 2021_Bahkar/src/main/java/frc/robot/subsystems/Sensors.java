@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -67,6 +66,8 @@ public class Sensors extends SubsystemBase {
    * Send updated values to NetworkTables; call in a Notifier
    */
   private void updateShuffleBoard() {
+    SmartDashboard.putBoolean("Top Beam", getTopBeam());
+    SmartDashboard.putNumber("Pigeon", getRotation2d().getDegrees());
   }
 
   public void closeNotifier() {
@@ -100,7 +101,7 @@ public class Sensors extends SubsystemBase {
    * @return Fused heading (normal gyro with corrections).
    */
   public double getFusedHeading() {
-    return -Math.IEEEremainder(pigeon.getFusedHeading(), 360);
+    return Math.IEEEremainder(pigeon.getFusedHeading(), 360);
   }
 
   /**
@@ -165,7 +166,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getTurretTX() {
-    return TlimelightTable.getEntry("tx").getDouble(0.0);
+    return TlimelightTable.getEntry("tx").getDouble(0.0) + 2.5;
   }
 
   public double getTurretSkew() {

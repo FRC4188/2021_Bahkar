@@ -17,7 +17,7 @@ public class Waypoints {
     /**
      * Constructs a Waypoints object.
      * @param poses - poses to store in object.
-     * @param isReversed - whether or not the poses are intended to be followed in reverse.
+     * @param config The TrajectoryConfig of the path once it is generated.
      */
     public Waypoints(List<Pose2d> poses, TrajectoryConfig config) {
         this.poses = poses;

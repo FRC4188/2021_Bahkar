@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.TempManager;
 import frc.robot.utils.components.LEDPanel;
 
 /**
@@ -27,8 +26,6 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
   private LEDPanel ledPanel;
 
-  private TempManager tempManager;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -40,8 +37,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer(ledPanel);
-
-    tempManager = m_robotContainer.getTempManager();
   }
 
   /**
@@ -88,7 +83,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
 
-    m_robotContainer.resetRobot();
+    //m_robotContainer.resetRobot();
   }
 
   /**
@@ -109,7 +104,7 @@ public class Robot extends TimedRobot {
     }
 
     if (RobotController.getBatteryVoltage() < 12.7) DriverStation.reportWarning("Battery voltage too low; please change battery.", false);
-    m_robotContainer.resetRobot();
+    //m_robotContainer.resetRobot();
   }
 
   /**

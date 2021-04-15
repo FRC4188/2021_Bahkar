@@ -30,8 +30,8 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (hopper.getBeam()) hopper.set(0.0);
-    else hopper.set(0.75);
+    if (!hopper.getBeam()) hopper.set(0.0);
+    else hopper.set(0.35);
   }
 
   // Called once the command ends or is interrupted.

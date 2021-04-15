@@ -20,7 +20,7 @@ public class ToPosition extends CommandBase {
 
   double x, y, Angle;
 
-  ProfiledPIDController thetaController = new ProfiledPIDController(0.2, 0.0, 0.0, new Constraints(Constants.drive.MAX_RADIANS, 2.0 * Constants.drive.MAX_RADIANS));
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.08, 0.0, 0.02, new Constraints(Constants.drive.MAX_RADIANS, 2.0 * Constants.drive.MAX_RADIANS));
   ProfiledPIDController xController = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL));
   ProfiledPIDController yController = new ProfiledPIDController(1.5, 0.0, 0.0, new Constraints(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL));
 
@@ -67,6 +67,6 @@ public class ToPosition extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
+    return xController.atSetpoint() && yController.atSetpoint();
   }
 }

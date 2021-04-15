@@ -42,6 +42,7 @@ public class Turret extends SubsystemBase {
     resetEncoders(); //added this to be in line with other subsystems, if stuff mess up here then remove 
 
     shuffle = new Notifier(() -> updateShuffleboard());
+    shuffle.startPeriodic(0.1);
 
     this.drivetrain = drivetrain;
   }
@@ -107,8 +108,7 @@ public class Turret extends SubsystemBase {
    */
   public void trackTarget(boolean cont) {
     double angle = sensors.getTurretHorizontalAngle();
-    double offset = sensors.getTurretOffset(getPosition());
-    double power = pid.calculate(angle - offset, 0.0);
+    double power = pid.calculate(angle, 0.0);
     
     set(cont ? power : 0.0);
   }

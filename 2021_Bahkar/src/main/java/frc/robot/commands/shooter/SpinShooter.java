@@ -21,6 +21,7 @@ public class SpinShooter extends CommandBase {
    */
   public SpinShooter(Shooter shooter, double velocity, boolean cont) {
     addRequirements(shooter);
+    this.shooter = shooter;
     this.velocity = velocity;
     this.cont = cont;
   }

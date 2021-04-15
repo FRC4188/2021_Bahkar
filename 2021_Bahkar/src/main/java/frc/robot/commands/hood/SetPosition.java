@@ -17,6 +17,7 @@ public class SetPosition extends InstantCommand {
 
   public SetPosition(Hood hood, double position) {
     addRequirements(hood);
+    this.hood = hood;
     this.position = position;
   }
 

@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.CSPMath;
 
 public class Shooter extends SubsystemBase {
 
@@ -18,21 +17,20 @@ public class Shooter extends SubsystemBase {
     private final WPI_TalonFX lowerShooterMotor = new WPI_TalonFX(11);
 
     private Notifier shuffle;
-
-    private Sensors sensors;
     
     //https://www.omnicalculator.com/physics/projectile-motion
 
-    public Shooter(Sensors sensors) {
+    public Shooter() {
         motorInits();
 
         SmartDashboard.putNumber("Set Shooter Velocity", 0.0);
         SmartDashboard.putNumber("Set Shooter Power", 0.0);
 
+        SmartDashboard.putNumber("Shooter kP", 0.0);
+        SmartDashboard.putNumber("Shooter kD", 0.0);
+
         shuffle = new Notifier(() -> updateShuffleboard());
         shuffle.startPeriodic(0.1);
-
-        this.sensors = sensors;
     }
 
     @Override
@@ -89,7 +87,7 @@ public class Shooter extends SubsystemBase {
      * Sets shooter motors to a given velocity in rpm.
      */
     public void setVelocity(double velocity) {
-        lowerShooterMotor.set(ControlMode.Velocity, velocity);
+        lowerShooterMotor.set(ControlMode.Velocity, (velocity / 600.0) * Constants.robot.FALCON_ENCODER_TICKS);
     }
 
     public void setZoneVelocity() {

@@ -7,24 +7,21 @@ package frc.robot.commands.hopper;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Hopper;
 
 public class AutoMagazine extends CommandBase {
 
   private Hopper hopper;
   private Shooter shooter;
-  private Hood hood;
   private Turret turret;
   private boolean cont;
 
   /** Creates a new AutoMagazine. */
-  public AutoMagazine(Hopper hopper, Shooter shooter, Hood hood, Turret turret, boolean cont) {
+  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, boolean cont) {
     addRequirements(hopper);
 
     this.hopper = hopper;
     this.shooter = shooter;
-    this.hood = hood;
     this.turret = turret;
     this.cont = cont;
   }
@@ -36,7 +33,7 @@ public class AutoMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean ready = shooter.isReady() && turret.isAimed() && hood.isAimed();
+    boolean ready = Math.abs(shooter.getLowerVelocity() - 4000.0) < 10.0 && turret.isAimed();
 
     if (ready) hopper.set(0.8);
     else {

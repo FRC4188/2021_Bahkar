@@ -15,10 +15,12 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.trajectory.Waypoints;
 
 public class HolonomicControl extends CommandBase {
   Drivetrain drivetrain;
@@ -28,9 +30,9 @@ public class HolonomicControl extends CommandBase {
 
   Timer timer = new Timer();
 
-  ProfiledPIDController thetaController = new ProfiledPIDController(1.0, 0.0, 0.0, new Constraints(Constants.drive.MAX_RADIANS, 2.0 * Constants.drive.MAX_RADIANS));
-  PIDController xController = new PIDController(1.0, 0.0, 0.0);
-  PIDController yController = new PIDController(1.0, 0.0, 0.0);
+  ProfiledPIDController thetaController = new ProfiledPIDController(0.08, 0.0, 0.02, new Constraints(Constants.drive.MAX_RADIANS, 2.0 * Constants.drive.MAX_RADIANS));
+  PIDController xController = new PIDController(5.2, 0.0, 0.0);
+  PIDController yController = new PIDController(5.2, 0.0, 0.0);
 
   HolonomicDriveController controller = new HolonomicDriveController(xController, yController, thetaController);
 
@@ -47,6 +49,10 @@ public class HolonomicControl extends CommandBase {
     controller.setEnabled(true);
   }
 
+  public HolonomicControl(Drivetrain drivetrain, Waypoints waypoints, Rotation2d rotation) {
+    this(drivetrain, TrajectoryGenerator.generateTrajectory(waypoints.getPoses(), waypoints.getConfig()), rotation);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -57,7 +63,8 @@ public class HolonomicControl extends CommandBase {
   @Override
   public void execute() {
     Pose2d pose = drivetrain.getPose();
-    drivetrain.setChassisSpeeds(controller.calculate(new Pose2d(pose.getX(), -pose.getY(), pose.getRotation()), trajectory.sample(timer.get()), angle));
+    ChassisSpeeds calculated = controller.calculate(new Pose2d(pose.getX(), -pose.getY(), pose.getRotation()), trajectory.sample(timer.get()), angle);
+    drivetrain.drive(calculated.vxMetersPerSecond / Constants.drive.MAX_VELOCITY, calculated.vyMetersPerSecond / Constants.drive.MAX_VELOCITY, calculated.omegaRadiansPerSecond / Constants.drive.MAX_RADIANS, true);
   }
 
   // Called once the command ends or is interrupted.
@@ -69,10 +76,10 @@ public class HolonomicControl extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    Pose2d endPose = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters;
+    //Pose2d endPose = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters;
 
-    return timer.get() == trajectory.getTotalTimeSeconds() && 
+    return timer.get() == trajectory.getTotalTimeSeconds();/* && 
     Math.abs(drivetrain.getPose().getX() - endPose.getX()) < 0.2 &&
-    Math.abs(drivetrain.getPose().getY() - endPose.getY()) < 0.2;
+    Math.abs(drivetrain.getPose().getY() - endPose.getY()) < 0.2;*/
   }
 }

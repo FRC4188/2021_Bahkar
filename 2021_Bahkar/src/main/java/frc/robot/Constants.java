@@ -56,10 +56,10 @@ public final class Constants {
             public static final double MAX_RADIANS = 3.0 * Math.PI; // Maximum rotational velocity (Radians per Second).
 
             // Put together swerve module positions relative to the center of the robot.
-            private static final Translation2d FrontLeftLocation = new Translation2d((Constants.robot.A_LENGTH / 2), -(Constants.robot.A_WIDTH / 2));
-            private static final Translation2d FrontRightLocation = new Translation2d((Constants.robot.A_LENGTH / 2), (Constants.robot.A_WIDTH / 2));
-            private static final Translation2d BackLeftLocation = new Translation2d(-(Constants.robot.A_LENGTH / 2), -(Constants.robot.A_WIDTH / 2));
-            private static final Translation2d BackRightLocation = new Translation2d(-(Constants.robot.A_LENGTH / 2), (Constants.robot.A_WIDTH / 2));
+            public static final Translation2d FrontLeftLocation = new Translation2d((Constants.robot.A_LENGTH / 2), -(Constants.robot.A_WIDTH / 2));
+            public static final Translation2d FrontRightLocation = new Translation2d((Constants.robot.A_LENGTH / 2), (Constants.robot.A_WIDTH / 2));
+            public static final Translation2d BackLeftLocation = new Translation2d(-(Constants.robot.A_LENGTH / 2), -(Constants.robot.A_WIDTH / 2));
+            public static final Translation2d BackRightLocation = new Translation2d(-(Constants.robot.A_LENGTH / 2), (Constants.robot.A_WIDTH / 2));
             public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(FrontLeftLocation, FrontRightLocation, BackLeftLocation, BackRightLocation);
 
             public final class auto {
@@ -92,11 +92,11 @@ public final class Constants {
         public static final double GEAR_RATIO = 300.0; // angular velocity will be divided by this amount
         public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO; // degrees
 
-        public static final double kP = 2.0;
+        public static final double kP = 0.021;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
-        public static final double POS_TOLERANCE = 0.1; // degrees
+        public static final double POS_TOLERANCE = 5.0; // degrees
         public static final double VEL_TOLERANCE = 2.0; // degrees per second
 
         public static final double MAX_ANG = 370.0; //Farthest bound of the turret's roation in degrees.
@@ -130,7 +130,7 @@ public final class Constants {
         public static final double kP = 0.325;
         public static final double kI = 0.0;
         public static final double kD = 32.5;
-        public static final double kF = 1023.0 / ((robot.FALCON_MAX_VEL / 600.0) * robot.FALCON_ENCODER_TICKS);
+        public static final double kF = (1023.0 * 0.75) / 12780.0;
 
         public static final double RAMP_RATE = 0.75;
         public static final double SHOOTER_HEIGHT = Units.feetToMeters(2.0);
@@ -148,6 +148,22 @@ public final class Constants {
     public final class intake {
         public static final double FLOP_RATE = 0.5;
         public static final double RAMP_RATE = 0.5;
+    }
+
+    public final class climber {
+        public static final double GEAR_RATIO = (58.0 / 11.0) * (20.0 / 60.0);
+        public static final double MAX_HEIGHT = 1.3; //meters
+        public static final double ENCODER_TICS_PER_REV = 2048.0;
+        public static final double ENCODER_TO_REV = 1.0 / (GEAR_RATIO * ENCODER_TICS_PER_REV);
+        public static final double MAX_VELOCITY = 20000.0;
+        public static final double kP = 0.4; // porportion (will be * error (= at - want))
+        public static final double kD = 0.0; // change in error over time will be negative * kD
+        public static final double kI = 0.0; // integral sums up error (see )
+        public static final double kF = 1023 / MAX_VELOCITY;
+        public static final double RAMP_RATE = .2; // seconds
+        public static final int TIMEOUT = 10; // ms
+        public static final double MAX_POSITION = 0;
+        public static final double MIN_POSITION = 197500;
     }
 
     public final class lcdpanel {

@@ -37,9 +37,9 @@ public final class WaypointsList {
         public static final Waypoints stuff = new Waypoints(
             List.of(
                 INIT_POSE,
-                new Pose2d(1.0, 0.0, new Rotation2d()),
-                new Pose2d(1.5, 1.0, new Rotation2d(Math.PI)),
-                new Pose2d(0.0, 0.0, new Rotation2d(Math.PI))
+                new Pose2d(1.0, 0.0, new Rotation2d())
+                //new Pose2d(1.5, 1.0, new Rotation2d(Math.PI)),
+                //new Pose2d(0.0, 0.0, new Rotation2d(Math.PI))
             ),
             new TrajectoryConfig(Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL)
         );
@@ -74,7 +74,8 @@ public final class WaypointsList {
         public static final Waypoints DOWN = new Waypoints(
             List.of(
                 INIT_POSE,
-                new Pose2d(0.0, 6.1, new Rotation2d())
+                new Pose2d(3.0, 0.0, new Rotation2d()),
+                new Pose2d(6.1, 0.0, new Rotation2d())
             ),
             new TrajectoryConfig(2.0, 1.0)
             .addConstraint(new CentripetalAccelerationConstraint(1.0))
@@ -82,7 +83,7 @@ public final class WaypointsList {
 
         public static final Waypoints BACK = new Waypoints(
             List.of(
-                new Pose2d(0.0, 6.1, new Rotation2d(Math.PI)),
+                new Pose2d(6.1, 0.0, new Rotation2d(Math.PI)),
                 new Pose2d(INIT_POSE.getTranslation(), new Rotation2d(Math.PI))
             ),
             new TrajectoryConfig(2.0, 1.0)
