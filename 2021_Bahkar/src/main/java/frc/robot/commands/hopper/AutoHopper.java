@@ -9,16 +9,19 @@ package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Sensors;
 
 public class AutoHopper extends CommandBase {
   Hopper hopper;
+  Sensors sensors;
   boolean cont;
   /**
    * Creates a new AutoHopper.
    */
-  public AutoHopper(Hopper hopper, boolean cont) {
+  public AutoHopper(Hopper hopper, Sensors sensors, boolean cont) {
     addRequirements(hopper);
     this.hopper = hopper;
+    this.sensors = sensors;
     this.cont = cont;
   }
 
@@ -30,8 +33,9 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!hopper.getBeam()) hopper.set(0.0);
-    else hopper.set(0.35);
+    if (!sensors.getTopBeam()) hopper.set(0.0);
+    //else if (!sensors.getMidBeam()) hopper.set(0.15);
+    else hopper.set(0.2);
   }
 
   // Called once the command ends or is interrupted.

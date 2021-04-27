@@ -1,5 +1,7 @@
 package frc.robot.utils;
 
+import edu.wpi.first.wpilibj.RobotController;
+
 public class Derivative {
     private double lastTime = System.currentTimeMillis();
     private double lastVal;
@@ -10,7 +12,7 @@ public class Derivative {
 
     public double getRate(double value) {
         double time = System.currentTimeMillis();
-        double rate = (value - lastVal) / ((System.currentTimeMillis() - lastTime) / 1000.0);
+        double rate = (value - lastVal) / ((time - lastTime) / 1000.0);
 
         lastTime = time;
         lastVal = value;

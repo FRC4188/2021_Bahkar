@@ -10,29 +10,31 @@ import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Sensors;
 
-public class AutoMagazine extends CommandBase {
+public class AutoMagQuantity extends CommandBase {
 
   private Hopper hopper;
   private Shooter shooter;
   private Turret turret;
   private Sensors sensors;
-  private boolean cont;
 
   private double RPM_GOAL = 4000.0;
 
+  private int quantity;
+  private boolean lastTop = true;
+
   /** Creates a new AutoMagazine. */
-  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, boolean cont) {
+  public AutoMagQuantity(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, int quantity) {
     addRequirements(hopper);
 
     this.hopper = hopper;
     this.shooter = shooter;
     this.turret = turret;
     this.sensors = sensors;
-    this.cont = cont;
+    this.quantity = quantity;
   }
 
-  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, boolean cont, double rpm) {
-    this(hopper, shooter, turret, sensors, cont);
+  public AutoMagQuantity(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, int quantity, double rpm) {
+    this(hopper, shooter, turret, sensors, quantity);
     RPM_GOAL = rpm;
   }
 
@@ -44,6 +46,7 @@ public class AutoMagazine extends CommandBase {
   @Override
   public void execute() {
     boolean ready = Math.abs(shooter.getLowerVelocity() - RPM_GOAL) < 50.0 && turret.isAimed();
+    boolean top = sensors.getTopBeam();
 
     System.out.println(String.valueOf(ready));
 
@@ -52,6 +55,10 @@ public class AutoMagazine extends CommandBase {
     } else {
       hopper.set(0.0);
     }
+
+    if (!lastTop && top) quantity--;
+
+    lastTop = top;
   }
 
   // Called once the command ends or is interrupted.
@@ -63,6 +70,6 @@ public class AutoMagazine extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !cont;
+    return quantity == 0;
   }
 }

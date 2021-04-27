@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Notifier;
@@ -48,10 +49,12 @@ public class Shooter extends SubsystemBase {
         lowerShooterMotor.configClosedloopRamp(Constants.shooter.RAMP_RATE);
         lowerShooterMotor.configOpenloopRamp(Constants.shooter.RAMP_RATE);
 
+        lowerShooterMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 0.25));
+        upperShooterMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 0.25));
+
+
         lowerShooterMotor.setInverted(true);
         upperShooterMotor.setInverted(InvertType.FollowMaster);
-
-        lowerShooterMotor.configClosedloopRamp(Constants.shooter.RAMP_RATE);
 
         upperShooterMotor.follow(lowerShooterMotor);
     }
@@ -59,6 +62,8 @@ public class Shooter extends SubsystemBase {
     private void updateShuffleboard() {
         SmartDashboard.putNumber("Shooter Speed", getLowerVelocity());
         SmartDashboard.putNumber("Shooter Voltage", lowerShooterMotor.get() * RobotController.getInputVoltage());
+        SmartDashboard.putNumber("Upper Shooter Temp", getUpperTemp());
+        SmartDashboard.putNumber("Lower Shooter Temp", getLowerTemp());
     }
 
     public void setPIDF(double kP, double kI, double kD, double kF) {

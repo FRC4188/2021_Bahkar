@@ -12,14 +12,18 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  CANSparkMax intakeMotor = new CANSparkMax(41, MotorType.kBrushless);
-  CANEncoder intakeEncoder = intakeMotor.getEncoder();
-  Solenoid piston = new Solenoid(0);
+  private CANSparkMax intakeMotor = new CANSparkMax(41, MotorType.kBrushless);
+  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
+  private Solenoid piston = new Solenoid(0);
+
+  Notifier shuffle = new Notifier(() -> updateShuffle());
 
   /**
    * Creates a new Intake.
@@ -27,6 +31,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     resetEncoders();
     motorInits();
+    shuffle.startPeriodic(0.1);
   }
 
   @Override
@@ -34,10 +39,11 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void motorInits() {
-    intakeMotor.setInverted(true);
+  private void motorInits() {
+    intakeMotor.setInverted(false);
     intakeMotor.setIdleMode(IdleMode.kCoast);
     intakeMotor.setOpenLoopRampRate(Constants.intake.RAMP_RATE);
+    intakeMotor.setSmartCurrentLimit((int) Math.round(Constants.intake.CURRENT_LIMIT));
   }
 
   /**
@@ -45,7 +51,7 @@ public class Intake extends SubsystemBase {
    * @param power power input in a range of [-1.0, 1.0]
    */
   public void set(double power) {
-    intakeMotor.set(power);
+    intakeMotor.set(-power);
   }
 
   /**
@@ -66,14 +72,14 @@ public class Intake extends SubsystemBase {
    * Lowers the intake.
    */
   public void lower() {
-    piston.set(false);
+    piston.set(true);
   }
 
   /**
    * Raises/Lowers the intake to wherever it isn't.
    */
   public void toggle() {
-    piston.set(!piston.get());
+    piston.set(!getIsLowered());
   }
 
   /**
@@ -90,5 +96,13 @@ public class Intake extends SubsystemBase {
    */
   public double getTemp() {
     return intakeMotor.getMotorTemperature();
+  }
+
+  public double getVelocity() {
+    return intakeEncoder.getVelocity();
+  }
+
+  private void updateShuffle() {
+    SmartDashboard.putNumber("IntakeTemp", intakeMotor.getMotorTemperature());
   }
 }

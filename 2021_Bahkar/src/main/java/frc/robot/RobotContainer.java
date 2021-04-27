@@ -7,20 +7,29 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.intake.ClearDeadzone;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.auto.SixBall;
+import frc.robot.commands.climb.ThrottleClimb;
 import frc.robot.commands.drive.ResetOdometry;
+import frc.robot.commands.drive.ToAngle;
+import frc.robot.commands.drive.trajectorycontrol.HolonomicControl;
+import frc.robot.commands.groups.AutoIntake;
+import frc.robot.commands.groups.AutoShoot;
 import frc.robot.commands.hood.DashPosition;
+import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.commands.turret.TurretToOneEighty;
@@ -40,6 +49,7 @@ import frc.robot.utils.components.CSPJoystick;
 import frc.robot.utils.components.CspController;
 import frc.robot.utils.components.LEDPanel;
 import frc.robot.utils.components.CspController.Scaling;
+import frc.robot.utils.trajectory.WaypointsList;
 import frc.robot.utils.TempManager;
 
 /**
@@ -68,6 +78,8 @@ public class RobotContainer {
   CspController copilot = new CspController(1);
   CSPJoystick stick = new CSPJoystick(3);
   ButtonBox bBox = new ButtonBox(2);
+
+  DoubleSupplier throttle = () -> stick.getThrottle();
 
   // Auto chooser initialization
   private final SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<SequentialCommandGroup>();
@@ -133,15 +145,22 @@ public class RobotContainer {
   private void setDefaultCommands() {
     // Drivetrain manual drive command.
     drivetrain.setDefaultCommand(new RunCommand( () -> drivetrain.drive(
-    stick.getYAxis() + pilot.getY(Hand.kLeft, Scaling.SQUARED),
-    stick.getXAxis() + pilot.getX(Hand.kLeft, Scaling.SQUARED),
-    stick.getRotation() + pilot.getX(Hand.kRight, Scaling.SQUARED),
-    pilot.getBumper(Hand.kRight) || stick.getPOV() == 180),
+    /*stick.getYAxis() + */pilot.getY(Hand.kLeft, Scaling.SQUARED),
+    /*stick.getXAxis() + */pilot.getX(Hand.kLeft, Scaling.SQUARED),
+    /*stick.getRotation() + */pilot.getX(Hand.kRight, Scaling.SQUARED),
+    pilot.getBumper(Hand.kRight)),// || stick.getPOV() == 180),
     drivetrain));
+
+    /*drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(
+      pilot.getY(Hand.kRight, Scaling.SQUARED),
+      pilot.getX(Hand.kRight, Scaling.SQUARED),
+      -pilot.getAngle(Hand.kLeft),
+      pilot.atZero(Hand.kLeft)),
+      drivetrain));*/
     
     // Set motors to do nothing by default.
     turret.setDefaultCommand(new TurretPower(turret, 0.0));
-    intake.setDefaultCommand(new SpinIntake(intake, 0.0));
+    //intake.setDefaultCommand(new SpinIntake(intake, 0.0));
     hopper.setDefaultCommand(new SpinHopper(hopper, 0.0));
   }
 
@@ -154,16 +173,16 @@ public class RobotContainer {
     */
 
     // Intake commands.
-    pilot.getAButtonObj().whenPressed(new SpinIntake(intake, 0.5, true));
-    pilot.getAButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
-    pilot.getBButtonObj().whenPressed(new SpinIntake(intake, -0.5, true));
-    pilot.getBButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
+    pilot.getBButtonObj().whenPressed(new AutoIntake(intake, hopper, sensors, true))
+      .whenReleased(new AutoIntake(intake, hopper, sensors, false));
+    pilot.getAButtonObj().whenPressed(new SpinIntake(intake, -0.5, true))
+      .whenReleased(new SpinIntake(intake, 0.0, false));
 
     //Hopper (shoot) commands.
-    pilot.getXButtonObj().whenPressed(new SpinHopper(hopper, 1.0, true));
-    pilot.getXButtonObj().whenReleased(new SpinHopper(hopper, 0.0, false));
-    pilot.getYButtonObj().whenPressed(new SpinHopper(hopper, -1.0, true));
-    pilot.getYButtonObj().whenPressed(new SpinHopper(hopper, 0.0, false));
+    pilot.getYButtonObj().whenPressed(new AutoShoot(shooter, turret, hood, hopper, sensors, true, 3500.0))
+      .whenReleased(new AutoShoot(shooter, turret, hood, hopper, sensors, false, 0.0));
+    pilot.getXButtonObj().whenPressed(new SpinHopper(hopper, -0.5))
+    .whenReleased(new SpinHopper(hopper, 0.0));
 
     //Relative referenced intake command.
     pilot.getLbButtonObj().whenPressed(new InstantCommand(() -> intake.toggle(), intake));
@@ -173,23 +192,31 @@ public class RobotContainer {
     */
 
     // Intake commands.
-    stick.get3ButtonObj().whenPressed(new SpinIntake(intake, 0.5, true));
-    stick.get3ButtonObj().whenReleased(new SpinIntake(intake, 0.0, true));
-    stick.get4ButtonObj().whenPressed(new SpinIntake(intake, -0.5, true));
-    stick.get4ButtonObj().whenReleased(new SpinIntake(intake, 0.0, true));
+    //stick.get3ButtonObj().whenPressed(new IntakeThrottleSpeed(intake, () -> stick.getRawAxis(2), true));
+    //stick.get3ButtonObj().whenReleased(new IntakeThrottleSpeed(intake, () -> stick.getRawAxis(2), false));
+    stick.get3ButtonObj().whenPressed(new AutoIntake(intake, hopper, sensors, true))
+      .whenReleased(new AutoIntake(intake, hopper, sensors, false));
+
+    //stick.get3ButtonObj().whenPressed(new SpinIntake(intake, 1.0, true));
+    //stick.get3ButtonObj().whenReleased(new SpinIntake(intake, 0.0, false));
+
+    stick.get4ButtonObj().whenPressed(new SpinIntake(intake, -0.85, true))
+      .whenReleased(new SpinIntake(intake, 0.0, false));
 
     // Hopper (shoot) commands.
-    stick.getTriggerButtonObj().whenPressed(new SpinHopper(hopper, 1.0, true));
-    stick.getTriggerButtonObj().whenReleased(new SpinHopper(hopper, 0.0, true));
-    stick.get5ButtonObj().whenPressed(new SpinHopper(hopper, -1.0, true));
-    stick.get5ButtonObj().whenReleased(new SpinHopper(hopper, 0.0, true));
+    stick.getTriggerButtonObj().whenPressed(new AutoShoot(shooter, turret, hood, hopper, sensors, true, 3500.0))
+      .whenReleased(new AutoShoot(shooter, turret, hood, hopper, sensors, false, 3500.0));
+    //stick.getTriggerButtonObj().whenPressed(new SpinHopper(hopper, 1.0, true));
+    //stick.getTriggerButtonObj().whenReleased(new SpinHopper(hopper, 0.0, false));
+    stick.get5ButtonObj().whenPressed(new SpinHopper(hopper, -1.0, true))
+      .whenReleased(new SpinHopper(hopper, 0.0, true));
 
     // Relative referenced intake command.
     stick.get6ButtonObj().whenPressed(new InstantCommand(() -> intake.toggle()));
 
     // Auto-Aim command.
-    stick.get2ButtonObj().whileHeld(new RunCommand(() -> turret.trackTarget(true), turret));
-    stick.get2ButtonObj().whenReleased(new InstantCommand(() -> turret.trackTarget(false), turret));
+    stick.get2ButtonObj().whileHeld(new RunCommand(() -> turret.trackTarget(true), turret))
+      .whenReleased(new InstantCommand(() -> turret.trackTarget(false), turret));
 
 
     /*
@@ -197,27 +224,36 @@ public class RobotContainer {
     */
 
     // Manually turn the turret.
-    copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5, true));
-    copilot.getDpadLeftButtonObj().whenReleased(new TurretPower(turret, 0.0, false));
-    copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5, true));
-    copilot.getDpadRightButtonObj().whenReleased(new TurretPower(turret, 0.0, false));
+    copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(turret, 0.5, true))
+      .whenReleased(new TurretPower(turret, 0.0, false));
+    copilot.getDpadRightButtonObj().whenPressed(new TurretPower(turret, -0.5, true))
+      .whenReleased(new TurretPower(turret, 0.0, false));
 
     // Absolute referenced intake commands.
-    copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.lower()));
-    copilot.getDpadUpButtonObj().whenPressed(new InstantCommand(() -> intake.raise()));
+    //copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.toggle()));
+    //copilot.getDpadUpButtonObj().whenPressed(new InstantCommand(() -> intake.raise()));
 
-    // Turret commands.
-    copilot.getAButtonObj().whileHeld(new RunCommand(() -> turret.trackTarget(true), turret));
-    copilot.getAButtonObj().whenReleased(new InstantCommand(() -> turret.trackTarget(false), turret));
+    copilot.getDpadDownButtonObj().whenPressed(new SetPosition(hood, 0.2));
+    copilot.getDpadUpButtonObj().whenPressed(new SetPosition(hood, 0.77));
 
     // Climber commands.
-    copilot.getRbButtonObj().whenPressed(new InstantCommand(() -> climber.setLeft(0.2), climber));
-    copilot.getRbButtonObj().whenReleased(new InstantCommand(() -> climber.setLeft(0.0), climber));
-    copilot.getLbButtonObj().whenPressed(new InstantCommand(() -> climber.setLeft(-1.0), climber));
-    copilot.getLbButtonObj().whenReleased(new InstantCommand(() -> climber.setLeft(0.0), climber));
+    copilot.getRbButtonObj().whenPressed(new RunCommand(() -> climber.set(0.2), climber))
+      .whenReleased(new InstantCommand(() -> climber.set(0.0), climber));
+    copilot.getLbButtonObj().whenPressed(new RunCommand(() -> climber.set(-0.2), climber))
+      .whenReleased(new InstantCommand(() -> climber.set(0.0), climber));
 
+    copilot.getBButtonObj().whenPressed(new RunCommand(() -> climber.set(-0.6), climber))
+      .whenReleased(new InstantCommand(() -> climber.set(0.0), climber));
+
+    copilot.getXButtonObj().whenPressed(new InstantCommand(() -> climber.togglePneuBrake(), climber));
+
+    copilot.getYButtonObj().whenPressed(new InstantCommand(() -> intake.toggle(), intake));
+
+    //copilot.getAButtonObj().whenPressed(new ToAngle(drivetrain, 180.0));
+
+    
     /*
-    Button box commands follow:
+    Button box commands follow:\
     */
 
     // Turret commands.
@@ -225,7 +261,7 @@ public class RobotContainer {
     bBox.getButton2Obj().whenPressed(new TurretToOneEighty(turret));
 
     // Intake command.
-    bBox.getButton3Obj().whenPressed(new ClearDeadzone(intake));
+    //bBox.getButton3Obj().whenPressed(new ClearDeadzone(intake));
 
     // NetworkTable commands.
     bBox.getButton4Obj().whenPressed(new InstantCommand(() -> openNotifiers()));
@@ -239,7 +275,7 @@ public class RobotContainer {
     SmartDashboard.putData("Zero Turret", new ZeroTurret(turret));
 
     // Drivetrain command.
-    SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors));
+    SmartDashboard.putData("Zero Gyro", new ResetGyro(sensors, drivetrain));
     SmartDashboard.putData("Reset Pose", new ResetOdometry(drivetrain));
 
     // Shooter commands.
@@ -252,8 +288,14 @@ public class RobotContainer {
   }
 
   private void putChooser() {
-    autoChooser.addOption("Do Nothing", null);
-    autoChooser.addOption("Six-Ball Auto", new SixBall(drivetrain, shooter, hopper, sensors, turret, hood));
+    autoChooser.setDefaultOption("Do Nothing", null);
+    autoChooser.addOption("Six-Ball Auto", new SixBall(drivetrain, shooter, hopper, intake, sensors, turret, hood));
+    autoChooser.addOption("3 Meter Test", new SequentialCommandGroup(
+      new HolonomicControl(drivetrain, WaypointsList.SixBall.DOWN, new Rotation2d(Math.PI)),
+      new HolonomicControl(drivetrain, WaypointsList.SixBall.BACK, new Rotation2d(Math.PI))
+    ));
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   public void resetRobot() {
@@ -270,5 +312,11 @@ public class RobotContainer {
     Command autoCommand = autoChooser.getSelected();
 
     return autoCommand;
+  }
+
+  public void startTele() {
+    drivetrain.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d(Math.PI)));
+    sensors.resetGyro(
+      sensors.getYaw() + 180);
   }
 }

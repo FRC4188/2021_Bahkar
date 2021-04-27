@@ -147,8 +147,8 @@ public class Turret extends SubsystemBase {
    * @return Whether the turret is correctly aimed.
    */
   public boolean isAimed() {
-    double angle = sensors.getTurretHorizontalAngle() - sensors.getTurretOffset(getPosition());
-    boolean aimed = (Math.abs(angle - turretEncoder.getPosition()) < Constants.turret.POS_TOLERANCE) ? true : false;
+    double angle = sensors.getTurretHorizontalAngle();
+    boolean aimed = (Math.abs(angle) < Constants.turret.POS_TOLERANCE);
     return aimed;
   }
 }

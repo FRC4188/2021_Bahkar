@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,11 +21,10 @@ public class Climber extends SubsystemBase {
     private WPI_TalonFX climberRightMotor = new WPI_TalonFX(12);
 
     // pneumatics
-    private Solenoid climberSolenoid = new Solenoid(2);// needs to change
+    private Solenoid climberSolenoid = new Solenoid(1);// needs to change
     boolean isBrakeEngaged;
 
-
-
+    private Notifier shuffle;
 
     /**
      * Constructs a new Climber object and configures devices.
@@ -34,9 +35,7 @@ public class Climber extends SubsystemBase {
         climberLeftMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
         climberRightMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
         climberLeftMotor.setInverted(false);
-        climberLeftMotor.setNeutralMode(NeutralMode.Brake);
-        climberRightMotor.setNeutralMode(NeutralMode.Brake);
-
+        climberRightMotor.setInverted(true);
 
         // init
         controllerInit();
@@ -46,6 +45,10 @@ public class Climber extends SubsystemBase {
         // reset devices
         resetEncoders();
 
+        shuffle = new Notifier(() -> updateShuffleboard());
+        shuffle.startPeriodic(0.1);
+
+        engagePneuBrake(true);
     }
 
     /**
@@ -65,6 +68,7 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("Left climber velocity", getLeftVelocity());
         SmartDashboard.putNumber("Right climber velocity", getRightVelocity());
         SmartDashboard.putBoolean("Climber brake", !climberSolenoid.get());
+        SmartDashboard.putNumber("Climber Power", climberLeftMotor.get());
     }
 
     /**
@@ -85,14 +89,17 @@ public class Climber extends SubsystemBase {
      * Sets both climber motors to a given percentage [-1.0, 1.0].
      */
     public void set(double percent) {
-        climberLeftMotor.set(percent);
-        climberRightMotor.set(percent);
+        setLeft(percent);
+        setRight(percent);
     }
 
     /**
      * Sets left climber motor to a given percentage [-1.0, 1.0].
      */
     public void setLeft(double percent) {
+        /**if (
+            (getLeftPosition() <= Constants.climber.MAX_POSITION && percent < 0.0) ||
+            (getLeftPosition() >= Constants.climber.MIN_POSITION && percent > 0.0)) percent = 0.0;*/
         climberLeftMotor.set(ControlMode.PercentOutput, percent);
     }
 
@@ -100,7 +107,7 @@ public class Climber extends SubsystemBase {
      * Sets left climber motor to a given percentage [-1.0, 1.0].
      */
     public void setRight(double percent) {
-        climberRightMotor.set(percent);
+        climberRightMotor.set(ControlMode.PercentOutput, percent);
     }
 
     /**
@@ -133,6 +140,10 @@ public class Climber extends SubsystemBase {
      */
     public void engagePneuBrake(boolean output) {
         climberSolenoid.set(output);
+    }
+
+    public void togglePneuBrake() {
+        climberSolenoid.set(!climberSolenoid.get());
     }
 
     /**
@@ -172,7 +183,7 @@ public class Climber extends SubsystemBase {
      * Returns right encoder position in feet.
      */
     public double getRightPosition() {
-        return climberRightMotor.getSelectedSensorPosition(); // * ENCODER_TO_REV;
+        return climberRightMotor.getSelectedSensorPosition();
     }
 
     /**

@@ -4,18 +4,19 @@ import java.util.List;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import frc.robot.Constants;
 
 public final class WaypointsList {
     public static final class Testing {
-        public static final Pose2d INIT_POSE = new Pose2d(0, 0, new Rotation2d(Math.PI/2));
+        public static final Pose2d INIT_POSE = new Pose2d(0, 0, new Rotation2d());
 
         public static final Waypoints partA = new Waypoints(
             List.of(
                 INIT_POSE,
-                new Pose2d(0.0, 1.0, new Rotation2d(Math.PI/2))
+                new Pose2d(6.0, 0.0, new Rotation2d())
             ),
             new TrajectoryConfig(
                 Constants.drive.auto.MAX_VELOCITY, Constants.drive.auto.MAX_ACCEL)
@@ -69,25 +70,25 @@ public final class WaypointsList {
     }
 
     public static final class SixBall {
-        public static final Pose2d INIT_POSE = new Pose2d();
+        public static final Pose2d INIT_POSE = new Pose2d(new Translation2d(), new Rotation2d(Math.PI));
 
         public static final Waypoints DOWN = new Waypoints(
             List.of(
                 INIT_POSE,
-                new Pose2d(3.0, 0.0, new Rotation2d()),
-                new Pose2d(6.1, 0.0, new Rotation2d())
+                new Pose2d(-2.1, 1.62, new Rotation2d(Math.PI)),
+                new Pose2d(-4.9, 1.82, new Rotation2d(Math.PI))
             ),
-            new TrajectoryConfig(2.0, 1.0)
-            .addConstraint(new CentripetalAccelerationConstraint(1.0))
+            new TrajectoryConfig(4.0, 2.5)
+            .addConstraint(new CentripetalAccelerationConstraint(2.0))
         );
 
         public static final Waypoints BACK = new Waypoints(
             List.of(
-                new Pose2d(6.1, 0.0, new Rotation2d(Math.PI)),
-                new Pose2d(INIT_POSE.getTranslation(), new Rotation2d(Math.PI))
+                new Pose2d(-4.9, 1.82, new Rotation2d()),
+                new Pose2d(-1.11, 0.0, Rotation2d.fromDegrees(-45.0))
             ),
-            new TrajectoryConfig(2.0, 1.0)
-            .addConstraint(new CentripetalAccelerationConstraint(1.0))
+            new TrajectoryConfig(5.0, 3.0)
+            .addConstraint(new CentripetalAccelerationConstraint(3.0))
         );
     }
 }

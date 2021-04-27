@@ -6,6 +6,7 @@ package frc.robot.commands.groups;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Sensors;
 import frc.robot.commands.hopper.AutoHopper;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.subsystems.Hopper;
@@ -20,10 +21,10 @@ public class AutoIntake extends ParallelCommandGroup {
   boolean cont;
 
   /** Creates a new AutoIntake. */
-  public AutoIntake(Intake intake, Hopper hopper, boolean cont) {
+  public AutoIntake(Intake intake, Hopper hopper, Sensors sensors, boolean cont) {
     addCommands(
-      new AutoHopper(hopper, cont),
-      new SpinIntake(intake, 0.25, cont)
+      new AutoHopper(hopper, sensors, cont),
+      new SpinIntake(intake, 0.75, cont)
     );
   }
 }

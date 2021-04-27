@@ -51,7 +51,7 @@ public final class Constants {
 
             public static final double MAX_VOLTS = 12.0; // Maximum voltage allowed in the drivetrain.
             public static final double MAX_VELOCITY = 5.0; // Maximum velocity allowed in the drivetrain (Meters per Second).
-            public static final double MAX_ACCEL = 10.0; // Maximum acceleration of the drivetrain in (Meters per Second Squared).
+            public static final double MAX_ACCEL = 5.0; // Maximum acceleration of the drivetrain in (Meters per Second Squared).
             public static final double MAX_CACCEL = 8.0; // Maximum centripital acceleration of the robot (Meters per Second Squared).
             public static final double MAX_RADIANS = 3.0 * Math.PI; // Maximum rotational velocity (Radians per Second).
 
@@ -92,11 +92,11 @@ public final class Constants {
         public static final double GEAR_RATIO = 300.0; // angular velocity will be divided by this amount
         public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO; // degrees
 
-        public static final double kP = 0.021;
+        public static final double kP = 0.035;//0.06;
         public static final double kI = 0.0;
-        public static final double kD = 0.0;
+        public static final double kD = 0.0;//0.2;
 
-        public static final double POS_TOLERANCE = 5.0; // degrees
+        public static final double POS_TOLERANCE = 10.0; // degrees
         public static final double VEL_TOLERANCE = 2.0; // degrees per second
 
         public static final double MAX_ANG = 370.0; //Farthest bound of the turret's roation in degrees.
@@ -105,7 +105,7 @@ public final class Constants {
 
     public static final class shooter {
         public static final double MAX_VELOCITY = 5750.0;
-        public static final double IDLE_VEL = 3500.0;
+        public static final double IDLE_VEL = 2000.0;
 
         public static final double MAX_DISTANCE = 12.2;
 
@@ -132,7 +132,7 @@ public final class Constants {
         public static final double kD = 32.5;
         public static final double kF = (1023.0 * 0.75) / 12780.0;
 
-        public static final double RAMP_RATE = 0.75;
+        public static final double RAMP_RATE = 1.0;
         public static final double SHOOTER_HEIGHT = Units.feetToMeters(2.0);
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
     }
@@ -147,7 +147,8 @@ public final class Constants {
 
     public final class intake {
         public static final double FLOP_RATE = 0.5;
-        public static final double RAMP_RATE = 0.5;
+        public static final double RAMP_RATE = 0.0; // Seconds
+        public static final double CURRENT_LIMIT = 35.0; // Amps
     }
 
     public final class climber {
@@ -162,8 +163,13 @@ public final class Constants {
         public static final double kF = 1023 / MAX_VELOCITY;
         public static final double RAMP_RATE = .2; // seconds
         public static final int TIMEOUT = 10; // ms
-        public static final double MAX_POSITION = 0;
-        public static final double MIN_POSITION = 197500;
+        public static final int MAX_POSITION = 95639;
+        public static final int MIN_POSITION = 0;
+    }
+
+    public final class hopper {
+        public static final double RAMP_RATE = 0.5;
+        public static final double CURRENT_LIMIT = 40.0;
     }
 
     public final class lcdpanel {

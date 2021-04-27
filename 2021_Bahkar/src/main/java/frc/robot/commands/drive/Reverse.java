@@ -7,19 +7,20 @@ package frc.robot.commands.drive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
-public class Straight extends CommandBase {
+public class Reverse extends CommandBase {
 
   private Drivetrain drivetrain;
   private double distance;
   private double startX;
   private double startY;
 
-  /** Creates a new Directional. */
-  public Straight(Drivetrain drivetrain, double distance) {
-    addRequirements(drivetrain);
+  /** Creates a new Reverse. */
+  public Reverse(Drivetrain drivetrain, double distance) { 
+    // Use addRequirements() here to declare subsystem dependencies.
+ addRequirements(drivetrain); 
 
-    this.drivetrain = drivetrain;
-    this.distance = distance;
+ this.drivetrain = drivetrain;
+ this.distance = distance;
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +33,7 @@ public class Straight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.drive(0.7, 0.0, 0.0, false);
+    drivetrain.drive(-0.7, 0.0, 0.0, false);
   }
 
   // Called once the command ends or is interrupted.

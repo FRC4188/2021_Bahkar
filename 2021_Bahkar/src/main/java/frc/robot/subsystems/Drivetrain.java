@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
@@ -38,7 +39,7 @@ public class Drivetrain extends SubsystemBase {
   VecBuilder.fill(1.0),
   VecBuilder.fill(0.0, 0.0, 0.0));**/
 
-  private CSPOdometry odometry = new CSPOdometry(new Pose2d());
+  private CSPOdometry odometry = new CSPOdometry(new Pose2d(new Translation2d(), new Rotation2d(Math.PI)));
 
   private SwerveDriveKinematics kinematics = Constants.drive.KINEMATICS;
 
@@ -91,7 +92,7 @@ public void openNotifier() {
   }
 
   boolean lastNoAngle = true;
-  double Angle = 0.0;
+  double Angle = 180.0;
   /**
    * Method for field oriented drive using kinematics
    * @param pilot CspController of the pilot
@@ -104,7 +105,7 @@ public void openNotifier() {
 
     rotation = rotation * Constants.drive.MAX_RADIANS;
 
-    double currentAngle = sensors.getFusedHeading();
+    double currentAngle = odometry.getPose().getRotation().getDegrees();
 
     double angleCorrection = 0.0;
     /*
@@ -114,7 +115,7 @@ public void openNotifier() {
 
     if(rotation != 0){
         Angle = currentAngle;
-    }else{
+    } else{
       if( Math.abs(speed) > 0 || Math.abs(strafe) > 0 ){
         angleCorrection = rotationPID.calculate(currentAngle, Angle);
       }
@@ -176,10 +177,22 @@ public void openNotifier() {
     SmartDashboard.putString("Chassis Speeds", getChassisSpeeds().toString());
     SmartDashboard.putNumber("Chassis Velocity", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2.0) + Math.pow(speeds.vyMetersPerSecond, 2.0)));
 
-    SmartDashboard.putNumber("Front Left Angle", LeftFront.getAbsoluteAngle());
+    /*SmartDashboard.putNumber("Front Left Angle", LeftFront.getAbsoluteAngle());
     SmartDashboard.putNumber("Front Right Angle", RightFront.getAbsoluteAngle());
     SmartDashboard.putNumber("Rear Left Angle", LeftRear.getAbsoluteAngle());
-    SmartDashboard.putNumber("Rear Right Angle", RightRear.getAbsoluteAngle());
+    SmartDashboard.putNumber("Rear Right Angle", RightRear.getAbsoluteAngle());*/
+
+    SmartDashboard.putNumber("Front Left Speed Temp", getFrontLeftDriveTemp());
+    SmartDashboard.putNumber("Front Right Speed Temp", getFrontRightDriveTemp());
+    SmartDashboard.putNumber("Front Left Angle Temp", getFrontLeftAngleTemp());
+    SmartDashboard.putNumber("Front Right Angle Temp", getFrontRightAngleTemp());    SmartDashboard.putNumber("Front Left Speed Temp", getFrontLeftDriveTemp());
+    SmartDashboard.putNumber("Rear Right Angle Temp", getRearRightAngleTemp());    SmartDashboard.putNumber("Front Left Speed Temp", getFrontLeftDriveTemp());
+    SmartDashboard.putNumber("Rear Left Angle Temp", getRearLeftAngleTemp());
+    SmartDashboard.putNumber("Rear Right Speed Temp", getRearRightDriveTemp());
+    SmartDashboard.putNumber("Rear Left Speed Temp", getRearLeftDriveTemp());
+
+
+
   }
 
   public void reset() {

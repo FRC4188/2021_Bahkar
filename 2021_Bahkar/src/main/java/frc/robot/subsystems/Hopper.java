@@ -7,21 +7,28 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Hopper extends SubsystemBase {
 
   private final WPI_TalonFX hopperMotor = new WPI_TalonFX(9);
   private Sensors sensors;
-
+private Notifier shuffle = new Notifier(() -> updateShuffle());
   /**
    * Creates a new Hopper.
    */
   public Hopper(Sensors sensors) {
     this.sensors = sensors;
     hopperMotor.setInverted(true);
+    hopperMotor.configOpenloopRamp(Constants.hopper.RAMP_RATE);
+    hopperMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 1.0));
+    shuffle.startPeriodic(0.1);
   }
 
   @Override
@@ -52,4 +59,7 @@ public class Hopper extends SubsystemBase {
   public double getTemp() {
     return hopperMotor.getTemperature();
   }
+ private void updateShuffle (){
+   SmartDashboard.putNumber("Hopper Temp",getTemp());
+ } 
 }

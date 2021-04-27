@@ -96,7 +96,7 @@ public class CspController extends XboxController {
         double x = getX(hand, Scaling.LINEAR);
         double y = getY(hand, Scaling.LINEAR);
 
-        double radAngle = (x > 0.0) ? (Math.acos(y)) : (-Math.acos(y));
+        double radAngle = (Math.atan2(y, x) - 270) % 360 + 180;
         
         return Math.toDegrees(radAngle);
     }

@@ -35,6 +35,10 @@ public class Sensors extends SubsystemBase {
 
   private final DigitalInput topBeamA = new DigitalInput(0);
   private final DigitalInput topBeamB = new DigitalInput(1);
+  private final DigitalInput chn2 = new DigitalInput(2);
+  private final DigitalInput chn3 = new DigitalInput(3);
+  private final DigitalInput chn4 = new DigitalInput(4);
+
 
   Notifier shuffle;
   //LEDPanel ledPanel;
@@ -49,12 +53,13 @@ public class Sensors extends SubsystemBase {
     setupGyro();
 
     TlimelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    ClimelightTable = NetworkTableInstance.getDefault().getTable("chassis_limelight");
+    ClimelightTable = NetworkTableInstance.getDefault().getTable("limelight-chassis");
 
     TlimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
     ClimelightTable.getEntry("pipeline").setNumber(pipeline.getValue());
 
     shuffle = new Notifier(() -> updateShuffleBoard());
+    openNotifier();
   }
 
   @Override
@@ -66,7 +71,12 @@ public class Sensors extends SubsystemBase {
    * Send updated values to NetworkTables; call in a Notifier
    */
   private void updateShuffleBoard() {
-    SmartDashboard.putBoolean("Top Beam", getTopBeam());
+    //SmartDashboard.putBoolean("Top Beam", getTopBeam());
+    SmartDashboard.putBoolean("DIO Chn. 0", topBeamA.get());
+    SmartDashboard.putBoolean("DIO Chn. 1", topBeamB.get());
+    SmartDashboard.putBoolean("DIO Chn. 2", chn2.get());
+    SmartDashboard.putBoolean("DIO Chn. 3", chn3.get());
+    SmartDashboard.putBoolean("DIO Chn. 4", chn4.get());
     SmartDashboard.putNumber("Pigeon", getRotation2d().getDegrees());
   }
 
@@ -83,7 +93,7 @@ public class Sensors extends SubsystemBase {
    */
   private void setupGyro() {
     calibrateGyro();
-    resetGyro();
+    resetGyro(0.0);
   }
 
   /**
@@ -101,7 +111,7 @@ public class Sensors extends SubsystemBase {
    * @return Fused heading (normal gyro with corrections).
    */
   public double getFusedHeading() {
-    return Math.IEEEremainder(pigeon.getFusedHeading(), 360);
+    return -Math.IEEEremainder(pigeon.getFusedHeading(), 360);
   }
 
   /**
@@ -114,6 +124,10 @@ public class Sensors extends SubsystemBase {
    * Send the gyro/pigeon to 0 degrees.
    */
   public void resetGyro() {
+    resetGyro(0.0);
+  }
+
+  public void resetGyro(double angle) {
     pigeon.setYaw(0.0);
     pigeon.setFusedHeading(0.0);
   }
@@ -317,5 +331,9 @@ public class Sensors extends SubsystemBase {
    */
   public boolean getTopBeam() {
     return (topBeamA.get() && topBeamB.get());
+  }
+
+  public boolean getMidBeam() {
+    return chn3.get();
   }
 }

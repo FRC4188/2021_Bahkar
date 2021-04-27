@@ -45,6 +45,7 @@ public class Hood extends SubsystemBase {
    */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Hood Position", getPos());
+    SmartDashboard.putBoolean("Below Trench", servos.getPos() <= 0.2);
   }
 
   public void closeNotifier() {
