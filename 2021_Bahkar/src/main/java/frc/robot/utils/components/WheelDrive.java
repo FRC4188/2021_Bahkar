@@ -2,6 +2,7 @@ package frc.robot.utils.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -46,6 +47,9 @@ public class WheelDrive {
     //Call PIDConfig method for each motor and set ramp rates.
     PIDConfig();
     speedMotor.configClosedloopRamp(0.5);
+
+    speedMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35.0, 40.0, 0.5));
+    angleMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 0.5));
 
     //Call reset methods.
     resetEncoders();

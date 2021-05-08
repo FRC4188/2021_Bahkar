@@ -10,29 +10,25 @@ import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Sensors;
 
-public class AutoMagazine extends CommandBase {
+public class CloseMag extends CommandBase {
 
   private Hopper hopper;
   private Shooter shooter;
-  private Turret turret;
-  private Sensors sensors;
   private boolean cont;
 
   private double RPM_GOAL = 4000.0;
 
   /** Creates a new AutoMagazine. */
-  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, boolean cont) {
+  public CloseMag(Hopper hopper, Shooter shooter, boolean cont) {
     addRequirements(hopper);
 
     this.hopper = hopper;
     this.shooter = shooter;
-    this.turret = turret;
-    this.sensors = sensors;
     this.cont = cont;
   }
 
-  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, boolean cont, double rpm) {
-    this(hopper, shooter, turret, sensors, cont);
+  public CloseMag(Hopper hopper, Shooter shooter, boolean cont, double rpm) {
+    this(hopper, shooter, cont);
     RPM_GOAL = rpm;
   }
 
@@ -43,9 +39,7 @@ public class AutoMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean ready = Math.abs(shooter.getLowerVelocity() - RPM_GOAL) < 100.0 && turret.isAimed();
-
-    System.out.println(String.valueOf(ready));
+    boolean ready = Math.abs(shooter.getLowerVelocity() - RPM_GOAL) < 100.0;
 
     if (ready) {
       hopper.set(1.0);

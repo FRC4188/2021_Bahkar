@@ -49,8 +49,8 @@ public class Shooter extends SubsystemBase {
         lowerShooterMotor.configClosedloopRamp(Constants.shooter.RAMP_RATE);
         lowerShooterMotor.configOpenloopRamp(Constants.shooter.RAMP_RATE);
 
-        lowerShooterMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 0.25));
-        upperShooterMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30.0, 35.0, 0.25));
+        lowerShooterMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 25.0, 30.0, 0.25));
+        upperShooterMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 25.0, 30.0, 0.25));
 
 
         lowerShooterMotor.setInverted(true);

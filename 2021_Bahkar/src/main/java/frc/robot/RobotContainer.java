@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
+import frc.robot.commands.shooter.SpinShooter;
 import frc.robot.commands.auto.SixBall;
 import frc.robot.commands.climb.ThrottleClimb;
 import frc.robot.commands.drive.ResetOdometry;
@@ -151,6 +152,8 @@ public class RobotContainer {
     pilot.getBumper(Hand.kRight)),// || stick.getPOV() == 180),
     drivetrain));
 
+    turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(0.0), turret));
+
     /*drivetrain.setDefaultCommand(new RunCommand(() -> drivetrain.drive(
       pilot.getY(Hand.kRight, Scaling.SQUARED),
       pilot.getX(Hand.kRight, Scaling.SQUARED),
@@ -173,19 +176,26 @@ public class RobotContainer {
     */
 
     // Intake commands.
-    pilot.getBButtonObj().whenPressed(new AutoIntake(intake, hopper, sensors, true))
+    pilot.getBButtonObj().whenPressed(new SpinIntake(intake, 0.75, true))
       .whenReleased(new AutoIntake(intake, hopper, sensors, false));
     pilot.getAButtonObj().whenPressed(new SpinIntake(intake, -0.5, true))
       .whenReleased(new SpinIntake(intake, 0.0, false));
 
     //Hopper (shoot) commands.
-    pilot.getYButtonObj().whenPressed(new AutoShoot(shooter, turret, hood, hopper, sensors, true, 3500.0))
-      .whenReleased(new AutoShoot(shooter, turret, hood, hopper, sensors, false, 0.0));
+    //pilot.getYButtonObj().whenPressed(new AutoShoot(shooter, turret, hood, hopper, sensors, true, 3500.0))
+      //.whenReleased(new AutoShoot(shooter, turret, hood, hopper, sensors, false, 0.0));
+    pilot.getYButtonObj().whenPressed(new SpinHopper(hopper, 1.0))
+    .whenReleased(new SpinHopper(hopper, 0.0));
     pilot.getXButtonObj().whenPressed(new SpinHopper(hopper, -0.5))
     .whenReleased(new SpinHopper(hopper, 0.0));
 
+    pilot.getDpadUpButtonObj().whenPressed(new SpinShooter(shooter, 2050.0));
+    pilot.getDpadDownButtonObj().whenPressed(new SpinShooter(shooter, 0.0));
+
     //Relative referenced intake command.
-    pilot.getLbButtonObj().whenPressed(new InstantCommand(() -> intake.toggle(), intake));
+    pilot.getLbButtonObj().whenPressed(new InstantCommand((
+      
+    ) -> intake.toggle(), intake));
 
     /*
     Joystick Commands
@@ -204,10 +214,10 @@ public class RobotContainer {
       .whenReleased(new SpinIntake(intake, 0.0, false));
 
     // Hopper (shoot) commands.
-    stick.getTriggerButtonObj().whenPressed(new AutoShoot(shooter, turret, hood, hopper, sensors, true, 3500.0))
-      .whenReleased(new AutoShoot(shooter, turret, hood, hopper, sensors, false, 3500.0));
-    //stick.getTriggerButtonObj().whenPressed(new SpinHopper(hopper, 1.0, true));
-    //stick.getTriggerButtonObj().whenReleased(new SpinHopper(hopper, 0.0, false));
+    //stick.getTriggerButtonObj().whenPressed(new AutoShoot(shooter, turret, hood, hopper, sensors, true, 3500.0))
+      //.whenReleased(new AutoShoot(shooter, turret, hood, hopper, sensors, false, 3500.0));
+    stick.getTriggerButtonObj().whenPressed(new SpinHopper(hopper, 1.0, true));
+    stick.getTriggerButtonObj().whenReleased(new SpinHopper(hopper, 0.0, false));
     stick.get5ButtonObj().whenPressed(new SpinHopper(hopper, -1.0, true))
       .whenReleased(new SpinHopper(hopper, 0.0, true));
 

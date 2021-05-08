@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -99,9 +100,12 @@ public void openNotifier() {
    */
   public void drive (double speed, double strafe, double rotation, boolean FO) {
 
+    double brownoutProt = (RobotController.getBatteryVoltage() < Constants.robot.MID_VOLTS) ?
+                          (RobotController.getBatteryVoltage() - Constants.robot.MIN_VOLTS) / (Constants.robot.MID_VOLTS - Constants.robot.MIN_VOLTS) :
+                          1.0;
     //Convert controller input to M/S and Rad/S
-    speed = speed * Constants.drive.MAX_VELOCITY;
-    strafe = strafe * Constants.drive.MAX_VELOCITY;
+    speed = (speed * Constants.drive.MAX_VELOCITY) * (brownoutProt > 0.0 ? brownoutProt : 0.0);
+    strafe = (strafe * Constants.drive.MAX_VELOCITY);
 
     rotation = rotation * Constants.drive.MAX_RADIANS;
 
