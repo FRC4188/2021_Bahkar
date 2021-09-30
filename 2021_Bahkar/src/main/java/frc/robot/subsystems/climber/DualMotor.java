@@ -64,7 +64,7 @@ public class DualMotor {
      * Reset the encoder of the falcon motor.
      */
     public void reset() {
-        falcon.setSelectedSensorPosition(0.0);
+        falcon.setSelectedSensorPosition(0);
     }
 
     /**
