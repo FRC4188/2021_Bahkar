@@ -5,45 +5,46 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.drive.Odometry;
+import frc.robot.subsystems.drive.Swerve;
 
 public class Straight extends CommandBase {
 
-  private Drivetrain drivetrain;
+  private Swerve drive = Swerve.getInstance();
+  private Odometry odometry = Odometry.getInstance();
   private double distance;
   private double startX;
   private double startY;
 
   /** Creates a new Directional. */
-  public Straight(Drivetrain drivetrain, double distance) {
-    addRequirements(drivetrain);
+  public Straight(double distance) {
+    addRequirements(drive);
 
-    this.drivetrain = drivetrain;
     this.distance = distance;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startX = drivetrain.getPose().getX();
-    startY = drivetrain.getPose().getY();
+    startX = odometry.getPose().getX();
+    startY = odometry.getPose().getY();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.drive(0.7, 0.0, 0.0, false);
+    drive.drive(0.3, 0.0, 0.0, false);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetrain.drive(0.0, 0.0, 0.0, false);
+    drive.drive(0.0, 0.0, 0.0, false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.hypot(drivetrain.getPose().getX() - startX, drivetrain.getPose().getY() - startY) >= distance;
+    return Math.hypot(odometry.getPose().getX() - startX, odometry.getPose().getY() - startY) >= distance;
   }
 }

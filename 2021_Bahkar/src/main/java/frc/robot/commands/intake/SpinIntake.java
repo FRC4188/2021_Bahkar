@@ -8,19 +8,19 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.intake.Intake;
 
 public class SpinIntake extends CommandBase {
-  private Intake intake;
+  private Intake intake = Intake.getInstace();
   private double power;
   private boolean cont;
 
   /**
    * Creates a new SpinIntake.
    */
-  public SpinIntake(Intake intake, double power, boolean cont) {
+  public SpinIntake(double power, boolean cont) {
     addRequirements(intake);
-    this.intake = intake;
+
     this.power = power;
     this.cont = cont;
   }
@@ -29,7 +29,7 @@ public class SpinIntake extends CommandBase {
    * Creates a new SpinIntake which will run until interrupted.
    */
   public SpinIntake(Intake intake, double power) {
-    this(intake, power, true);
+    this(power, true);
   }
 
   // Called when the command is initially scheduled.

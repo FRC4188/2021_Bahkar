@@ -2,27 +2,32 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.hood;
+package frc.robot.commands.sensors;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.drive.Odometry;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class SetPosition extends InstantCommand {
+public class ResetTranslation extends InstantCommand {
 
-  private Hood hood = Hood.getInstance();
-  private boolean position;
+  Odometry odometry = Odometry.getInstance();
+  Translation2d translation;
 
-  public SetPosition(boolean position) {
-    addRequirements(hood);
-    this.position = position;
+  public ResetTranslation(Translation2d translation) {
+    this.translation = translation;
+  }
+
+  public ResetTranslation() {
+    this(new Translation2d());
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    hood.setPosition(position);
+    odometry.setPose(new Pose2d(translation, odometry.getPose().getRotation()));
   }
 }

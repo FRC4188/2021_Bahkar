@@ -5,35 +5,22 @@
 package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.Hopper;
-import frc.robot.subsystems.Sensors;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.hopper.Hopper;
 
 public class AutoMagazine extends CommandBase {
 
-  private Hopper hopper;
-  private Shooter shooter;
-  private Turret turret;
-  private Sensors sensors;
+  private Hopper hopper = Hopper.getInstance();
+  private Shooter shooter = Shooter.getInstance();
+  private Turret turret = Turret.getInstance();
   private boolean cont;
 
-  private double RPM_GOAL = 4000.0;
-
   /** Creates a new AutoMagazine. */
-  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, boolean cont) {
+  public AutoMagazine(boolean cont) {
     addRequirements(hopper);
 
-    this.hopper = hopper;
-    this.shooter = shooter;
-    this.turret = turret;
-    this.sensors = sensors;
     this.cont = cont;
-  }
-
-  public AutoMagazine(Hopper hopper, Shooter shooter, Turret turret, Sensors sensors, boolean cont, double rpm) {
-    this(hopper, shooter, turret, sensors, cont);
-    RPM_GOAL = rpm;
   }
 
   // Called when the command is initially scheduled.
@@ -43,7 +30,7 @@ public class AutoMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean ready = Math.abs(shooter.getLowerVelocity() - RPM_GOAL) < 100.0 && turret.isAimed();
+    boolean ready = Math.abs(shooter.getVelocity() - 4000.0) < 200.0 && turret.isAimed();
 
     System.out.println(String.valueOf(ready));
 

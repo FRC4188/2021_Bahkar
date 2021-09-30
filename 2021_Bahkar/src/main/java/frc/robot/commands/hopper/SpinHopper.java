@@ -8,20 +8,20 @@
 package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.hopper.Hopper;
 
 public class SpinHopper extends CommandBase {
 
-  Hopper hopper;
+  Hopper hopper = Hopper.getInstance();
   double percentage;
   boolean cont;
 
   /**
    * Creates a new SpinHopper.
    */
-  public SpinHopper(Hopper hopper, double percentage, boolean cont) {
+  public SpinHopper(double percentage, boolean cont) {
     addRequirements(hopper);
-    this.hopper = hopper;
+
     this.percentage = percentage;
     this.cont = cont;
   }
@@ -30,7 +30,7 @@ public class SpinHopper extends CommandBase {
    * Creates a new SpinHopper which will run until interrupted.
    */
   public SpinHopper(Hopper hopper, double percentage) {
-    this(hopper, percentage, true);
+    this(percentage, true);
   }
 
   // Called when the command is initially scheduled.

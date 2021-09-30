@@ -8,20 +8,19 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.turret.Turret;
 
 public class FollowTarget extends CommandBase {
-  Turret turret;
+  Turret turret = Turret.getInstance();
 
   boolean cont;
 
   /**
    * Creates a new FollowTarget.
    */
-  public FollowTarget(Turret turret, boolean cont) {
+  public FollowTarget(boolean cont) {
     addRequirements(turret);
 
-    this.turret = turret;
     this.cont = cont;
   }
 

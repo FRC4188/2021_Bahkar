@@ -1,61 +1,61 @@
 package frc.robot.utils;
 
+import java.util.ArrayList;
+
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Hopper;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.drive.Swerve;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class TempManager {
 
-    Drivetrain drivetrain;
-    Shooter shooter;
-    Turret turret;
-    Hopper hopper;
-    Intake intake;
+    private static Swerve drive = Swerve.getInstance();
+    private static Intake intake = Intake.getInstace();
+    private static Shooter shooter = Shooter.getInstance();
+    private static Hopper hopper = Hopper.getInstance();
 
-    /**
-     * Constructs a TempManaget object.
-     * @param drivetrain Drivetrain subsytem.
-     * @param shooter Shooter subsytem.
-     * @param turret Turret subsystem.
-     * @param hopper Hopper subsystem.
-     * @param intake Intake subsystem.
-     */
-    public TempManager(Drivetrain drivetrain, Shooter shooter, Turret turret, Hopper hopper, Intake intake) {
-        this.drivetrain = drivetrain;
-        this.shooter = shooter;
-        this.turret = turret;
-        this.hopper = hopper;
-        this.intake = intake;
+    private static Notifier shuffle = new Notifier(() -> run());
 
-        SmartDashboard.putString("Temp Warnings", "None");
+    public static void openNotifier() {
+        shuffle.startPeriodic(1.0);
     }
 
-    /**
-     * Call in robotPeriodic to check all of the motor temperatures.
-     */
-    public void run() {
-        StringBuilder sb = new StringBuilder();
+    public static void closeNotifier() {
+        shuffle.close();
+    }
 
-        // check all the motors and append their temperature to the String Builder.
-        if (drivetrain.getFrontLeftDriveTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("FLDrive: " + drivetrain.getFrontLeftDriveTemp() + ", ");
-        if (drivetrain.getFrontLeftAngleTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("FLAngle: " + drivetrain.getFrontLeftAngleTemp() + ", ");
-        if (drivetrain.getFrontRightDriveTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("FRDrive: " + drivetrain.getFrontRightDriveTemp() + ", ");
-        if (drivetrain.getFrontRightAngleTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("FRAngle: " + drivetrain.getFrontRightAngleTemp() + ", ");
-        if (drivetrain.getRearLeftDriveTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("RLDrive: " + drivetrain.getRearLeftDriveTemp() + ", ");
-        if (drivetrain.getRearLeftAngleTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("RLAngle: " + drivetrain.getRearLeftAngleTemp() + ", ");
-        if (drivetrain.getRearRightDriveTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("RRDrive: " + drivetrain.getRearRightDriveTemp() + ", ");
-        if (drivetrain.getRearRightAngleTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("RRAngle: " + drivetrain.getRearRightAngleTemp() + ", ");
-        if (shooter.getUpperTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("Upper Shooter: " + shooter.getUpperTemp() + ",");
-        if (shooter.getLowerTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("Lower Shooter: " + shooter.getLowerTemp() + ",");
-        if (turret.getTemp() > Constants.robot.FIVEFIFTY_MAX_TEMP) sb.append("Turret: " + turret.getTemp());
-        if (hopper.getTemp() > Constants.robot.FALCON_MAX_TEMP) sb.append("Hopper: " + hopper.getTemp() + ",");
-        if (intake.getTemp() > Constants.robot.FIVEFIFTY_MAX_TEMP) sb.append("Intake: " + intake.getTemp() + ",");
+    private static void run() {
+        ArrayList<String> report = new ArrayList<String>();
 
-        if (sb.length() > 1) SmartDashboard.putString("Temp Warnings", sb.toString());
-        else if (SmartDashboard.getString("Temp Warnings", "None") != "None") SmartDashboard.putString("Temp Warnings", "None");
+        if (drive.getFrontLeftAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Front Left Angle");
+        if (drive.getFrontRightAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Front Right Angle");
+        if (drive.getRearLeftAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Rear Left Angle");
+        if (drive.getRearRightAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Rear Right Angle");
+        if (drive.getFrontLeftDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Front Left Drive");
+        if (drive.getFrontRightDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Front Right Drive");
+        if (drive.getRearLeftDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Rear Left Drive");
+        if (drive.getRearRightDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Rear Right Drive");
+        if (intake.getTemperature() > Constants.robot.FIVEFIFTY_MAX_TEMP)
+            report.add("Intake");
+        if (hopper.getTemperature() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Hopper");
+        if (shooter.getUpperTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Upper Shooter");
+        if (shooter.getLowerTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Lower Shooter");
+
+        String product = String.join(", ", report);
+        SmartDashboard.putString("Motor Temp Warnings", product);
     }
 }

@@ -8,18 +8,18 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.turret.Turret;
 
 public class TurretPower extends CommandBase {
-  Turret turret;
+  Turret turret = Turret.getInstance();
   double power;
   private boolean cont;
   /**
    * Creates a new TurretPower.
    */
-  public TurretPower(Turret turret, double power, boolean cont) {
+  public TurretPower(double power, boolean cont) {
     addRequirements(turret);
-    this.turret = turret;
+
     this.power = power;
     this.cont = cont;
   }
@@ -27,8 +27,8 @@ public class TurretPower extends CommandBase {
   /**
    * Creates a new TurretPower which will run until interrupted.
    */
-  public TurretPower (Turret turret, double power) {
-    this(turret, power, true);
+  public TurretPower (double power) {
+    this(power, true);
   }
 
   // Called when the command is initially scheduled.

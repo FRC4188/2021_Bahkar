@@ -8,33 +8,21 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.AutoMagazine;
 import frc.robot.commands.intake.SpinIntake;
-import frc.robot.commands.shooter.SpinShooter;
+import frc.robot.commands.shooter.ShooterVelocity;
 import frc.robot.commands.turret.FollowTarget;
-import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Hopper;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Sensors;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoShoot extends ParallelCommandGroup {
   /** Creates a new AutoShoot. */
-  public AutoShoot(Shooter shooter, Turret turret, Hood hood, Hopper hopper, Sensors sensors, boolean cont) {
+  public AutoShoot(boolean cont) {
     addCommands(
-      new AutoMagazine(hopper, shooter, turret, sensors, cont),
-      new FollowTarget(turret, cont),
-      new SpinShooter(shooter, 4000.0, cont)
-    );
-  }
-
-  public AutoShoot(Shooter shooter, Turret turret, Hood hood, Hopper hopper, Sensors sensors, boolean cont, double rpm) {
-    addCommands(
-      new AutoMagazine(hopper, shooter, turret, sensors, cont, rpm),
-      new FollowTarget(turret, cont),
-      new SpinShooter(shooter, rpm, cont)
+      new AutoMagazine(cont),
+      new SpinIntake(0.75, cont),
+      new FollowTarget(cont),
+      new ShooterVelocity(4000.0),
+      new SetPosition(cont)
     );
   }
 }

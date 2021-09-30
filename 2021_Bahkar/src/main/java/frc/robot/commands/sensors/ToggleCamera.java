@@ -4,29 +4,41 @@
 
 package frc.robot.commands.sensors;
 
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.sensors.Sensors;
+import frc.robot.subsystems.sensors.Limelight.CameraMode;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ResetGyro extends InstantCommand {
+public class ToggleCamera extends InstantCommand {
 
   Sensors sensors = Sensors.getInstance();
-  Rotation2d angle;
 
-  public ResetGyro(Rotation2d angle) {
-    this.angle = angle;
-  }
-
-  public ResetGyro() {
-    this(new Rotation2d());
+  public ToggleCamera() {
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    sensors.setPigeonAngle(angle.getDegrees());
+    CameraMode current;
+
+    try {
+      current = sensors.getCameraMode();
+    } catch (Exception e) {
+      current = CameraMode.VISION;
+
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+      DriverStation.reportError(e.getMessage(), true);
+    }
+
+    switch (current) {
+      case VISION:
+        sensors.setCameraMode(CameraMode.CAMERA);
+      case CAMERA:
+        sensors.setCameraMode(CameraMode.VISION);
+    }
   }
 }
