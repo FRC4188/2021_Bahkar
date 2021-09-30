@@ -9,6 +9,8 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.drive.Swerve;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.climber.Climber;
 
 public class TempManager {
 
@@ -16,6 +18,8 @@ public class TempManager {
     private static Intake intake = Intake.getInstace();
     private static Shooter shooter = Shooter.getInstance();
     private static Hopper hopper = Hopper.getInstance();
+    private static Climber climber = Climber.getInstance();
+    private static Turret turret = Turret.getInstance();
 
     private static Notifier shuffle = new Notifier(() -> run());
 
@@ -54,6 +58,12 @@ public class TempManager {
             report.add("Upper Shooter");
         if (shooter.getLowerTemp() > Constants.robot.FALCON_MAX_TEMP)
             report.add("Lower Shooter");
+        if (climber.getFalconTemp() > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Climber Falcon");
+        if (climber.getNeoTemp() > Constants.robot.NEO_MAX_TEMP)
+            report.add("Climber Neo");
+        if (turret.getTemp() > Constants.robot.FIVEFIFTY_MAX_TEMP)
+            report.add("Turret Temp");
 
         String product = String.join(", ", report);
         SmartDashboard.putString("Motor Temp Warnings", product);

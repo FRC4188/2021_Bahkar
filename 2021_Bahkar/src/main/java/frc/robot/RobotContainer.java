@@ -18,6 +18,7 @@ import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.sensors.ResetTranslation;
+import frc.robot.commands.shooter.ShooterVelocity;
 import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.subsystems.climber.Climber;
@@ -49,7 +50,6 @@ public class RobotContainer {
 
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
-  //CSPJoystick stick = new CSPJoystick(2);
 
   SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<SequentialCommandGroup>();
 
@@ -71,8 +71,9 @@ public class RobotContainer {
       pilot.getX(Hand.kRight, Scaling.CUBED),
       pilot.getBumper(Hand.kRight)),
     drive));
+    
     // Set shooter speed to nothing.
-    //shooter.setDefaultCommand(new ShooterVelocity(0.0));
+    shooter.setDefaultCommand(new ShooterVelocity(0.0));
   }
 
   /**
