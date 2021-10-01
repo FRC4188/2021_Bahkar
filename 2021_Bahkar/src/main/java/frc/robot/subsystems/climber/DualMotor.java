@@ -7,8 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import frc.robot.Constants;
-import frc.robot.utils.NonLinearController;
+import frc.robot.math.Derivative;
 
 /** Class to control the Falcon/Neo duo in the climber */
 public class DualMotor {
@@ -16,11 +15,7 @@ public class DualMotor {
     private WPI_TalonFX falcon;
     private CANSparkMax neo;
 
-    private NonLinearController controller = new NonLinearController(
-        Constants.climber.A,
-        Constants.climber.B,
-        Constants.climber.D
-    );
+    private Derivative accel = new Derivative(0.0);
 
     /**
      * Constructs a new DualMotor controller.
@@ -41,10 +36,6 @@ public class DualMotor {
     public void set(double percent) {
         falcon.set(percent);
         neo.set(percent);
-    }
-
-    public void setVelocity(double velocity) {
-        set(controller.calculate(velocity, getVelocity()));
     }
 
     /**
@@ -84,14 +75,21 @@ public class DualMotor {
      * Get the position of the falcon motor.
      */
     public double getPosition() {
-        return falcon.getSelectedSensorPosition() * Constants.climber.ENCODER_TO_REV;
+        return falcon.getSelectedSensorPosition();
     }
 
     /**
      * Get the velocity of the falcon motor.
      */
     public double getVelocity() {
-        return falcon.getSelectedSensorVelocity() * Constants.climber.ENCODER_TO_REV;
+        return falcon.getSelectedSensorVelocity();
+    }
+
+    /**
+     * Get the acceleration of the falcon motor.
+     */
+    public double getAcceleration() {
+        return accel.getRate(getVelocity());
     }
 
     /**

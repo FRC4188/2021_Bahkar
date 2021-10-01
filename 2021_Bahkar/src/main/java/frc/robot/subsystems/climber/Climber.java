@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.math.LogisticController;
 
 /**
  * Class encapsulating climber function.
@@ -19,6 +20,12 @@ public class Climber extends SubsystemBase {
     }
 
     private DualMotor motors = new DualMotor(13, 41);
+
+    private LogisticController controller = new LogisticController(
+        Constants.climber.P,
+        Constants.climber.D,
+        Constants.climber.S
+    );
 
     // pneumatics
     private Solenoid climberSolenoid = new Solenoid(2);// needs to change
@@ -74,6 +81,10 @@ public class Climber extends SubsystemBase {
         motors.set(percent);
     }
 
+    public void setVelocity(double velocity) {
+        motors.set(controller.calculate(velocity, getVelocity()));
+    }
+
     /**
      * Fires the break pistons to stop the climber.
      */
@@ -106,14 +117,14 @@ public class Climber extends SubsystemBase {
      * Returns left encoder position in feet.
      */
     public double getPosition() {
-        return motors.getPosition();
+        return motors.getPosition() * Constants.climber.ENCODER_TO_REV;
     }
 
     /**
      * Returns the left climber velocity in rpm.
      */
     public double getVelocity() {
-        return motors.getVelocity();
+        return motors.getVelocity() * Constants.climber.ENCODER_TO_REV;
     }
 
     /**

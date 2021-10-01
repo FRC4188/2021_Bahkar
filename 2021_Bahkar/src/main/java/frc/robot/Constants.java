@@ -263,9 +263,12 @@ public final class Constants {
         public static final double MAX_HEIGHT = 1.3; //meters
         public static final double ENCODER_TICS_PER_REV = 2048.0;
         public static final double ENCODER_TO_REV = 1.0 / (GEAR_RATIO * ENCODER_TICS_PER_REV);
-        public static final double A = 2.9;
-        public static final double B = 0.07;
-        public static final double D = 0.5;
+        public static final double kP = 0.4;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double P = 0.8; // Proportional term in PDS controller
+        public static final double D = 0.027; // Deviational term in PDS controller
+        public static final double S = 0.413; // Squaring term in PDS controller
         public static final double MAX_VELOCITY = 0.5; // Meters per second.
         public static final double RAMP_RATE = .2; // seconds
         public static final int TIMEOUT = 10; // ms
