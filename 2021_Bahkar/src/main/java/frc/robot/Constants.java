@@ -259,9 +259,10 @@ public final class Constants {
     }
 
     public static final class climber {
-        public static final double GEAR_RATIO = (58.0 / 11.0) * (20.0 / 60.0);
+        private static final double GEAR_RATIO = (58.0 / 11.0) * (20.0 / 60.0);
         public static final double MAX_HEIGHT = 1.3; //meters
-        public static final double ENCODER_TICS_PER_REV = 2048.0;
+        private static final double ENCODER_TICS_PER_REV = 2048.0;
+        /** Multiply this by encoder ticks to get meters. */
         public static final double ENCODER_TO_REV = 1.0 / (GEAR_RATIO * ENCODER_TICS_PER_REV);
         public static final double kP = 0.4;
         public static final double kI = 0.0;

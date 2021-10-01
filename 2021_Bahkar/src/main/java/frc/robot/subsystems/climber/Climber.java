@@ -78,7 +78,9 @@ public class Climber extends SubsystemBase {
      * Sets both climber motors to a given percentage [-1.0, 1.0].
      */
     public void set(double percent) {
-        motors.set(percent);
+        if ((percent >= 0.0 && getPosition() < Constants.climber.MAX_HEIGHT) ||
+            (percent <= 0.0 && getPosition() > 0.0))
+         motors.set(percent);
     }
 
     public void setVelocity(double velocity) {
