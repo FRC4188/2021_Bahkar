@@ -28,7 +28,7 @@ public class Climber extends SubsystemBase {
     );
 
     // pneumatics
-    private Solenoid climberSolenoid = new Solenoid(2);// needs to change
+    private Solenoid climberSolenoid = new Solenoid(1);// needs to change
 
     private Notifier shuffle;
 
@@ -37,10 +37,9 @@ public class Climber extends SubsystemBase {
      */
     private Climber() {
 
-        motors.setInverted(false);
+        //motors.setInverted(false);
 
         // init
-        controllerInit();
         setBrake();
         setRampRate();
 
@@ -48,7 +47,9 @@ public class Climber extends SubsystemBase {
         resetEncoders();
 
         shuffle = new Notifier(() -> updateShuffleboard());
-        shuffle.startPeriodic(0.1);
+        shuffle.startPeriodic(0.2);
+
+        engagePneuBrake(false);
     }
 
     /**
@@ -69,17 +70,11 @@ public class Climber extends SubsystemBase {
     }
 
     /**
-     * Config Pid loop stuff. Have Locke explain.
-     */
-    public void controllerInit() {
-    }
-
-    /**
      * Sets both climber motors to a given percentage [-1.0, 1.0].
      */
     public void set(double percent) {
-        if ((percent >= 0.0 && getPosition() < Constants.climber.MAX_HEIGHT) ||
-            (percent <= 0.0 && getPosition() > 0.0))
+        //if ((percent >= 0.0 && getPosition() < Constants.climber.MAX_HEIGHT) ||
+            //(percent <= 0.0 && getPosition() > 0.0))
          motors.set(percent);
     }
 
@@ -91,7 +86,11 @@ public class Climber extends SubsystemBase {
      * Fires the break pistons to stop the climber.
      */
     public void engagePneuBrake(boolean output) {
-        //climberSolenoid.set(output);
+        climberSolenoid.set(output);
+    }
+
+    public boolean getPneuBrake() {
+        return climberSolenoid.get();
     }
 
     /**
@@ -105,7 +104,7 @@ public class Climber extends SubsystemBase {
      * Sets climber ramp rates.
      */
     public void setRampRate() {
-        motors.setRampRate(Constants.climber.RAMP_RATE);
+        motors.setRampRate(0.0);
     }
 
     /**

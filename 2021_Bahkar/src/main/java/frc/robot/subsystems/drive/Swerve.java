@@ -40,6 +40,7 @@ public class Swerve extends SubsystemBase {
   private PIDController rotationPID = new PIDController(0.1, 0.0, 0.01);
 
   private Notifier dashboard = new Notifier(() -> smartDashboard());
+  private Notifier odometryNotifier = new Notifier(() -> runOdo());
 
   /** Creates a new Swerve. */
   private Swerve() {
@@ -47,11 +48,15 @@ public class Swerve extends SubsystemBase {
     rotationPID.enableContinuousInput(-180, 180);
     rotationPID.setTolerance(2.0);
 
-    dashboard.startPeriodic(0.1);
+    dashboard.startPeriodic(0.2);
+    odometryNotifier.startPeriodic(0.05);
   }
 
   @Override
   public void periodic() {
+  }
+
+  private void runOdo() {
     odometry.update(sensors.getRotation(), getChassisSpeeds());
   }
 
@@ -62,14 +67,14 @@ public class Swerve extends SubsystemBase {
     SmartDashboard.putNumber("M4 (RR) Angle", rightRear.getAbsoluteAngle());
     SmartDashboard.putString("Chassis Speeds", getChassisSpeeds().toString());
 
-    SmartDashboard.putNumber("Falcon 1 Temp", leftFront.getAngleTemp());
+    /*SmartDashboard.putNumber("Falcon 1 Temp", leftFront.getAngleTemp());
     SmartDashboard.putNumber("Falcon 2 Temp", leftFront.getSpeedTemp());
     SmartDashboard.putNumber("Falcon 3 Temp", rightFront.getAngleTemp());
     SmartDashboard.putNumber("Falcon 4 Temp", rightFront.getSpeedTemp());
     SmartDashboard.putNumber("Falcon 5 Temp", leftRear.getAngleTemp());
     SmartDashboard.putNumber("Falcon 6 Temp", leftRear.getSpeedTemp());
     SmartDashboard.putNumber("Falcon 7 Temp", rightRear.getAngleTemp());
-    SmartDashboard.putNumber("Falcon 8 Temp", rightRear.getSpeedTemp());
+    SmartDashboard.putNumber("Falcon 8 Temp", rightRear.getSpeedTemp());*/
   }
 
   public void drive(double yInput, double xInput, double rotInput, boolean fieldOriented) {

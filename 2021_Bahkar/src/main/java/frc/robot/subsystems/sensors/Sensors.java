@@ -23,7 +23,7 @@ public class Sensors extends SubsystemBase {
   }
 
   private Pigeon pigeon = new Pigeon(31);
-  private Limelight limelight = new Limelight("limelight");
+  private Limelight limelight = new Limelight("limelight-turret");
 
   private Notifier shuffle = new Notifier(() -> updateShuffleboard());
 
@@ -40,7 +40,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public void openNotifier() {
-    shuffle.startPeriodic(0.1);
+    shuffle.startPeriodic(0.2);
   }
 
   public void closeNotifier() {
@@ -49,6 +49,7 @@ public class Sensors extends SubsystemBase {
 
   private void updateShuffleboard() {
     SmartDashboard.putString("Vision Pose", getRobotPose().toString());
+    SmartDashboard.putNumber("Limelight TY", getTY());
     SmartDashboard.putNumber("Vision Distance", getDistance());
     SmartDashboard.putNumber("Pigeon Rotation", getRotation().getDegrees());
   }
@@ -70,7 +71,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getDistance() {
-    return (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT) / getTY();
+    return (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(getTY() + Constants.turret.MOUNTING_ANGLE));
   }
 
   public Rotation2d getRotation() {

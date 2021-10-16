@@ -20,7 +20,7 @@ public class Hood extends SubsystemBase {
 
   //LinearServos servos = new LinearServos(0, 1);
 
-  private Solenoid piston = new Solenoid(1);
+  private Solenoid piston = new Solenoid(2);
 
   /** Creates a new Hood. */
   public Hood() {

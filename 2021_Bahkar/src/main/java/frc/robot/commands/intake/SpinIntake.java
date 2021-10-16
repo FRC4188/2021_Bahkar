@@ -28,7 +28,7 @@ public class SpinIntake extends CommandBase {
   /**
    * Creates a new SpinIntake which will run until interrupted.
    */
-  public SpinIntake(Intake intake, double power) {
+  public SpinIntake(double power) {
     this(power, true);
   }
 

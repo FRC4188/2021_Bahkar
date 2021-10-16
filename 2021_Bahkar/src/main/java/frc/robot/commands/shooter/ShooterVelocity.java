@@ -14,15 +14,17 @@ public class ShooterVelocity extends InstantCommand {
 
   Shooter shooter = Shooter.getInstance();
   double velocity;
+  boolean cont;
 
-  public ShooterVelocity(double velocity) {
+  public ShooterVelocity(double velocity, boolean cont) {
     addRequirements(shooter);
     this.velocity = velocity;
+    this.cont = cont;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.setVelocity(velocity);
+    shooter.setVelocity(cont ? velocity : 0.0);
   }
 }

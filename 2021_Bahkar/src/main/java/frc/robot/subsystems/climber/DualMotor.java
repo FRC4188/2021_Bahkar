@@ -26,6 +26,9 @@ public class DualMotor {
         falcon = new WPI_TalonFX(falconID);
         neo = new CANSparkMax(neoID, MotorType.kBrushless);
 
+        falcon.setInverted(false);
+        neo.setInverted(false);
+
         falcon.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     }
     

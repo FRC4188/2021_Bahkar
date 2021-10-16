@@ -38,7 +38,7 @@ public class SixBall extends SequentialCommandGroup {
         new ResetGyro(),
         new ResetOdometry(),
 
-        new ShooterVelocity(4000),
+        new ShooterVelocity(4000, true),
 
         // Second, aim the turret close to the target.
         new TurretAngle(30.0),
@@ -52,7 +52,7 @@ public class SixBall extends SequentialCommandGroup {
         // End the auto-aiming and shooting.
         new ParallelCommandGroup(
           new AutoShoot(false),
-          new ShooterVelocity(Constants.shooter.IDLE_VEL)
+          new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
         ),
 
         new InstantCommand(() -> intake.setRaised(false), intake),
@@ -73,14 +73,14 @@ public class SixBall extends SequentialCommandGroup {
 
         new ParallelCommandGroup(
           new AutoShoot(false),
-          new ShooterVelocity(Constants.shooter.IDLE_VEL)
+          new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
         ),
 
         new ParallelCommandGroup(
           new SpinIntake(0.0, false),
           new SpinHopper(0.0, false),
           new TurretPower(0.0),
-          new ShooterVelocity(Constants.shooter.IDLE_VEL)
+          new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
         )
     );
   }

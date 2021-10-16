@@ -13,9 +13,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -37,8 +36,9 @@ public class Turret extends SubsystemBase {
   // Motor control components.
   CANSparkMax turretMotor = new CANSparkMax(42, MotorType.kBrushless);
   CANEncoder turretEncoder = turretMotor.getEncoder();
-  ProfiledPIDController pid = new ProfiledPIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD,
-                              new Constraints(Constants.turret.MAX_VELOCITY, Constants.turret.MAX_ACCELERATION));
+  PIDController pid = new PIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD);
+  //ProfiledPIDController pid = new ProfiledPIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD,
+                              //new Constraints(Constants.turret.MAX_VELOCITY, Constants.turret.MAX_ACCELERATION));
 
   Notifier shuffle;
 
@@ -52,7 +52,7 @@ public class Turret extends SubsystemBase {
     resetEncoders(); //added this to be in line with other subsystems, if stuff mess up here then remove 
 
     shuffle = new Notifier(() -> updateShuffleboard());
-    shuffle.startPeriodic(0.1);
+    shuffle.startPeriodic(0.2);
   }
 
   @Override

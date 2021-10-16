@@ -114,8 +114,7 @@ public final class Constants {
     }
 
     public final static class field {
-        public static final double GOAL_HEIGHT = Units.feetToMeters(8.0 + 2.25 / 12.0); // Height of the goal from the
-                                                                                        // ground (Meters).
+        public static final double GOAL_HEIGHT = 2.4954282231; // Height of the goal from the ground (Meters).
         public static final double PORT_HEIGHT = 2.5; // feet
         public static final double THREE_POINT_DEPTH = Units.feetToMeters(2.0 + (5.25 / 12.0)); // Depth of the 3 point
                                                                                                 // goal inside the 2
@@ -135,10 +134,9 @@ public final class Constants {
         public static final double GOAL_X_POS = 9.27; // 0.0
     }
 
-    public final class turret {
+    public final static class turret {
         public static final double LIMELIGHT_HEIGHT = 0.67; // Height fromt the ground of the limelight (Meters).
-        public static final double MOUNTING_ANGLE = 0.0; // Verticle angle which the limelight sits at on the turret
-                                                         // (Degrees).
+        public static final double MOUNTING_ANGLE = 19.7;//20.61;
 
         public static final double MAX_VELOCITY = 11000.0; // rpm
         public static final double MAX_ACCELERATION = 22000.0; // rpm per sec
@@ -146,11 +144,11 @@ public final class Constants {
         public static final double GEAR_RATIO = 300.0; // angular velocity will be divided by this amount
         public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO; // degrees
 
-        public static final double kP = 0.8;
+        public static final double kP = 0.03;
         public static final double kI = 0.0;
-        public static final double kD = 0.0;
+        public static final double kD = 0.003;
 
-        public static final double POS_TOLERANCE = 0.1; // degrees
+        public static final double POS_TOLERANCE = 2.0; // degrees
         public static final double VEL_TOLERANCE = 2.0; // degrees per second
 
         public static final double MAX_ANG = 370.0; // Farthest bound of the turret's roation in degrees.

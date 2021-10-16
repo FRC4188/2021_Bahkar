@@ -24,7 +24,7 @@ public class TempManager {
     private static Notifier shuffle = new Notifier(() -> run());
 
     public static void openNotifier() {
-        shuffle.startPeriodic(1.0);
+        shuffle.startPeriodic(2.0);
     }
 
     public static void closeNotifier() {

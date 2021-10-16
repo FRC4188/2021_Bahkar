@@ -36,6 +36,8 @@ public class AutoMagazine extends CommandBase {
 
     if (ready) {
       hopper.set(1.0);
+    } else if (hopper.getTopBeam()){
+      hopper.set(0.2);
     } else {
       hopper.set(0.0);
     }

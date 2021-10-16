@@ -13,12 +13,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.climber.Climb;
+import frc.robot.commands.drive.CenterBall;
+import frc.robot.commands.groups.AutoIntake;
+import frc.robot.commands.groups.AutoShoot;
+import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.sensors.ResetTranslation;
-import frc.robot.commands.shooter.ShooterVelocity;
 import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.subsystems.climber.Climber;
@@ -29,6 +33,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.utils.CspController;
+import frc.robot.utils.TempManager;
 import frc.robot.utils.CspController.Scaling;
 
 /**
@@ -61,6 +66,8 @@ public class RobotContainer {
     setDefaultCommands();
     configureButtonBindings();
     addChooser();
+
+    TempManager.openNotifier();
   }
 
   private void setDefaultCommands() {
@@ -69,11 +76,11 @@ public class RobotContainer {
       pilot.getY(Hand.kLeft, Scaling.CUBED),
       pilot.getX(Hand.kLeft, Scaling.CUBED),
       pilot.getX(Hand.kRight, Scaling.CUBED),
-      pilot.getBumper(Hand.kRight)),
+      false),
     drive));
     
     // Set shooter speed to nothing.
-    shooter.setDefaultCommand(new ShooterVelocity(0.0));
+    //shooter.setDefaultCommand(new ShooterVelocity(0.0));
   }
 
   /**
@@ -85,21 +92,31 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
       // Intake commands.
-      pilot.getAButtonObj().whenPressed(new SpinIntake(0.5, true))
-        .whenReleased(new SpinIntake(0.0, false));
+      pilot.getAButtonObj().whenPressed(new AutoIntake(true))
+        .whenReleased(new AutoIntake(false));
       pilot.getBButtonObj().whenPressed(new SpinIntake(-0.5, true))
         .whenReleased(new SpinIntake(0.0, false));
   
       //Hopper (shoot) commands.
-      pilot.getXButtonObj().whenPressed(new SpinHopper(1.0, true))
-        .whenReleased(new SpinHopper(0.0, false));
+      pilot.getXButtonObj().whenPressed(new AutoShoot(true))
+        .whenReleased(new AutoShoot(false));
       pilot.getYButtonObj().whenPressed(new SpinHopper(-1.0, true))
         .whenReleased(new SpinHopper(0.0, false));
+
+      pilot.getDpadUpButtonObj().whenPressed(new SetPosition(true));
+      pilot.getDpadDownButtonObj().whenPressed(new SetPosition(false));
+
+      pilot.getDpadLeftButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(true)));
+      pilot.getDpadRightButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(false)));
   
       //Relative referenced intake command.
       pilot.getLbButtonObj().whenPressed(new InstantCommand(() -> intake.toggleRaised(), intake));
 
-      pilot.getRbButtonObj().whenPressed(new FollowTarget(true)).whenReleased(new FollowTarget(false));
+      pilot.getRbButtonObj().whenPressed(new CenterBall(
+        () -> pilot.getY(Hand.kLeft, Scaling.CUBED),
+        () -> pilot.getX(Hand.kLeft, Scaling.CUBED),
+        true
+        )).whenReleased(new CenterBall(false));
   
       /*
       Copilot commands follow:
@@ -110,6 +127,9 @@ public class RobotContainer {
         .whenReleased(new TurretPower(0.0, false));
       copilot.getDpadRightButtonObj().whenPressed(new TurretPower(-0.5, true))
         .whenReleased(new TurretPower(0.0, false));
+
+      /*copilot.getDpadLeftButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(true)));
+      copilot.getDpadRightButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(false)));*/
   
       // Absolute referenced intake commands.
       copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.setRaised(true)));
@@ -119,14 +139,16 @@ public class RobotContainer {
       copilot.getAButtonObj().whileHeld(new RunCommand(() -> turret.trackTarget(true), turret))
         .whenReleased(new InstantCommand(() -> turret.trackTarget(false), turret));
 
+      copilot.getXButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(!climber.getPneuBrake())));
+
       // Climber commands.
-      copilot.getRbButtonObj().whenPressed(new RunCommand(() -> climber.set(0.2), climber))
-        .whenReleased(new InstantCommand(() -> climber.set(0.0), climber));
-      copilot.getLbButtonObj().whenPressed(new RunCommand(() -> climber.set(-0.2), climber))
-        .whenReleased(new InstantCommand(() -> climber.set(0.0), climber));
+      copilot.getRbButtonObj().whenPressed(new Climb(0.5, true))
+        .whenReleased(new Climb(0.0, false));
+      copilot.getLbButtonObj().whenPressed(new Climb(-0.5, true))
+        .whenReleased(new Climb(0.0, false));
   
-      copilot.getBButtonObj().whenPressed(new RunCommand(() -> climber.set(-1.0), climber))
-        .whenReleased(new InstantCommand(() -> climber.set(0.0), climber));
+      copilot.getBButtonObj().whenPressed(new Climb(-1.0, true))
+        .whenReleased(new Climb(0.0, false));
 
     /* SmartDashboard Commands */
     SmartDashboard.putData("Reset Gyro", new ResetGyro());
