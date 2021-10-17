@@ -19,7 +19,7 @@ public class Climber extends SubsystemBase {
         return instance;
     }
 
-    private DualMotor motors = new DualMotor(13, 41);
+    private DualMotor motors = new DualMotor(13, 12);
 
     private LogisticController controller = new LogisticController(
         Constants.climber.P,
@@ -118,14 +118,14 @@ public class Climber extends SubsystemBase {
      * Returns left encoder position in feet.
      */
     public double getPosition() {
-        return motors.getPosition() * Constants.climber.ENCODER_TO_REV;
+        return motors.getPositions()[0] * Constants.climber.ENCODER_TO_REV;
     }
 
     /**
      * Returns the left climber velocity in rpm.
      */
     public double getVelocity() {
-        return motors.getVelocity() * Constants.climber.ENCODER_TO_REV;
+        return motors.getVelocities()[0] * Constants.climber.ENCODER_TO_REV;
     }
 
     /**
@@ -145,15 +145,15 @@ public class Climber extends SubsystemBase {
     /**
      * Returns left climber motor temperature in Celcius.
      */
-    public double getFalconTemp() {
-        return motors.getFalconTemp();
+    public double[] getFalconTemps() {
+        return motors.getTemps();
     }
 
-    /**
-     * Returns right climber motor temperature in Celcius.
-     */
-    public double getNeoTemp() {
-        return motors.getNeoTemp();
-    }
+    // /**
+    //  * Returns right climber motor temperature in Celcius.
+    //  */
+    // public double getNeoTemp() {
+    //     return motors.getNeoTemp();
+    // }
 
 }

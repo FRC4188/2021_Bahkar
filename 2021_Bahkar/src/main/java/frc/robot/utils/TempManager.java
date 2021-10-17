@@ -35,33 +35,35 @@ public class TempManager {
         ArrayList<String> report = new ArrayList<String>();
 
         if (drive.getFrontLeftAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Front Left Angle");
+            report.add("Front Left Angle" + drive.getFrontLeftAngleTemp());
         if (drive.getFrontRightAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Front Right Angle");
+            report.add("Front Right Angle" + drive.getFrontRightAngleTemp());
         if (drive.getRearLeftAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Rear Left Angle");
+            report.add("Rear Left Angle" + drive.getRearLeftAngleTemp());
         if (drive.getRearRightAngleTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Rear Right Angle");
+            report.add("Rear Right Angle" + drive.getRearRightAngleTemp());
         if (drive.getFrontLeftDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Front Left Drive");
+            report.add("Front Left Drive" + drive.getFrontLeftDriveTemp());
         if (drive.getFrontRightDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Front Right Drive");
+            report.add("Front Right Drive" + drive.getFrontRightDriveTemp());
         if (drive.getRearLeftDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Rear Left Drive");
+            report.add("Rear Left Drive" + drive.getRearLeftDriveTemp());
         if (drive.getRearRightDriveTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Rear Right Drive");
+            report.add("Rear Right Drive" + drive.getRearRightDriveTemp());
         if (intake.getTemperature() > Constants.robot.FIVEFIFTY_MAX_TEMP)
-            report.add("Intake");
+            report.add("Intake" + intake.getTemperature());
         if (hopper.getTemperature() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Hopper");
+            report.add("Hopper" + hopper.getTemperature());
         if (shooter.getUpperTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Upper Shooter");
+            report.add("Upper Shooter" + shooter.getUpperTemp());
         if (shooter.getLowerTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Lower Shooter");
-        if (climber.getFalconTemp() > Constants.robot.FALCON_MAX_TEMP)
-            report.add("Climber Falcon");
-        if (climber.getNeoTemp() > Constants.robot.NEO_MAX_TEMP)
-            report.add("Climber Neo");
+            report.add("Lower Shooter" + shooter.getLowerTemp());
+        if (climber.getFalconTemps()[0] > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Climber Falcon1");
+        if (climber.getFalconTemps()[1] > Constants.robot.FALCON_MAX_TEMP)
+            report.add("Climber Falcon2" + climber.getFalconTemps()[1]);
+        // if (climber.getNeoTemp() > Constants.robot.NEO_MAX_TEMP)
+        //     report.add("Climber Neo");
         if (turret.getTemp() > Constants.robot.FIVEFIFTY_MAX_TEMP)
             report.add("Turret Temp");
 
