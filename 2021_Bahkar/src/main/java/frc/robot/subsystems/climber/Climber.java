@@ -104,7 +104,7 @@ public class Climber extends SubsystemBase {
      * Sets climber ramp rates.
      */
     public void setRampRate() {
-        motors.setRampRate(0.0);
+        motors.setRampRate(Constants.climber.RAMP_RATE);
     }
 
     /**

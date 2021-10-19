@@ -269,7 +269,7 @@ public final class Constants {
         public static final double D = 0.027; // Deviational term in PDS controller
         public static final double S = 0.413; // Squaring term in PDS controller
         public static final double MAX_VELOCITY = 0.5; // Meters per second.
-        public static final double RAMP_RATE = .2; // seconds
+        public static final double RAMP_RATE = 0.5; // seconds
         public static final int TIMEOUT = 10; // ms
         public static final int MAX_POSITION = 95639;
         public static final int MIN_POSITION = 0;
