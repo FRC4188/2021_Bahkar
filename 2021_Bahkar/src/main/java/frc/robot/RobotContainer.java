@@ -23,7 +23,6 @@ import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.sensors.ResetTranslation;
-import frc.robot.commands.turret.FollowTarget;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Swerve;
