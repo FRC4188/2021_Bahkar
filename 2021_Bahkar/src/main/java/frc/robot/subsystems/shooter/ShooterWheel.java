@@ -35,6 +35,9 @@ public class ShooterWheel {
         masterMotor.configClosedloopRamp(Constants.shooter.RAMP_RATE);
 
         slaveMotor.follow(masterMotor);
+
+        masterMotor.setSubsystem("Shooter");
+        slaveMotor.setSubsystem("Shooter");
     }
 
     public void setPower(double power) {

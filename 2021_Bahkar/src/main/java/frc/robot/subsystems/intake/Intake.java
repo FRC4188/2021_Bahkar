@@ -7,6 +7,8 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,6 +25,8 @@ public class Intake extends SubsystemBase {
   private FourBar fourBar = new FourBar(0);
   private WPI_TalonFX intakeMotor = new WPI_TalonFX(14);
 
+  private Notifier shuffle = new Notifier(() -> shuffle());
+
   /** Creates a new Intake. */
   private Intake() {
     CommandScheduler.getInstance().registerSubsystem(this);
@@ -30,10 +34,16 @@ public class Intake extends SubsystemBase {
     intakeMotor.setNeutralMode(NeutralMode.Brake);
     intakeMotor.configOpenloopRamp(Constants.intake.RAMP_RATE);
     intakeMotor.setInverted(true);
+
+    shuffle.startPeriodic(0.2);
   }
 
   @Override
   public void periodic() {
+  }
+
+  private void shuffle() {
+    SmartDashboard.putBoolean("Intake Solenoid", getRaised());
   }
 
   public void set(double power) {
@@ -42,6 +52,10 @@ public class Intake extends SubsystemBase {
 
   public void setRaised(boolean raised) {
     fourBar.setRaised(raised);
+  }
+
+  public void relax() {
+    fourBar.relax();
   }
 
   public boolean getRaised() {

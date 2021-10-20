@@ -49,7 +49,6 @@ public class Sensors extends SubsystemBase {
 
   private void updateShuffleboard() {
     SmartDashboard.putString("Vision Pose", getRobotPose().toString());
-    SmartDashboard.putNumber("Limelight TY", getTY());
     SmartDashboard.putNumber("Vision Distance", getDistance());
     SmartDashboard.putNumber("Pigeon Rotation", getRotation().getDegrees());
   }
@@ -72,6 +71,14 @@ public class Sensors extends SubsystemBase {
 
   public double getDistance() {
     return (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(getTY() + Constants.turret.MOUNTING_ANGLE));
+  }
+
+  public double getFormulaRPM() {
+    double dist = getDistance();
+
+    return 37.0583 * Math.pow(dist, 2) +
+      -368.372 * dist +
+      4566.37;
   }
 
   public Rotation2d getRotation() {

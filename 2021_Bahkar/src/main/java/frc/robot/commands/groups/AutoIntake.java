@@ -5,8 +5,10 @@
 package frc.robot.commands.groups;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.hopper.LoadHopper;
 import frc.robot.commands.intake.SpinIntake;
+import frc.robot.subsystems.intake.Intake;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -18,7 +20,8 @@ public class AutoIntake extends ParallelCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new LoadHopper(cont),
-      new SpinIntake(0.5, cont)
+      new SpinIntake(0.5, cont),
+      new RunCommand(() -> Intake.getInstace().setRaised(!cont), Intake.getInstace())
     );
   }
 }

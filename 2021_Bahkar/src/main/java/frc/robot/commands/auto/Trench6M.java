@@ -4,14 +4,13 @@
 
 package frc.robot.commands.auto;
 
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.drive.Reverse;
-import frc.robot.commands.drive.Straight;
+import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.groups.AutoShoot;
 import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
@@ -21,17 +20,16 @@ import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.shooter.ShooterVelocity;
 import frc.robot.commands.turret.TurretAngle;
 import frc.robot.commands.turret.TurretPower;
-import frc.robot.subsystems.drive.Swerve;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.utils.Trajectories;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class SixBall extends SequentialCommandGroup {
+public class Trench6M extends SequentialCommandGroup {
   /** Creates a new SixBall. */
-  public SixBall() {
+  public Trench6M() {
     Intake intake = Intake.getInstace();
-    Swerve drive = Swerve.getInstance();
 
     addCommands(
       // First reset the sensors and odometry.
@@ -59,7 +57,7 @@ public class SixBall extends SequentialCommandGroup {
   
         new ParallelDeadlineGroup(
           // Drive down the trench.
-          new Straight(4.5),
+          new FollowTrajectory(Trajectories.trench6M.down, new Rotation2d()),
           // Begin intaking balls
           new SpinIntake(0.7, true)
         ),
@@ -67,7 +65,7 @@ public class SixBall extends SequentialCommandGroup {
         // Stop intaking balls.
         new SpinIntake(0.0, false),
 
-        new Reverse(4.5).andThen(new InstantCommand(() -> drive.setChassisSpeeds(new ChassisSpeeds()), drive)),
+        new FollowTrajectory(Trajectories.trench6M.back, new Rotation2d()),
 
         new AutoShoot(true).withTimeout(5.0),
 

@@ -1,7 +1,5 @@
 package frc.robot.subsystems.sensors;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -28,11 +26,6 @@ public class IntakeCam {
         ballx = grip.getEntry("x");
         bally = grip.getEntry("y");
         balla = grip.getEntry("size");
-
-        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setFPS(30);
-        camera.setExposureManual(45);
-        camera.setResolution(320, 240);
     }
 
     /**

@@ -1,23 +1,27 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj.Solenoid;
+import frc.robot.utils.DSolenoid;
 
 public class FourBar {
 
-    private Solenoid masterSolenoid;
+    private DSolenoid masterSolenoid;
 
     private boolean raised = true;
 
     public FourBar(int masterID) {
-        masterSolenoid = new Solenoid(masterID);
+        masterSolenoid = new DSolenoid(1, 2);
 
-        setRaised(true);
+        masterSolenoid.set(false);
     }
 
     public void setRaised(boolean raised) {
         this.raised = raised;
 
-        masterSolenoid.set(!raised);
+        masterSolenoid.set(raised);
+    }
+
+    public void relax() {
+        masterSolenoid.relax();
     }
 
     public boolean getRaised() {

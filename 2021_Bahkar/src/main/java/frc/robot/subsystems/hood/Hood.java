@@ -4,10 +4,11 @@
 
 package frc.robot.subsystems.hood;
 
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.DSolenoid;
 
 public class Hood extends SubsystemBase {
 
@@ -18,22 +19,33 @@ public class Hood extends SubsystemBase {
     return instance;
   }
 
-  //LinearServos servos = new LinearServos(0, 1);
+  private DSolenoid piston = new DSolenoid(6, 5);
 
-  private Solenoid piston = new Solenoid(2);
+  private Notifier shuffle = new Notifier(() -> shuffle());
 
   /** Creates a new Hood. */
   public Hood() {
-    SmartDashboard.putNumber("Set Hood Position (mm)", 0.0);
     CommandScheduler.getInstance().registerSubsystem(this);
+    shuffle.startPeriodic(0.2);
   }
 
   @Override
   public void periodic() {
   }
 
+  private void shuffle() {
+    SmartDashboard.putBoolean("Hood Solenoid", getRaised());
+  }
+
   public void setPosition(boolean position) {
-    //servos.set(position);
-    piston.set(position);
+    piston.set(position);;
+  }
+
+  public boolean getRaised() {
+    return piston.get();
+  }
+
+  public void relax() {
+    piston.relax();
   }
 }

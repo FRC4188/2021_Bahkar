@@ -26,252 +26,243 @@ import edu.wpi.first.wpilibj.util.Units;
 public final class Constants {
 
     public final class robot {
-        public static final double MIN_VOLTS = 6.0; // Minimum available battery volts before things get really bad.
-        public static final double MID_VOLTS = 8.0; // Battery voltage where we start getting a little bit worried.
 
-        public static final double A_LENGTH = 0.59055; // Axel length (Meters).
-        public static final double A_WIDTH = 0.48895; // Axel width (Meters).
+        /** Minimum available battery power before things get really bad (Volts). */
+        public static final double MIN_VOLTS = 6.0;
+        /** Battery power where we start getting a little bit worried (Volts). */
+        public static final double MID_VOLTS = 8.0;
+
+        /** Axel length (Meters). */
+        public static final double A_LENGTH = 0.59055;
+        /** Axel width (Meters). */
+        public static final double A_WIDTH = 0.48895;
+        /** Distance from one axel to the diagonal axel (Meters). */
         public final double A_CROSSLENGTH = Math.sqrt(Math.pow(A_LENGTH, 2.0) + Math.pow(A_WIDTH, 2.0));
 
-        public static final double FIVEFIFTY_MAX_TEMP = 50.0; // Maximum preferred temperature of a neo550 (Celsius.)
+        /** Maximum preferred temperature of a neo-550 motor (Celsius). */
+        public static final double FIVEFIFTY_MAX_TEMP = 50.0;
+        /** Maximum preferred temperature of a neo motor (Celsius). */
         public static final double NEO_MAX_TEMP = 50.0;
-        public static final double FALCON_ENCODER_TICKS = 2048.0; // Counts per revolution of the Falcon 500 motor.
-        public static final double FALCON_MAX_TEMP = 50.0; // Max temperature of Falcon 500 (Celsius).
+        /** Counts per revolution of the Falcon 500 motor. */
+        public static final double FALCON_ENCODER_TICKS = 2048.0;
+        /** Maximum preferred temperature of Falcon-500 motor (Celsius). */
+        public static final double FALCON_MAX_TEMP = 50.0;
+        /** Maximum velocity of a Falcon-500 motor with no load (RPM). */
         public static final double FALCON_MAX_VEL = 6380.0;
     }
 
     public static class drive {
-        public static final double DRIVE_GEARING = 6.92; // Gear ratio of the drive motor.
-        public static final double WHEEL_DIAMETER = Units.inchesToMeters(4); //Diameter of the drive wheels (Meters).
-        public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER; // Circumfrence of the drive wheels (Meters).
-        public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE; // Rotations per meter of the drive wheels.
-        public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * robot.FALCON_ENCODER_TICKS; // Encoder counts per revolution of the drive wheel.
-        public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION; // Encoder ticks per meter of the drive wheels.
+        /** Gear ratio of the drive motor. */
+        public static final double DRIVE_GEARING = 6.92;
+        /** Diameter of the drive wheels (Meters). */
+        public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+        /** Circumfrence of the drive wheels (Meters). */
+        public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER;
+        /** Rotations over distance of the drive wheels (Rotations per Meter). */
+        public static final double DRIVE_ROTATIONS_PER_METER = 1.0 / WHEEL_CIRCUMFRENCE;
+        /** Encoder counts per revolution of the drive wheel. */
+        public static final double DRIVE_COUNTS_PER_ROTATION = DRIVE_GEARING * robot.FALCON_ENCODER_TICKS;
+        /** Encoder ticks over distance of the drive wheels (Counts per Meter). */
+        public static final double DRIVE_COUNTS_PER_METER = DRIVE_ROTATIONS_PER_METER * DRIVE_COUNTS_PER_ROTATION;
 
+        /** Gear ratio of the angle motors. */
         public static final double ANGLE_GEARING = 11.57;
+        /** Encoder counts over rotation of the angle motors (Counts per Degree). */
         public static final double ANGLE_TICKS_PER_DEGREE = (ANGLE_GEARING * robot.FALCON_ENCODER_TICKS) / 360.0;
 
-        public static final double MAX_VOLTS = 12.0; // Maximum voltage allowed in the drivetrain.
-        public static final double MAX_VELOCITY = 10.0; // Maximum velocity allowed in the drivetrain (Meters per Second).
-        public static final double MAX_ACCEL = 20.0; // Maximum acceleration of the drivetrain in (Meters per Second Squared).
-        public static final double MAX_CACCEL = 8.0; // Maximum centripital acceleration of the robot (Meters per Second Squared).
-        public static final double MAX_RADIANS = 3.0 * Math.PI; // Maximum rotational velocity (Radians per Second).
+        /** Maximum voltage allowed in the drivetrain. */
+        public static final double MAX_VOLTS = 12.0;
+        /** Maximum velocity allowed in the drivetrain (Meters per Second). */
+        public static final double MAX_VELOCITY = 5.0;
+        /** Maximum acceleration of the drivetrain in (Meters per Second Squared). */
+        public static final double MAX_ACCEL = 20.0;
+        /** Maximum centripital acceleration of the robot (Meters per Second Squared). */
+        public static final double MAX_CACCEL = 8.0;
+        /** Maximum rotational velocity (Radians per Second). */
+        public static final double MAX_RADIANS = 3.0 * Math.PI;
 
-        public static final double ROTATION_KV = 0.0;
-        public static final double ROTATION_KA = 0.0;
-
-        // Put together swerve module positions relative to the center of the robot.
+        /** Position of the Front-Left module relative to the center of the robot (Meters). */
         public static final Translation2d FrontLeftLocation = new Translation2d(-(Constants.robot.A_WIDTH / 2), -(Constants.robot.A_LENGTH / 2));
+        /** Position of the Front-Right module relative to the center of the robot (Meters). */
         public static final Translation2d FrontRightLocation = new Translation2d(-(Constants.robot.A_WIDTH / 2), (Constants.robot.A_LENGTH / 2));
+        /** Position of the Back-Left module relative to the center of the robot (Meters). */
         public static final Translation2d BackLeftLocation = new Translation2d((Constants.robot.A_WIDTH / 2), -(Constants.robot.A_LENGTH / 2));
+        /** Position of the Back-Right module relative to the center of the robot (Meters). */
         public static final Translation2d BackRightLocation = new Translation2d((Constants.robot.A_WIDTH / 2), (Constants.robot.A_LENGTH / 2));
 
-        public static final class modules {
-            public static final double M1_ZERO = -143.789063 + 180.0;
-            public static final double M2_ZERO = -0.966797 + 180.0;
-            public static final double M3_ZERO = 136.933594 + 180.0;
-            public static final double M4_ZERO = -50.537109 + 180.0;
-        }
+        /** Magnetic zero of the M1 module (Degrees). */
+        public static final double M1_ZERO = -143.789063 + 180.0;
+        /** Magnetic zero of the M1 module (Degrees). */
+        public static final double M2_ZERO = -0.966797 + 180.0;
+        /** Magnetic zero of the M1 module (Degrees). */
+        public static final double M3_ZERO = 136.933594 + 180.0;
+        /** Magnetic zero of the M1 module (Degrees). */
+        public static final double M4_ZERO = -50.537109 + 180.0;
 
+        /** PID Constants for the angle motors. */
         public static final class anglemotor {
+            /** Proportional term (kP). */
             public static final double kP = -1e-2;
+            /** Integral term (kI). */
             public static final double kI = 0.0;
+            /** Derivative term (kD). */
             public static final double kD = 0.0;
         }
 
+        /** PID Constants for the speed motors. */
         public static final class speedmotor {
+            /** Proportional term (kP). */
             public static final double kP = 24e-2;
+            /** Integral term (kI). */
             public static final double kI = 0.0;
+            /** Derivative term (kD). */
             public static final double kD = 1e-1;
         }
 
+        /** X Axis PID Constants (Autonomous). */
         public static final class xPID {
+            /** Proportional term (kP). */
             public static final double kP = 52e-1;
+            /** Integral term (kI). */
             public static final double kI = 0.0;
+            /** Derivative term (kD). */
             public static final double kD = 0.0;
+            /** PID Controller object. */
             public static final PIDController xPID = new PIDController(kP, kI, kD);
         }
        
+        /** Y Axis PID Constants (Autonomous). */
         public static final class yPID {
+            /** Proportional term (kP). */
             public static final double kP = 52e-1;
+            /** Integral term (kI). */
             public static final double kI = 0.0;
-            public static final double kD = 0.0;  
+            /** Derivative term (kD). */
+            public static final double kD = 0.0;
+            /** PID Controller object. */
             public static final PIDController yPID = new PIDController(kP, kI, kD);
         }
 
+        /** Heading PID constants (Autonomous). */
         public static class thetaPID {
+            /** Proportional term (kP). */
             public static final double kP = 6e-2;
+            /** Integral term (kI). */
             public static final double kI = 0.0;
-            public static final double kD = 15e-3;  
+            /** Derivative term (kD). */
+            public static final double kD = 15e-3; 
+            /** PID Controller object. */ 
             public static final ProfiledPIDController thetaPID = new ProfiledPIDController(kP, kI, kD, new Constraints(270.0, 90.0));
         }
 
+        /** Autonomous configuration constants. */
         public final class auto {
-            public static final double MAX_VELOCITY = 1.0; // Maximum velocity allowed in the drivetrain (Meters per Second).
-            public static final double MAX_ACCEL = 3.0; // Maximum acceleration of the drivetrain in (Meters per Second Squared).
-            public static final double MAX_CACCEL = 5.0; // Maximum centripital acceleration of the robot (Meters per Second Squared).
+            /** Maximum velocity allowed in the drivetrain (Meters per Second). */
+            public static final double MAX_VELOCITY = 1.0;
+            /** Maximum acceleration of the drivetrain in (Meters per Second Squared). */
+            public static final double MAX_ACCEL = 3.0;
+            /** Maximum centripital acceleration of the robot (Meters per Second Squared). */
+            public static final double MAX_CACCEL = 5.0;
         }
     }
 
     public final static class field {
-        public static final double GOAL_HEIGHT = 2.4954282231; // Height of the goal from the ground (Meters).
-        public static final double PORT_HEIGHT = 2.5; // feet
-        public static final double THREE_POINT_DEPTH = Units.feetToMeters(2.0 + (5.25 / 12.0)); // Depth of the 3 point
-                                                                                                // goal inside the 2
-                                                                                                // point goal (Meters).
-        public static final double PORT_SIDE_LENGTH = Units
-                .feetToMeters(PORT_HEIGHT / (2.0 * Math.sin(Math.toRadians(60.0)))); // Side length of the port
-                                                                                     // (Meters).
-        public static final double OFFSET_LIMIT = Math
-                .toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2.0))); // Limit for the skew against the
-                                                                                     // 3-point goal (Degrees).
-        public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0); // Diameter of the power cell
-                                                                                         // (Meters).
-        public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0); // Diameter of the inner port
-                                                                                          // (Meters).
-        public static final double GOAL_Y_POS = 2.25; // 5.77
-        public static final double GOAL_SCALE = 0.5;
-        public static final double GOAL_X_POS = 9.27; // 0.0
+        /** Height of the goal from the ground (Meters). */
+        public static final double GOAL_HEIGHT = 2.4954282231;
+        /** Height of the port from top to bottom (Feet). */
+        public static final double PORT_HEIGHT = 2.5;
+        /** Depth of the 3 point goal inside the 2 point goal (Meters). */
+        public static final double THREE_POINT_DEPTH = Units.feetToMeters(2.0 + (5.25 / 12.0));
+        /** Length of one side of the port (Meters). */
+        public static final double PORT_SIDE_LENGTH = Units.feetToMeters(PORT_HEIGHT / (2.0 * Math.sin(Math.toRadians(60.0))));
+        /** Limit of the offset targeting before hitting the outside of the port (Degrees). */
+        public static final double OFFSET_LIMIT = Math.toDegrees(Math.atan(PORT_SIDE_LENGTH / (THREE_POINT_DEPTH * 2.0)));
+        /** Diameter of the power cell (Meters). */
+        public static final double POWER_CELL_DIAMETER = Units.feetToMeters(7.0 / 12.0);
+        /** Diameter of the 3-point inner port (Meters). */
+        public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0);
     }
 
     public final static class turret {
-        public static final double LIMELIGHT_HEIGHT = 0.67; // Height fromt the ground of the limelight (Meters).
-        public static final double MOUNTING_ANGLE = 19.7;//20.61;
+        /** Height fromt the ground of the limelight (Meters). */
+        public static final double LIMELIGHT_HEIGHT = 0.67;
+        /** Angle from horizontal the Limelight is mounted at (Degrees). */
+        public static final double MOUNTING_ANGLE = 19.7;
 
-        public static final double MAX_VELOCITY = 11000.0; // rpm
-        public static final double MAX_ACCELERATION = 22000.0; // rpm per sec
+        /** Gear ratio of the turret motor */
+        public static final double GEAR_RATIO = 300.0;
+        public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO;
 
-        public static final double GEAR_RATIO = 300.0; // angular velocity will be divided by this amount
-        public static final double ENCODER_TO_DEGREES = 360.0 / GEAR_RATIO; // degrees
-
+        /** Proportional term (kP). */
         public static final double kP = 0.03;
+        /** Integral term (kI). */
         public static final double kI = 0.0;
+        /** Derivative term (kD). */
         public static final double kD = 0.003;
 
-        public static final double POS_TOLERANCE = 2.0; // degrees
-        public static final double VEL_TOLERANCE = 2.0; // degrees per second
+        /** Positional tolerance for aiming (Degrees). */
+        public static final double POS_TOLERANCE = 2.0;
+        /** Velocity tolerance for aiming (Degrees). */
+        public static final double VEL_TOLERANCE = 2.0;
 
-        public static final double MAX_ANG = 370.0; // Farthest bound of the turret's roation in degrees.
-        public static final double MIN_ANG = -10.0; // Other farthest bound of the turret's rotation in degrees.
+        /** Farthest positive bound of the turret's roation (Degrees). */
+        public static final double MAX_ANG = 370.0;
+        /** Farthest negative bound of the turret's roation (Degrees). */
+        public static final double MIN_ANG = -10.0;
     }
 
     public static final class shooter {
+        /** Highest velocity of the shooter (RPM). */
         public static final double MAX_VELOCITY = 5750.0;
+        /** Resting velocity of the shooter when not shooting (RPM). */
         public static final double IDLE_VEL = 3500.0;
-
-        public static final double MAX_DISTANCE = 12.2;
-
-        public static final double HAIL_MARY_VEL = 5750.0;
-        public static final double[] HAIL_MARY_RANGE = { 8.5, MAX_DISTANCE };
-        public static final double FAR_SHOOTING_VEL = 5000.0;
-        public static final double[] FAR_SHOOTING_RANGE = { 5.0, 9.0 };
-        public static final double MID_SHOOTING_VEL = 3750.0;
-        public static final double[] MID_SHOOTING_RANGE = { 2.0, 5.5 }; // Shoot with the mid velocity if the distance
-                                                                        // is between this and the short distance. in
-                                                                        // meters.
-        public static final double CLOSE_SHOOTING_VEL = 3000.0;
-        public static final double[] CLOSE_SHOOTING_RANGE = { 0.5, 2.5 }; // Shoot with the short velocity if the
-                                                                          // distance is less than this. In meters.
-
+        /** Velocity tolerance to shoot (RPM). */
         public static final double SHOOTING_TOLERANCE = 250.0;
 
-        public static final double MAIN_WHEEL_RADIUS = Units.inchesToMeters(2.0);
-        public static final double MAIN_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(MAIN_WHEEL_RADIUS, 2.0);
-        public static final double MAIN_WHEEL_RATIO = 1.0;
-        public static final double AUX_WHEEL_RADIUS = Units.inchesToMeters(0.75);
-        public static final double AUX_WHEEL_CIRCUMFERENCE = Math.PI * Math.pow(AUX_WHEEL_RADIUS, 2.0);
-        public static final double AUX_WHEEL_RATIO = 4.0 / 3.0;
-
+        /** Proportional term (kP). */
         public static final double kP = 0.325;
+        /** Integral term (kI). */
         public static final double kI = 0.0;
+        /** Derivative term (kD). */
         public static final double kD = 32.5;
+        /** Arbitrary Feedforward term (kF). */
         public static final double kF = (1023.0 * 0.75) / 12780.0;
 
+        /** Ramp rate of the shooter motors (Seconds from 0.0 to 1.0 power.) */
         public static final double RAMP_RATE = 1.0;
+
+        /** Height of the shooter off of the ground (Meters). */
         public static final double SHOOTER_HEIGHT = Units.feetToMeters(2.0);
+        /** Diameter of the shooter wheel (Meters). */
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
     }
 
-    public static final class hood {
-        public static final double SERVO_STROKE = 100.0; // milimeters
-        public static final double AXEL_TO_SERVO = Math.cos(Math.toDegrees(16.7)) * 117.2972; // The length from the
-                                                                                              // hood's pivot to the
-                                                                                              // where the servo
-                                                                                              // standoff is part of the
-                                                                                              // line perpendicular to
-                                                                                              // the arm. in milimeters.
-        public static final double PIVOT_CIRCUMFERENCE = 2 * Math.PI * AXEL_TO_SERVO;
-        public static final double INITIAL_ANGLE = 77.473085; // The angle the shooter starts at (Degrees).
-        public static final double MIN_ANGLE = 26.475460; // The minimum angle the shooter can point to (Degrees).
-    }
-
     public final class intake {
-        public static final double FLOP_RATE = 0.5;
+        /** Ramp rate of the intake motor (Seconds from 0.0 to 1.0 power.) */
         public static final double RAMP_RATE = 0.5;
     }
 
-    public final class lcdpanel {
-        public static final int CLEAR_DISPLAY = 0x01;
-        public static final int RETURN_HOME = 0x02;
-        public static final int ENTRY_MODE_SET = 0x04;
-        public static final int DISPLAY_CONTROL = 0x08;
-        public static final int CURSOR_SHIFT = 0x10;
-        public static final int FUNCTION_SET = 0x20;
-        public static final int SETCGRAMADDR = 0x40;
-        public static final int SETDDRAMADDR = 0x80;
-
-        public static final int DISPLAY_ON = 0x04;
-        public static final int DISPLAY_OFF = 0x00;
-        public static final int CURSOR_ON = 0x02;
-        public static final int CURSOR_OFF = 0x00;
-        public static final int BLINK_ON = 0x01;
-        public static final int BLINK_OFF = 0x00;
-
-        // public static final int ENTRYRIGHT = 0x00;
-        public static final int ENTRY_LEFT = 0x02;
-        public static final int ENTRY_SHIFT_INCREMENT = 0x01;
-        public static final int ENTRY_SHIFT_DECREMENT = 0x00;
-
-        public static final int DISPLAY_MOVE = 0x08;
-        public static final int CURSOR_MOVE = 0x00;
-        public static final int MOVE_RIGHT = 0x04;
-        public static final int MOVE_LEFT = 0x00;
-
-        public static final int EIGHT_BIT_MODE = 0x10;
-        public static final int FOUR_BIT_MODE = 0x00;
-        public static final int TWO_LINE = 0x08; // for 2 or 4 lines actually
-        public static final int ONE_LINE = 0x00;
-        public static final int FIVExTEN_DOTS = 0x04; // seldom used!!
-        public static final int FIVExEIGHT_DOTS = 0x00;
-
-        public static final int BACKLIGHT_ON = 0x08;
-        public static final int BACKLIGHT_OFF = 0x00;
-
-        public static final int ENABLE = 0b00000100;
-        public static final int READ_WRITE = 0b00000010;
-        public static final int REGISTER_SELECT = 0b00000001;
-    }
-
     public static final class hopper {
+        /** Ramp rate of the hopper motor (Seconds from 0.0 to 1.0 power.) */
         public static final double RAMP_RATE = 0.5;
     }
 
     public static final class climber {
+        /** Gear Ratio of the climber. */
         private static final double GEAR_RATIO = (58.0 / 11.0) * (20.0 / 60.0);
-        public static final double MAX_HEIGHT = 1.3; //meters
-        private static final double ENCODER_TICS_PER_REV = 2048.0;
+        /** Maximum allowed height of the climber (Meters). */
+        public static final double MAX_HEIGHT = 1.3;
         /** Multiply this by encoder ticks to get meters. */
-        public static final double ENCODER_TO_REV = 1.0 / (GEAR_RATIO * ENCODER_TICS_PER_REV);
+        public static final double ENCODER_TO_REV = 1.0 / (GEAR_RATIO * robot.FALCON_ENCODER_TICKS);
         public static final double kP = 0.4;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double P = 0.8; // Proportional term in PDS controller
         public static final double D = 0.027; // Deviational term in PDS controller
         public static final double S = 0.413; // Squaring term in PDS controller
-        public static final double MAX_VELOCITY = 0.5; // Meters per second.
-        public static final double RAMP_RATE = 0.5; // seconds
-        public static final int TIMEOUT = 10; // ms
-        public static final int MAX_POSITION = 95639;
-        public static final int MIN_POSITION = 0;
+        /** Maximum allowed valocity of the climber (Meters per Second). */
+        public static final double MAX_VELOCITY = 0.5;
+        /** Ramp rate of the climber motors (Seconds from 0.0 to 1.0 power.) */
+        public static final double RAMP_RATE = 0.5;
     }
 }

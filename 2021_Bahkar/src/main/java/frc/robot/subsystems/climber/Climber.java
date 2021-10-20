@@ -1,11 +1,11 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.math.LogisticController;
+import frc.robot.utils.DSolenoid;
 
 /**
  * Class encapsulating climber function.
@@ -28,7 +28,7 @@ public class Climber extends SubsystemBase {
     );
 
     // pneumatics
-    private Solenoid climberSolenoid = new Solenoid(1);// needs to change
+    private DSolenoid climberSolenoid = new DSolenoid(3, 4);
 
     private Notifier shuffle;
 
@@ -49,7 +49,7 @@ public class Climber extends SubsystemBase {
         shuffle = new Notifier(() -> updateShuffleboard());
         shuffle.startPeriodic(0.2);
 
-        engagePneuBrake(false);
+        climberSolenoid.set(false);
     }
 
     /**
@@ -66,7 +66,7 @@ public class Climber extends SubsystemBase {
     public void updateShuffleboard() {
         SmartDashboard.putNumber("Left climber height", getPosition());
         SmartDashboard.putNumber("Left climber velocity", getVelocity());
-        SmartDashboard.putBoolean("Climber brake", !climberSolenoid.get());
+        SmartDashboard.putBoolean("Climber Solenoid", getPneuBrake());
     }
 
     /**
@@ -87,6 +87,10 @@ public class Climber extends SubsystemBase {
      */
     public void engagePneuBrake(boolean output) {
         climberSolenoid.set(output);
+    }
+
+    public void relax() {
+        climberSolenoid.relax();
     }
 
     public boolean getPneuBrake() {
@@ -126,20 +130,6 @@ public class Climber extends SubsystemBase {
      */
     public double getVelocity() {
         return motors.getVelocities()[0] * Constants.climber.ENCODER_TO_REV;
-    }
-
-    /**
-     * Returns the maximum position of the climber in raw encoder ticks.
-     */
-    public double getMaxPosition() {
-        return Constants.climber.MAX_POSITION;
-    }
-
-    /**
-     * Returns the minimum position of the climber in raw encoder ticks.
-     */
-    public double getMinPosition() {
-        return Constants.climber.MIN_POSITION;
     }
 
     /**

@@ -77,9 +77,6 @@ public class RobotContainer {
       pilot.getX(Hand.kRight, Scaling.CUBED),
       false),
     drive));
-    
-    // Set shooter speed to nothing.
-    //shooter.setDefaultCommand(new ShooterVelocity(0.0));
   }
 
   /**

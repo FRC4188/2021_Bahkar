@@ -6,9 +6,11 @@ package frc.robot.subsystems.drive;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,12 +27,13 @@ public class Swerve extends SubsystemBase {
     return instance;
   }
 
-  private Module leftFront = new Module(1, 2, 21, Constants.drive.modules.M1_ZERO);
-  private Module rightFront = new Module(3, 4, 22, Constants.drive.modules.M2_ZERO);
-  private Module leftRear = new Module(5, 6, 23, Constants.drive.modules.M3_ZERO);
-  private Module rightRear = new Module(7, 8, 24, Constants.drive.modules.M4_ZERO);
+  private Module leftFront = new Module(1, 2, 21, Constants.drive.M1_ZERO);
+  private Module rightFront = new Module(3, 4, 22, Constants.drive.M2_ZERO);
+  private Module leftRear = new Module(5, 6, 23, Constants.drive.M3_ZERO);
+  private Module rightRear = new Module(7, 8, 24, Constants.drive.M4_ZERO);
 
   private Odometry odometry = Odometry.getInstance();
+  private final Field2d field = new Field2d();
 
   private Sensors sensors = Sensors.getInstance();
 
@@ -47,6 +50,8 @@ public class Swerve extends SubsystemBase {
     CommandScheduler.getInstance().registerSubsystem(this);
     rotationPID.enableContinuousInput(-180, 180);
     rotationPID.setTolerance(2.0);
+
+    SmartDashboard.putData("Field", field);
 
     dashboard.startPeriodic(0.2);
     odometryNotifier.startPeriodic(0.05);
@@ -67,14 +72,7 @@ public class Swerve extends SubsystemBase {
     SmartDashboard.putNumber("M4 (RR) Angle", rightRear.getAbsoluteAngle());
     SmartDashboard.putString("Chassis Speeds", getChassisSpeeds().toString());
 
-    /*SmartDashboard.putNumber("Falcon 1 Temp", leftFront.getAngleTemp());
-    SmartDashboard.putNumber("Falcon 2 Temp", leftFront.getSpeedTemp());
-    SmartDashboard.putNumber("Falcon 3 Temp", rightFront.getAngleTemp());
-    SmartDashboard.putNumber("Falcon 4 Temp", rightFront.getSpeedTemp());
-    SmartDashboard.putNumber("Falcon 5 Temp", leftRear.getAngleTemp());
-    SmartDashboard.putNumber("Falcon 6 Temp", leftRear.getSpeedTemp());
-    SmartDashboard.putNumber("Falcon 7 Temp", rightRear.getAngleTemp());
-    SmartDashboard.putNumber("Falcon 8 Temp", rightRear.getSpeedTemp());*/
+    field.setRobotPose(odometry.getPose());
   }
 
   public void drive(double yInput, double xInput, double rotInput, boolean fieldOriented) {
@@ -126,6 +124,14 @@ public class Swerve extends SubsystemBase {
       leftRear.getModuleState(),
       rightRear.getModuleState()
     };
+  }
+
+  public Pose2d getPose() { 
+    return odometry.getPose();
+  }
+
+  public SwerveDriveKinematics getKinematics() {
+    return kinematics;
   }
 
   public double getFrontLeftAngleTemp() {
