@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -108,5 +109,17 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+  }
+
+  /**
+   * Normalizes percent power to a 12V battery so that a demand from a low battery is equal to the demand from a charged battery.
+   * @param power Desired percent of full power in the range [-1.0, 1.0].
+   * @return True percent of current battery voltage.
+   */
+  public static double normalizePercentVolts(double power) {
+    double rPower = (power * 12.0) / RobotController.getInputVoltage();
+    if (rPower < -1.0) return -1.0;
+    if (rPower > 1.0) return 1.0;
+    else return rPower;
   }
 }

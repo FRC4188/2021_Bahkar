@@ -11,6 +11,10 @@ public class Shooter extends SubsystemBase {
 
   private static Shooter instance;
 
+  /**
+   * Returns the instance of the {@link Shooter} subsystem.
+   * @return An instance of {@link Shooter} common to the entire program.
+   */
   public synchronized static Shooter getInstance() {
     if (instance == null) instance = new Shooter();
     return instance;
@@ -19,8 +23,6 @@ public class Shooter extends SubsystemBase {
   private ShooterWheel wheel = new ShooterWheel(10, 11);
 
   private Notifier shuffle = new Notifier(() -> updateShuffleboard());
-
-  // https://www.omnicalculator.com/physics/projectile-motion
 
   public Shooter() {
     SmartDashboard.putNumber("Set Shooter Velocity", 0.0);

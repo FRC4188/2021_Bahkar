@@ -18,13 +18,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.drive.Swerve;
 import frc.robot.subsystems.sensors.Sensors;
 
+/** Turret subsystem class; controls the turret mechanism. */
 public class Turret extends SubsystemBase {
 
   private static Turret instance;
 
+  /**
+   * Returns the instance of the {@link Turret} subsystem.
+   * @return An instance of {@link Turret} common to the entire program.
+   */
   public synchronized static Turret getInstance() {
     if (instance == null) instance = new Turret();
     return instance;
@@ -37,31 +43,29 @@ public class Turret extends SubsystemBase {
   CANSparkMax turretMotor = new CANSparkMax(42, MotorType.kBrushless);
   CANEncoder turretEncoder = turretMotor.getEncoder();
   PIDController pid = new PIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD);
-  //ProfiledPIDController pid = new ProfiledPIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD,
-                              //new Constraints(Constants.turret.MAX_VELOCITY, Constants.turret.MAX_ACCELERATION));
 
-  Notifier shuffle;
+  // SmartDashboard thread.
+  Notifier shuffle = new Notifier(() -> updateShuffleboard());
 
   /**
-   * Creates a new Turret.
+   * Creates a new {@link Turret}.
+   * For use only within the {@link Turret} class.
    */
   private Turret() {
     CommandScheduler.getInstance().registerSubsystem(this);
 
     motorInits();
-    resetEncoders(); //added this to be in line with other subsystems, if stuff mess up here then remove 
+    resetEncoders();
 
-    shuffle = new Notifier(() -> updateShuffleboard());
-    shuffle.startPeriodic(0.2);
+    openNotifier();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
   }
 
   /**
-  * Configures gains for Spark closed loop controller.
+  * Configures the turret motor controller.
   */
   private void motorInits() {
     pid.setP(Constants.turret.kP);
@@ -75,20 +79,30 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-  * Resets turret encoder value to 0.
+  * Resets turret encoder position value to 0.
   */
   public void resetEncoders() {
     turretEncoder.setPosition(0.0);
   }
 
+  /**
+   * Refreshes the data on SmartDashboard.
+   * Should be called in a {@link Notifier}.
+   */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Turret Angle", getPosition());
   }
 
+  /**
+   * End the SmartDashboard interaction notifier.
+   */
   public void closeNotifier() {
     shuffle.close();
   }
 
+  /**
+   * Start the SmartDashboard interaction notifier.
+   */
   public void openNotifier() {
     shuffle.startPeriodic(0.1);
   }
@@ -98,7 +112,9 @@ public class Turret extends SubsystemBase {
   * @param percent The goal percentage to set the turret motor to.
   */
   public void set(double percent) {
-    turretMotor.set(percent);
+    if (getPosition() < Constants.turret.MIN_ANG && percent < 0.0) turretMotor.set(0.0);
+    else if (getPosition() > Constants.turret.MAX_ANG && percent > 0.0) turretMotor.set(0.0);
+    else turretMotor.set(percent);
   }
 
   /**
@@ -107,7 +123,7 @@ public class Turret extends SubsystemBase {
    */
   public void setAngle(double angle) {
       angle /= Constants.turret.ENCODER_TO_DEGREES;
-      turretMotor.set(pid.calculate(turretEncoder.getPosition(), angle));
+      turretMotor.set(Robot.normalizePercentVolts(pid.calculate(turretEncoder.getPosition(), angle)));
   }
 
   /**
@@ -116,8 +132,8 @@ public class Turret extends SubsystemBase {
    */
   public void trackTarget(boolean cont) {
     double angle = sensors.getTX();
-    double power = pid.calculate(angle, 0.0) +
-      Swerve.getInstance().getChassisSpeeds().omegaRadiansPerSecond / 10.0;;
+    double power = Robot.normalizePercentVolts(pid.calculate(angle, 0.0)) +
+      Swerve.getInstance().getChassisSpeeds().omegaRadiansPerSecond / 10.0;
     
     set(cont ? power : 0.0);
   }
@@ -138,13 +154,9 @@ public class Turret extends SubsystemBase {
       return turretEncoder.getVelocity() * Constants.turret.ENCODER_TO_DEGREES / 60.0;
   }
 
-  public double getTemperature() {
-    return turretMotor.getMotorTemperature();
-  }
-
   /**
    * Returns the temperature of the turret motor.
-   * @return Motor temperature in celcius.
+   * @return Temperature (Celsius).
    */
   public double getTemp() {
     return turretMotor.getMotorTemperature();

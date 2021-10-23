@@ -10,12 +10,9 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.commands.drive.FollowTrajectory;
-import frc.robot.commands.groups.AutoFireQuantity;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoShoot;
-import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
@@ -29,30 +26,36 @@ import frc.robot.utils.Trajectories;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class Trench6M extends SequentialCommandGroup {
+public class Trench6L extends SequentialCommandGroup {
   /** Creates a new SixBall. */
-  public Trench6M() {
-      addCommands(
+  public Trench6L() {
+    Intake intake = Intake.getInstace();
+
+    addCommands(
         // First reset the sensors and odometry.
           new ResetGyro(),
-          new ResetOdometry(Trajectories.trench8M.POSE1),
+          new ResetOdometry(Trajectories.trench8L.POSE1),
+
+          new TurretAngle(20.0),
     
           // Auto aim the turret and fire.
-          new AutoShoot(true).withTimeout(3.5),
+          new AutoShoot(3500.0, true).withTimeout(5.0),
+      
           new AutoShoot(false),
 
           //new InstantCommand(() -> intake.setRaised(false), intake),
     
           new ParallelDeadlineGroup(
             // Drive down the trench.
-            new FollowTrajectory(Trajectories.trench6M.DOWN_TRENCH, new Rotation2d()),
+            new FollowTrajectory(Trajectories.trench6L.DOWN_TRENCH, new Rotation2d()),
             // Begin intaking balls
             new AutoIntake(true)
           ),
 
-          new FollowTrajectory(Trajectories.trench6M.TO_SHOOT, new Rotation2d()),
+          new FollowTrajectory(Trajectories.trench6L.TO_SHOOT, new Rotation2d()),
 
-          new AutoShoot(true).withTimeout(3.5),
+          new AutoShoot(true).withTimeout(5.0),
+
           new AutoShoot(false),
 
           new ParallelCommandGroup(

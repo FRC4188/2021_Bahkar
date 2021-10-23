@@ -51,7 +51,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setRaised(boolean raised) {
-    fourBar.setRaised(raised);
+    fourBar.setRaised(!raised);
   }
 
   public void relax() {

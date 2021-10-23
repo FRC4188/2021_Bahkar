@@ -4,14 +4,15 @@
 
 package frc.robot.commands.auto;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.commands.drive.FollowTrajectory;
+import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoShoot;
-import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
@@ -19,65 +20,42 @@ import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.shooter.ShooterVelocity;
 import frc.robot.commands.turret.TurretAngle;
 import frc.robot.commands.turret.TurretPower;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.utils.Trajectories;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Trench8M extends SequentialCommandGroup {
+
   /** Creates a new Trench8M. */
   public Trench8M() {
-    Intake intake = Intake.getInstace();
-
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       // First reset the sensors and odometry.
       new ResetGyro(),
-      new ResetOdometry(),
-
-      new ShooterVelocity(4000, true),
-
-      // Second, aim the turret close to the target.
-      new TurretAngle(30.0),
-
-      // Then prepare the shooter.
-      new SetPosition(true),
+      new ResetOdometry(Trajectories.trench8M.POSE1),
 
       // Auto aim the turret and fire.
       new AutoShoot(true).withTimeout(5.0),
   
       // End the auto-aiming and shooting.
-      new ParallelCommandGroup(
-        new AutoShoot(false),
-        new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
-      ),
-
-      new InstantCommand(() -> intake.setRaised(false), intake),
+      new AutoShoot(false),
 
       new ParallelDeadlineGroup(
         new SequentialCommandGroup(
           // Drive down the trench.
-          new FollowTrajectory(Trajectories.trench8M.down, Trajectories.trench8M.headings[0]),
-          new FollowTrajectory(Trajectories.trench8M.ball1, Trajectories.trench8M.headings[1]),
-          new FollowTrajectory(Trajectories.trench8M.ball2, Trajectories.trench8M.headings[2])
+          new FollowTrajectory(Trajectories.trench8M.DOWN_TRENCH, new Rotation2d()),
+          new FollowTrajectory(Trajectories.trench8M.BALL1, new Rotation2d()),
+          new FollowTrajectory(Trajectories.trench8M.BALL2, new Rotation2d())
         ),
         // Begin intaking balls
-        new SpinIntake(0.7, true)
+        new AutoIntake(true)
       ),
 
-      // Stop intaking balls.
-      new SpinIntake(0.0, false),
-
-      new FollowTrajectory(Trajectories.trench8M.back, Trajectories.trench8M.headings[0]),
+      new FollowTrajectory(Trajectories.trench8M.TO_SHOOT, new Rotation2d()),
 
       new AutoShoot(true).withTimeout(5.0),
 
-      new ParallelCommandGroup(
-        new AutoShoot(false),
-        new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
-      ),
+      new AutoShoot(false),
 
       new ParallelCommandGroup(
         new SpinIntake(0.0, false),
@@ -85,6 +63,6 @@ public class Trench8M extends SequentialCommandGroup {
         new TurretPower(0.0),
         new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
       )
-  );
+    );
   }
 }

@@ -41,12 +41,14 @@ public class SpinIntake extends CommandBase {
   @Override
   public void execute() {
     intake.set(power);
+    System.out.println("intake running");
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intake.set(0.0);
+    System.out.println("intake done");
   }
 
   // Returns true when the command should end.

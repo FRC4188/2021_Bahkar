@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 /**
  * Class to define Swerve Module Control code.
@@ -91,9 +92,14 @@ public class Module {
         }
         
         speedMotor.set(ControlMode.Velocity, velMultiplier * (state.speedMetersPerSecond * (Constants.drive.DRIVE_COUNTS_PER_METER / 10.0)));
-        angleMotor.set(anglePID.calculate(getAbsoluteAngle(), setAngle));
+        angleMotor.set(Robot.normalizePercentVolts(anglePID.calculate(getAbsoluteAngle(), setAngle)));
 
         lastAngle = getAbsoluteAngle();
+    }
+
+    public void stop() {
+        speedMotor.set(0.0);
+        angleMotor.set(0.0);
     }
 
     /**

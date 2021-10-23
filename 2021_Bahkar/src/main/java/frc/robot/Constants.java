@@ -1,30 +1,26 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
+import edu.wpi.first.wpilibj.trajectory.constraint.EllipticalRegionConstraint;
+import edu.wpi.first.wpilibj.trajectory.constraint.MaxVelocityConstraint;
+import edu.wpi.first.wpilibj.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants. This class should not be used for any other
- * purpose. All constants should be declared globally (i.e. public static). Do
- * not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the constants are needed, to reduce verbosity.
+ * A class storing static variables holding constants.
+ * 
+ * Create constants here even if they will only be used once in the code; the idea is to have a single tuning class.
  */
 public final class Constants {
 
+    /** Robot-wide constants. */
     public final class robot {
 
         /** Minimum available battery power before things get really bad (Volts). */
@@ -51,6 +47,7 @@ public final class Constants {
         public static final double FALCON_MAX_VEL = 6380.0;
     }
 
+    /** Drivetrain specific constants. */
     public static class drive {
         /** Gear ratio of the drive motor. */
         public static final double DRIVE_GEARING = 6.92;
@@ -90,14 +87,17 @@ public final class Constants {
         /** Position of the Back-Right module relative to the center of the robot (Meters). */
         public static final Translation2d BackRightLocation = new Translation2d((Constants.robot.A_WIDTH / 2), (Constants.robot.A_LENGTH / 2));
 
+        /** Kinematics object for the swerve drivetrain. */
+        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(FrontLeftLocation, FrontRightLocation, BackLeftLocation, BackRightLocation);
+
         /** Magnetic zero of the M1 module (Degrees). */
-        public static final double M1_ZERO = -143.789063 + 180.0;
+        public static final double M1_ZERO = 37.792969;
         /** Magnetic zero of the M1 module (Degrees). */
-        public static final double M2_ZERO = -0.966797 + 180.0;
+        public static final double M2_ZERO = 177.187500;
         /** Magnetic zero of the M1 module (Degrees). */
-        public static final double M3_ZERO = 136.933594 + 180.0;
+        public static final double M3_ZERO = -42.275391;
         /** Magnetic zero of the M1 module (Degrees). */
-        public static final double M4_ZERO = -50.537109 + 180.0;
+        public static final double M4_ZERO = 128.583984;
 
         /** PID Constants for the angle motors. */
         public static final class anglemotor {
@@ -156,16 +156,25 @@ public final class Constants {
         }
 
         /** Autonomous configuration constants. */
-        public final class auto {
+        public static final class auto {
             /** Maximum velocity allowed in the drivetrain (Meters per Second). */
-            public static final double MAX_VELOCITY = 1.0;
+            public static final double MAX_VELOCITY = 2.5;
             /** Maximum acceleration of the drivetrain in (Meters per Second Squared). */
-            public static final double MAX_ACCEL = 3.0;
-            /** Maximum centripital acceleration of the robot (Meters per Second Squared). */
-            public static final double MAX_CACCEL = 5.0;
+            public static final double MAX_ACCEL = 1.5;
+            /** Maximum velocity of the robot when driving over the steel bars. */
+            public static final double BAR_VELOCITY = 0.5;
+            /** {@link TrajectoryConfig} object to control trajectory generation. */
+            public static final TrajectoryConfig CONFIG = new TrajectoryConfig(MAX_VELOCITY, MAX_ACCEL)
+                .addConstraint(new CentripetalAccelerationConstraint(MAX_ACCEL))
+                .addConstraint(new EllipticalRegionConstraint(
+                    new Translation2d(3.518223, 2.317102)
+                    , 0.3, 0.7, Rotation2d.fromDegrees(22.341197),
+                    new MaxVelocityConstraint(BAR_VELOCITY)))
+                .addConstraint(new SwerveDriveKinematicsConstraint(KINEMATICS, MAX_VELOCITY));
         }
     }
 
+    /** Field measurement constants. */
     public final static class field {
         /** Height of the goal from the ground (Meters). */
         public static final double GOAL_HEIGHT = 2.4954282231;
@@ -183,6 +192,7 @@ public final class Constants {
         public static final double INNER_PORT_DIAMETER = Units.feetToMeters(13.0 / 12.0);
     }
 
+    /** Turret specific constants. */
     public final static class turret {
         /** Height fromt the ground of the limelight (Meters). */
         public static final double LIMELIGHT_HEIGHT = 0.67;
@@ -206,16 +216,17 @@ public final class Constants {
         public static final double VEL_TOLERANCE = 2.0;
 
         /** Farthest positive bound of the turret's roation (Degrees). */
-        public static final double MAX_ANG = 370.0;
+        public static final double MAX_ANG = 360.0;
         /** Farthest negative bound of the turret's roation (Degrees). */
-        public static final double MIN_ANG = -10.0;
+        public static final double MIN_ANG = -45.0;
     }
 
+    /** Shooter specific constants. */
     public static final class shooter {
         /** Highest velocity of the shooter (RPM). */
         public static final double MAX_VELOCITY = 5750.0;
         /** Resting velocity of the shooter when not shooting (RPM). */
-        public static final double IDLE_VEL = 3500.0;
+        public static final double IDLE_VEL = 0.0;
         /** Velocity tolerance to shoot (RPM). */
         public static final double SHOOTING_TOLERANCE = 250.0;
 
@@ -237,16 +248,19 @@ public final class Constants {
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
     }
 
+    /** Intake specific constants. */
     public final class intake {
         /** Ramp rate of the intake motor (Seconds from 0.0 to 1.0 power.) */
         public static final double RAMP_RATE = 0.5;
     }
 
+    /** Hopper specific constants. */
     public static final class hopper {
         /** Ramp rate of the hopper motor (Seconds from 0.0 to 1.0 power.) */
         public static final double RAMP_RATE = 0.5;
     }
 
+    /** Climber specific constants. */
     public static final class climber {
         /** Gear Ratio of the climber. */
         private static final double GEAR_RATIO = (58.0 / 11.0) * (20.0 / 60.0);

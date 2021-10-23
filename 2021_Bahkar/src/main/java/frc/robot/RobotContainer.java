@@ -7,12 +7,20 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.auto.Shoot3;
+import frc.robot.commands.auto.Steal10;
+import frc.robot.commands.auto.Trench6L;
+import frc.robot.commands.auto.Trench6M;
+import frc.robot.commands.auto.Trench8L;
+import frc.robot.commands.auto.Trench8M;
 import frc.robot.commands.climber.Climb;
 import frc.robot.commands.drive.CenterBall;
 import frc.robot.commands.groups.AutoIntake;
@@ -23,6 +31,8 @@ import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.sensors.ResetTranslation;
+import frc.robot.commands.turret.OppositeAim;
+import frc.robot.commands.turret.TurretAngle;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Swerve;
@@ -71,12 +81,16 @@ public class RobotContainer {
 
   private void setDefaultCommands() {
     // Drivetrain manual drive command.
-    drive.setDefaultCommand(new RunCommand( () -> drive.drive(
+    RunCommand tele = new RunCommand( () -> drive.drive(
       pilot.getY(Hand.kLeft, Scaling.CUBED),
       pilot.getX(Hand.kLeft, Scaling.CUBED),
       pilot.getX(Hand.kRight, Scaling.CUBED),
       false),
-    drive));
+    drive);
+
+    tele.setName("Tele Drive");
+
+    drive.setDefaultCommand(tele);
   }
 
   /**
@@ -99,14 +113,12 @@ public class RobotContainer {
       pilot.getYButtonObj().whenPressed(new SpinHopper(-1.0, true))
         .whenReleased(new SpinHopper(0.0, false));
 
-      pilot.getDpadUpButtonObj().whenPressed(new SetPosition(true));
-      pilot.getDpadDownButtonObj().whenPressed(new SetPosition(false));
-
-      pilot.getDpadLeftButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(true)));
-      pilot.getDpadRightButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(false)));
+      pilot.getDpadUpButtonObj().whenPressed(new TurretAngle(180.0));
+      pilot.getDpadDownButtonObj().whenPressed(new TurretAngle(0.0));
+      pilot.getDpadLeftButtonObj().whenPressed(new TurretAngle(270.0));
+      pilot.getDpadRightButtonObj().whenPressed(new TurretAngle(90.0));
   
-      //Relative referenced intake command.
-      pilot.getLbButtonObj().whenPressed(new InstantCommand(() -> intake.toggleRaised(), intake));
+      pilot.getLbButtonObj().whenPressed(new OppositeAim());
 
       pilot.getRbButtonObj().whenPressed(new CenterBall(
         () -> pilot.getY(Hand.kLeft, Scaling.CUBED),
@@ -160,7 +172,14 @@ public class RobotContainer {
 
   private void addChooser() {
     autoChooser.setDefaultOption("Nothing", null);
-    //autoChooser.addOption("Six-Ball", new SixBall());
+    autoChooser.addOption("Six-Ball Left Trench", new Trench6L());
+    autoChooser.addOption("Six-Ball Middle Trench", new Trench6M());
+    autoChooser.addOption("Eight-Ball Middle Trench", new Trench8M());
+    autoChooser.addOption("Eight-Ball Left Trench", new Trench8L());
+    autoChooser.addOption("Ten-Ball Steal", new Steal10());
+    autoChooser.addOption("Simply shoot 3 balls", new Shoot3());
+
+    autoChooser.addOption("Set Pose", new SequentialCommandGroup(new ResetOdometry(new Pose2d(3.95, 5.6475228849, new Rotation2d()))));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }

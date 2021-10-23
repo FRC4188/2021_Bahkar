@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.sensors.Limelight.CameraMode;
 import frc.robot.subsystems.sensors.Limelight.LedMode;
 
+/** Class to control the various sensors on Bahkar. */
 public class Sensors extends SubsystemBase {
   private static Sensors instance;
 

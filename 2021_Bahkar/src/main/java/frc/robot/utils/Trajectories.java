@@ -5,183 +5,175 @@ import java.util.List;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
-import edu.wpi.first.wpilibj.trajectory.constraint.SwerveDriveKinematicsConstraint;
-import frc.robot.subsystems.drive.Swerve;
+import frc.robot.Constants;
 
 public final class Trajectories {
 
         public static class trench6M {
-        
-                public static Rotation2d[] headings = {
-                    new Rotation2d()
-                };
-        
-                private static double adjustment = -0.15;
-        
-                public static Trajectory down = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(),
-                        new Pose2d(1.78, 1.63 + adjustment, new Rotation2d()),
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d())
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
-        
-                public static Trajectory back = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(5.0, 1.63 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(0.0, 0.0, new Rotation2d(-Math.PI))
-                    ),
-                new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
+
+            private static final double xAdj = 0.0;
+            private static final double yAdj = 0.0;
+
+            //public static final Pose2d POSE1 = new Pose2d(3.95, 3.145003 * 1.79571303587, new Rotation2d());
+            public static final Pose2d POSE1 = new Pose2d(3.95, 5.6475228849, new Rotation2d());
+
+            public static final Trajectory DOWN_TRENCH = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE1,
+                    //new Pose2d(3.262223 * 1.74759405074, 3.999829 * 1.79571303587 + 0.35, new Rotation2d()),
+                    //new Pose2d(4.549337 * 1.74759405074 + xAdj + 0.175, 3.999829 * 1.79571303587 + yAdj + 0.35, new Rotation2d())
+                    new Pose2d(5.576245,7.3, new Rotation2d()),
+                    new Pose2d(7.713587,7.5, new Rotation2d())
+                ), Constants.drive.auto.CONFIG);
+    
+            public static final Pose2d POSE2 = new Pose2d(7.713587,7.5, new Rotation2d(Math.PI));
+    
+            public static final Trajectory TO_SHOOT = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE2,
+                    new Pose2d(POSE1.getTranslation(), new Rotation2d(Math.PI))
+                ), Constants.drive.auto.CONFIG);
             }
 
         public static class trench8M {
-        
-                public static Rotation2d[] headings = {
-                    new Rotation2d(),
-                    new Rotation2d(Math.PI / 8.0),
-                    new Rotation2d(-Math.PI)
-                };
-        
-                private static double adjustment = -0.15;
-        
-                public static Trajectory down = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(),
-                        new Pose2d(1.78, 1.63 + adjustment, new Rotation2d()),
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d())
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                        .setEndVelocity(0.5)
-                );
-        
-                public static Trajectory ball1 = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d()),
-                        new Pose2d(7.0, 1.53 + adjustment, new Rotation2d())
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                        .setStartVelocity(0.5)
-                );
-        
-                public static Trajectory ball2 = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(7.0, 1.53 + adjustment, new Rotation2d(-Math.PI / 2.0)),
-                        new Pose2d(7.0, 1.7 + adjustment, new Rotation2d(-Math.PI / 2.0))
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
-        
-                public static Trajectory back = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(5.0, 1.7 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(5.0, 1.63 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(0.0, 0.0, new Rotation2d(-Math.PI))
-                    ),
-                new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
+
+            private static final double xAdj = 0.225;
+            private static final double yAdj = 0.1;
+
+            public static final Pose2d POSE1 = new Pose2d(3.95, 3.145003 * 1.79571303587, new Rotation2d());
+
+            public static final Trajectory DOWN_TRENCH = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE1,
+                    new Pose2d(3.262223 * 1.74759405074, 3.999829 * 1.79571303587, new Rotation2d()),
+                    new Pose2d(4.549337 * 1.74759405074 + xAdj + 0.175, 3.999829 * 1.79571303587 + yAdj, new Rotation2d())
+                ), Constants.drive.auto.CONFIG);
+    
+            public static final Pose2d POSE2 = new Pose2d(4.549337 * 1.74759405074 + xAdj + 0.175, 3.999829 * 1.79571303587 + yAdj, new Rotation2d());
+    
+            public static final Trajectory BALL1 = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE2,
+                    new Pose2d(4.980190 * 1.74759405074 + xAdj, 3.958766 * 1.79571303587 + yAdj, new Rotation2d())
+                ), Constants.drive.auto.CONFIG);
+            
+            public static final Pose2d POSE3 = new Pose2d(4.987459 * 1.74759405074 + xAdj, 3.950242 * 1.79571303587 + yAdj, new Rotation2d(Math.PI / 2.0));
+    
+            public static final Trajectory BALL2 = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE3,
+                    new Pose2d(5.002947 * 1.74759405074 + xAdj, 4.044807 * 1.79571303587 + yAdj, new Rotation2d(Math.PI / 2.0))
+                ), Constants.drive.auto.CONFIG);
+            
+            public static final Pose2d POSE4 = new Pose2d(4.980190 * 1.74759405074 + xAdj, 4.045270 * 1.79571303587 + yAdj, new Rotation2d(Math.PI));
+    
+            public static final Trajectory TO_SHOOT = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE4,
+                    new Pose2d(3.262223 * 1.74759405074 + xAdj, 3.999829 * 1.79571303587 + yAdj, new Rotation2d(Math.PI)),
+                    new Pose2d(POSE1.getTranslation(), new Rotation2d(Math.PI))
+                ), Constants.drive.auto.CONFIG);
             }
 
             public static class trench6L {
-        
-                public static Rotation2d[] headings = {
-                    new Rotation2d()
-                };
-        
-                private static double adjustment = -1.63;
-        
-                public static Trajectory down = TrajectoryGenerator.generateTrajectory(
+
+                public static final Pose2d POSE1 = new Pose2d(3.95, 3.999829 * 1.79571303587, new Rotation2d());
+
+                public static final Trajectory DOWN_TRENCH = TrajectoryGenerator.generateTrajectory(
                     List.of(
-                        new Pose2d(),
-                        new Pose2d(1.78, 1.63 + adjustment, new Rotation2d()),
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d())
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
+                        POSE1,
+                        new Pose2d(3.262223 * 1.74759405074, 3.999829 * 1.79571303587, new Rotation2d()),
+                        new Pose2d(4.338513 * 1.74759405074, 3.999829 * 1.79571303587 + 0.05, new Rotation2d())
+                    ), Constants.drive.auto.CONFIG);
         
-                public static Trajectory back = TrajectoryGenerator.generateTrajectory(
+                public static final Pose2d POSE2 = new Pose2d(4.338513 * 1.74759405074, 3.999829 * 1.79571303587 + 0.05, new Rotation2d(Math.PI));
+        
+                public static final Trajectory TO_SHOOT = TrajectoryGenerator.generateTrajectory(
                     List.of(
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(5.0, 1.63 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(0.0, 0.0, new Rotation2d(-Math.PI))
-                    ),
-                new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
+                        POSE2,
+                        new Pose2d(3.95, 3.999829 * 1.79571303587, new Rotation2d(Math.PI))
+                    ), Constants.drive.auto.CONFIG);
             }
 
         public static class trench8L {
+            public static final Pose2d POSE1 = new Pose2d(3.95, 3.999829 * 1.79571303587, new Rotation2d());
+
+            private static final double xAdj = 0.1;
+            private static final double yAdj = 0.1;
+
+            public static final Trajectory DOWN_TRENCH = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE1,
+                    new Pose2d(3.262223 * 1.74759405074, 3.999829 * 1.79571303587, new Rotation2d()),
+                    new Pose2d(4.549337 * 1.74759405074, 3.999829 * 1.79571303587 + xAdj, new Rotation2d())
+                ), Constants.drive.auto.CONFIG);
+    
+            public static final Pose2d POSE2 = new Pose2d(4.549337 * 1.74759405074, 3.999829 * 1.79571303587 + xAdj, new Rotation2d());
+    
+            public static final Trajectory BALL1 = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE2,
+                    new Pose2d(4.980190 * 1.74759405074 + yAdj, 3.958766 * 1.79571303587 + xAdj, new Rotation2d())
+                ), Constants.drive.auto.CONFIG);
+            
+            public static final Pose2d POSE3 = new Pose2d(4.987459 * 1.74759405074 + yAdj, 3.950242 * 1.79571303587 + xAdj, new Rotation2d(Math.PI / 2.0));
+    
+            public static final Trajectory BALL2 = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE3,
+                    new Pose2d(5.002947 * 1.74759405074 + yAdj, 4.044807 * 1.79571303587 + xAdj, new Rotation2d(Math.PI / 2.0))
+                ), Constants.drive.auto.CONFIG);
+            
+            public static final Pose2d POSE4 = new Pose2d(4.980190 * 1.74759405074 + yAdj, 4.045270 * 1.79571303587 + xAdj, new Rotation2d(Math.PI));
+    
+            public static final Trajectory TO_SHOOT = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                    POSE4,
+                    new Pose2d(3.262223 * 1.74759405074, 3.999829 * 1.79571303587, new Rotation2d(Math.PI)),
+                    new Pose2d(POSE1.getTranslation(), new Rotation2d(Math.PI))
+                ), Constants.drive.auto.CONFIG);
+            }
+
+            public static final class WheelTenBall {
+                public static final Pose2d POSE1 = new Pose2d(3.95, 0.541844 * 1.79571303587, new Rotation2d());
         
-                public static Rotation2d[] headings = {
-                    new Rotation2d(),
-                    new Rotation2d(Math.PI / 8.0),
-                    new Rotation2d(-Math.PI)
-                };
-        
-                private static double adjustment = -1.63;
-        
-                public static Trajectory down = TrajectoryGenerator.generateTrajectory(
+                public static final Trajectory TO_WHEEL = TrajectoryGenerator.generateTrajectory(
                     List.of(
-                        new Pose2d(),
-                        new Pose2d(1.78, 1.63 + adjustment, new Rotation2d()),
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d())
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                        .setEndVelocity(0.5)
-                );
+                        POSE1,
+                        new Pose2d(3.390185 * 1.74759405074, 0.568928 * 1.79571303587, new Rotation2d())
+                    ), Constants.drive.auto.CONFIG);
         
-                public static Trajectory ball1 = TrajectoryGenerator.generateTrajectory(
+                public static final Pose2d POSE2 = new Pose2d(3.390185 * 1.74759405074, 0.568928 * 1.79571303587, new Rotation2d(Math.PI / 2.0));
+                
+                public static final Trajectory FIRST_SHOT = TrajectoryGenerator.generateTrajectory(
                     List.of(
-                        new Pose2d(5.5, 1.63 + adjustment, new Rotation2d()),
-                        new Pose2d(7.0, 1.53 + adjustment, new Rotation2d())
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                        .setStartVelocity(0.5)
-                );
+                        POSE2,
+                        new Pose2d(3.190836 * 1.74759405074, 1.257456 * 1.79571303587, new Rotation2d(Math.PI / 2.0)),
+                        new Pose2d(3.184118 * 1.74759405074, 2.051534 * 1.79571303587, new Rotation2d(Math.PI / 2.0))
+                    ), Constants.drive.auto.CONFIG);
+                
+                public static final Pose2d POSE3 = new Pose2d(3.184118 * 1.74759405074, 2.051534 * 1.79571303587, Rotation2d.fromDegrees(21.923073));
+                
+                public static final Trajectory TURN_IN = TrajectoryGenerator.generateTrajectory(
+                    List.of(
+                        POSE3,
+                        new Pose2d(4.432168 * 1.74759405074, 2.504933 * 1.79571303587, Rotation2d.fromDegrees(23.617190)),
+                        new Pose2d(4.615875 * 1.74759405074, 2.792169 * 1.79571303587, Rotation2d.fromDegrees(111.711319)),
+                        new Pose2d(4.308327 * 1.74759405074, 2.926100 * 1.79571303587, Rotation2d.fromDegrees(-153.523966)),
+                        new Pose2d(3.881773 * 1.74759405074, 2.718925 * 1.79571303587, Rotation2d.fromDegrees(-154.582789))
+                    ), Constants.drive.auto.CONFIG);
         
-                public static Trajectory ball2 = TrajectoryGenerator.generateTrajectory(
-                    List.of(
-                        new Pose2d(7.0, 1.53 + adjustment, new Rotation2d(-Math.PI / 2.0)),
-                        new Pose2d(7.0, 1.7 + adjustment, new Rotation2d(-Math.PI / 2.0))
-                    ),
-                    new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
+                public static final Pose2d POSE4 = new Pose2d(3.881773 * 1.74759405074, 2.718925 * 1.79571303587, Rotation2d.fromDegrees(60.531868));
         
-                public static Trajectory back = TrajectoryGenerator.generateTrajectory(
+                public static final Trajectory SECOND_SHOOT = TrajectoryGenerator.generateTrajectory(
                     List.of(
-                        new Pose2d(5.0, 1.7 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(5.0, 1.63 + adjustment, new Rotation2d(-Math.PI)),
-                        new Pose2d(0.0, 0.0, new Rotation2d(-Math.PI))
-                    ),
-                new TrajectoryConfig(4.0, 3.0)
-                        .addConstraint(new CentripetalAccelerationConstraint(3.0))
-                        .addConstraint(new SwerveDriveKinematicsConstraint(Swerve.getInstance().getKinematics(), 4.0))
-                );
+                        POSE4,
+                        new Pose2d(3.941514 * 1.74759405074, 2.987104 * 1.79571303587, Rotation2d.fromDegrees(111.213839)),
+                        new Pose2d(3.377689 * 1.74759405074, 3.260448 * 1.79571303587, new Rotation2d(Math.PI)),
+                        new Pose2d(3.123596 * 1.74759405074, 3.260448 * 1.79571303587, new Rotation2d(Math.PI))
+                    ), Constants.drive.auto.CONFIG);
+                
+        
             }
 }

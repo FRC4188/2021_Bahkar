@@ -16,12 +16,10 @@ import frc.robot.subsystems.intake.Intake;
 public class AutoIntake extends ParallelCommandGroup {
   /** Creates a new AutoIntake. */
   public AutoIntake(boolean cont) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new LoadHopper(cont),
       new SpinIntake(0.5, cont),
-      new RunCommand(() -> Intake.getInstace().setRaised(!cont), Intake.getInstace())
+      new RunCommand(() -> Intake.getInstace().setRaised(!cont))
     );
   }
 }
