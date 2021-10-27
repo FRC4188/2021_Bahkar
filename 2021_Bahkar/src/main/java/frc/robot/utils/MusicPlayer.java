@@ -12,7 +12,9 @@ public class MusicPlayer {
     return instance;
   }
 
-  private static final String[] playlist = {"AMOGUS.chrp", "MEGLOV.chrp", "BFIFTH.chrp"};
+  private static final String[] playlist = {
+    "AMOGUS.chrp", "MEGLOV.chrp", "BFIFTH.chrp", "AVNGER.chrp", "IMMRCH.chrp", "STLALV.chrp"
+  };
 
   private Orchestra orch = new Orchestra();
 

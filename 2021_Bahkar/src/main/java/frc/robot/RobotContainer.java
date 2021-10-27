@@ -202,6 +202,12 @@ public class RobotContainer {
         "Play Megalovenia", new SequentialCommandGroup(new PlaySong("MEGALOV.chrp")));
     autoChooser.addOption(
         "Play Beethoven's Fifth", new SequentialCommandGroup(new PlaySong("BFIFTH.chrp")));
+    autoChooser.addOption(
+        "Play Still Alive", new SequentialCommandGroup(new PlaySong("STLALV.chrp")));
+    autoChooser.addOption(
+        "Play Imperial March", new SequentialCommandGroup(new PlaySong("IMMRCH.chrp")));
+    autoChooser.addOption(
+        "Play The Avengers Theme", new SequentialCommandGroup(new PlaySong("AVNGER.chrp")));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
