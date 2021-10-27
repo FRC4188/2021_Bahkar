@@ -5,16 +5,17 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.groups.AutoShoot;
-import frc.robot.commands.turret.TurretAngle;
+import frc.robot.commands.sensors.ResetOdometry;
+import frc.robot.utils.Trajectories;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class Shoot3 extends SequentialCommandGroup {
-  /** Creates a new Shoot3. */
-  public Shoot3() {
-    addCommands(
-        new TurretAngle(180.0), new AutoShoot(true).withTimeout(5.0).andThen(new AutoShoot(false)));
+public class GeneratorRun extends SequentialCommandGroup {
+  /** Creates a new GeneratorRun. */
+  public GeneratorRun() {
+    // Add your commands in the addCommands() call, e.g.
+    // addCommands(new FooCommand(), new BarCommand());
+    addCommands(new ResetOdometry(Trajectories.Generator.POSE1));
   }
 }

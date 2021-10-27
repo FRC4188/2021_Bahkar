@@ -4,27 +4,27 @@ import frc.robot.utils.DSolenoid;
 
 public class FourBar {
 
-    private DSolenoid masterSolenoid;
+  private DSolenoid masterSolenoid;
 
-    private boolean raised = true;
+  private boolean raised = true;
 
-    public FourBar(int masterID) {
-        masterSolenoid = new DSolenoid(1, 2);
+  public FourBar(int masterID) {
+    masterSolenoid = new DSolenoid(1, 2);
 
-        masterSolenoid.set(false);
-    }
+    masterSolenoid.set(false);
+  }
 
-    public void setRaised(boolean raised) {
-        this.raised = raised;
+  public void setRaised(boolean raised) {
+    this.raised = raised;
 
-        masterSolenoid.set(raised);
-    }
+    masterSolenoid.set(raised);
+  }
 
-    public void relax() {
-        masterSolenoid.relax();
-    }
+  public void relax() {
+    masterSolenoid.relax();
+  }
 
-    public boolean getRaised() {
-        return raised;
-    }
+  public boolean getRaised() {
+    return raised;
+  }
 }

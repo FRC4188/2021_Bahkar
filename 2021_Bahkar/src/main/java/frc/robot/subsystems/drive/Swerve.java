@@ -40,8 +40,13 @@ public class Swerve extends SubsystemBase {
 
   private Sensors sensors = Sensors.getInstance();
 
-  //private Kinematics kinematics = Constants.drive.KINEMATICS;
-  SwerveDriveKinematics kinematics = new SwerveDriveKinematics(Constants.drive.FrontLeftLocation, Constants.drive.FrontRightLocation, Constants.drive.BackLeftLocation, Constants.drive.BackRightLocation);
+  // private Kinematics kinematics = Constants.drive.KINEMATICS;
+  SwerveDriveKinematics kinematics =
+      new SwerveDriveKinematics(
+          Constants.drive.FrontLeftLocation,
+          Constants.drive.FrontRightLocation,
+          Constants.drive.BackLeftLocation,
+          Constants.drive.BackRightLocation);
 
   private PIDController rotationPID = new PIDController(0.1, 0.0, 0.01);
 
@@ -62,8 +67,7 @@ public class Swerve extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   private void runOdo() {
     odometry.update(sensors.getRotation(), getChassisSpeeds());
@@ -94,13 +98,14 @@ public class Swerve extends SubsystemBase {
     } else {
       if (yInput != 0 || xInput != 0) {
         double correction = rotationPID.calculate(-sensors.getRotation().getDegrees());
-        rotInput =  rotationPID.atSetpoint() ? 0.0 : correction;
+        rotInput = rotationPID.atSetpoint() ? 0.0 : correction;
       }
     }
 
-    setChassisSpeeds(!fieldOriented ?
-    ChassisSpeeds.fromFieldRelativeSpeeds(yInput, xInput, rotInput, sensors.getRotation()) :
-    new ChassisSpeeds(yInput, xInput, rotInput));
+    setChassisSpeeds(
+        !fieldOriented
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(yInput, xInput, rotInput, sensors.getRotation())
+            : new ChassisSpeeds(yInput, xInput, rotInput));
   }
 
   public void setRotSetpoint(double setpoint) {
@@ -114,17 +119,21 @@ public class Swerve extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.normalizeWheelSpeeds(states, Constants.drive.MAX_VELOCITY);
-    
-    leftFront.setModuleState(new SwerveModuleState(states[0].speedMetersPerSecond, states[0].angle));
-    rightFront.setModuleState(new SwerveModuleState(states[1].speedMetersPerSecond, states[1].angle));
+
+    leftFront.setModuleState(
+        new SwerveModuleState(states[0].speedMetersPerSecond, states[0].angle));
+    rightFront.setModuleState(
+        new SwerveModuleState(states[1].speedMetersPerSecond, states[1].angle));
     leftRear.setModuleState(new SwerveModuleState(states[2].speedMetersPerSecond, states[2].angle));
-    rightRear.setModuleState(new SwerveModuleState(states[3].speedMetersPerSecond, states[3].angle));
+    rightRear.setModuleState(
+        new SwerveModuleState(states[3].speedMetersPerSecond, states[3].angle));
   }
 
   public ChassisSpeeds getChassisSpeeds() {
     ChassisSpeeds temp = kinematics.toChassisSpeeds(getModuleStates());
 
-    return new ChassisSpeeds(-temp.vxMetersPerSecond, -temp.vyMetersPerSecond, temp.omegaRadiansPerSecond);
+    return new ChassisSpeeds(
+        -temp.vxMetersPerSecond, -temp.vyMetersPerSecond, temp.omegaRadiansPerSecond);
   }
 
   public SwerveModuleState[] getModuleStates() {
@@ -136,7 +145,7 @@ public class Swerve extends SubsystemBase {
     };
   }
 
-  public Pose2d getPose() { 
+  public Pose2d getPose() {
     return odometry.getPose();
   }
 

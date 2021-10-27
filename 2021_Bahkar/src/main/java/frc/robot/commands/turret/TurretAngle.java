@@ -15,9 +15,7 @@ public class TurretAngle extends CommandBase {
 
   Turret turret = Turret.getInstance();
   double angle;
-  /**
-   * Creates a new TurretAngle.
-   */
+  /** Creates a new TurretAngle. */
   public TurretAngle(double angle) {
     addRequirements(turret);
     this.angle = angle;
@@ -25,8 +23,7 @@ public class TurretAngle extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -44,6 +41,6 @@ public class TurretAngle extends CommandBase {
   @Override
   public boolean isFinished() {
     return Math.abs(turret.getPosition() - angle) < Constants.turret.POS_TOLERANCE
-           && Math.abs(turret.getVelocity()) < Constants.turret.VEL_TOLERANCE;
+        && Math.abs(turret.getVelocity()) < Constants.turret.VEL_TOLERANCE;
   }
 }

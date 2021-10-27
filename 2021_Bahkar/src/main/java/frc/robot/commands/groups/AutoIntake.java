@@ -17,9 +17,8 @@ public class AutoIntake extends ParallelCommandGroup {
   /** Creates a new AutoIntake. */
   public AutoIntake(boolean cont) {
     addCommands(
-      new LoadHopper(cont),
-      new SpinIntake(0.5, cont),
-      new RunCommand(() -> Intake.getInstace().setRaised(!cont))
-    );
+        new LoadHopper(cont),
+        new SpinIntake(0.5, cont),
+        new RunCommand(() -> Intake.getInstace().setRaised(!cont)));
   }
 }

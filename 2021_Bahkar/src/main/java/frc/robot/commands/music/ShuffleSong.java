@@ -2,43 +2,40 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.hopper;
+package frc.robot.commands.music;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.drive.Swerve;
 import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.utils.MusicPlayer;
 
-public class LoadHopper extends CommandBase {
+public class ShuffleSong extends CommandBase {
 
-  Hopper hopper = Hopper.getInstance();
-  private boolean cont;
-
-  /** Creates a new LoadHopper. */
-  public LoadHopper(boolean cont) {
-    addRequirements(hopper);
-
-    this.cont = cont;
+  /** Creates a new PlaySong. */
+  public ShuffleSong() {
+    addRequirements(
+        Swerve.getInstance(), Shooter.getInstance(), Hopper.getInstance(), Intake.getInstace());
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    MusicPlayer.getInstance().play();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    hopper.set(0.0);
-    // if (!hopper.getTopBeam()) hopper.set(0.2);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    hopper.set(0.0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !cont;
+    return MusicPlayer.getInstance().isPlaying();
   }
 }

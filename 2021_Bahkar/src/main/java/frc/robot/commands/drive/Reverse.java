@@ -17,11 +17,11 @@ public class Reverse extends CommandBase {
   private double startY;
 
   /** Creates a new Reverse. */
-  public Reverse(double distance) { 
+  public Reverse(double distance) {
     // Use addRequirements() here to declare subsystem dependencies.
- addRequirements(drive); 
+    addRequirements(drive);
 
- this.distance = distance;
+    this.distance = distance;
   }
 
   // Called when the command is initially scheduled.
@@ -46,6 +46,7 @@ public class Reverse extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.hypot(odometry.getPose().getX() - startX, odometry.getPose().getY() - startY) >= distance;
+    return Math.hypot(odometry.getPose().getX() - startX, odometry.getPose().getY() - startY)
+        >= distance;
   }
 }

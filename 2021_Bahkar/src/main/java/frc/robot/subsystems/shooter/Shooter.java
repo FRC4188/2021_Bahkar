@@ -13,9 +13,10 @@ public class Shooter extends SubsystemBase {
 
   /**
    * Returns the instance of the {@link Shooter} subsystem.
+   *
    * @return An instance of {@link Shooter} common to the entire program.
    */
-  public synchronized static Shooter getInstance() {
+  public static synchronized Shooter getInstance() {
     if (instance == null) instance = new Shooter();
     return instance;
   }
@@ -34,12 +35,12 @@ public class Shooter extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Shooter Speed", getVelocity());
-    SmartDashboard.putNumber("Shooter Voltage", wheel.getPower() * RobotController.getInputVoltage());
+    SmartDashboard.putNumber(
+        "Shooter Voltage", wheel.getPower() * RobotController.getInputVoltage());
 
     if (!wheel.matchingVels()) {
       DriverStation.reportError("Shooter motors spinning at different speeds.", false);
@@ -54,37 +55,27 @@ public class Shooter extends SubsystemBase {
     shuffle.startPeriodic(0.1);
   }
 
-  /**
-   * Sets shooter motors to a given percentage [-1.0, 1.0].
-   */
+  /** Sets shooter motors to a given percentage [-1.0, 1.0]. */
   public void setPercentage(double percent) {
     wheel.setPower(percent);
   }
 
-  /**
-   * Sets shooter motors to a given velocity in rpm.
-   */
+  /** Sets shooter motors to a given velocity in rpm. */
   public void setVelocity(double velocity) {
     wheel.setVelocity(velocity);
   }
 
-  /**
-   * Gets left shooter motor velocity in rpm.
-   */
+  /** Gets left shooter motor velocity in rpm. */
   public double getVelocity() {
     return wheel.getVelocity();
   }
 
-  /**
-   * Returns left shooter motor temperature in Celcius.
-   */
+  /** Returns left shooter motor temperature in Celcius. */
   public double getLowerTemp() {
     return wheel.getLowerTemp();
   }
 
-  /**
-   * Returns right shooter motor temperature in Celcius.
-   */
+  /** Returns right shooter motor temperature in Celcius. */
   public double getUpperTemp() {
     return wheel.getUpperTemp();
   }

@@ -7,7 +7,6 @@ package frc.robot.commands.groups;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.AutoMagazine;
-import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.shooter.FormulaRPM;
 import frc.robot.commands.shooter.ShooterVelocity;
 import frc.robot.commands.turret.FollowTarget;
@@ -19,21 +18,19 @@ public class AutoShoot extends ParallelCommandGroup {
   /** Creates a new AutoShoot. */
   public AutoShoot(boolean cont) {
     addCommands(
-      new AutoMagazine(cont),
-      new SpinIntake(0.75, cont),
-      new FollowTarget(cont),
-      new FormulaRPM(cont),
-      new SetPosition(cont)
-    );
+        new AutoMagazine(cont),
+        // new SpinIntake(0.75, cont),
+        new FollowTarget(cont),
+        new FormulaRPM(cont),
+        new SetPosition(cont));
   }
 
   public AutoShoot(double rpm, boolean cont) {
     addCommands(
-      new AutoMagazine(cont),
-      new SpinIntake(0.75, cont),
-      new FollowTarget(cont),
-      new ShooterVelocity(rpm, cont),
-      new SetPosition(cont)
-    );
+        new AutoMagazine(cont),
+        // new SpinIntake(0.75, cont),
+        new FollowTarget(cont),
+        new ShooterVelocity(rpm, cont),
+        new SetPosition(cont));
   }
 }

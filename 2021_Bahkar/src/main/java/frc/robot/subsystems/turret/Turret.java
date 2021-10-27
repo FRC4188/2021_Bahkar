@@ -11,7 +11,6 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,9 +28,10 @@ public class Turret extends SubsystemBase {
 
   /**
    * Returns the instance of the {@link Turret} subsystem.
+   *
    * @return An instance of {@link Turret} common to the entire program.
    */
-  public synchronized static Turret getInstance() {
+  public static synchronized Turret getInstance() {
     if (instance == null) instance = new Turret();
     return instance;
   }
@@ -42,15 +42,13 @@ public class Turret extends SubsystemBase {
   // Motor control components.
   CANSparkMax turretMotor = new CANSparkMax(42, MotorType.kBrushless);
   CANEncoder turretEncoder = turretMotor.getEncoder();
-  PIDController pid = new PIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD);
+  PIDController pid =
+      new PIDController(Constants.turret.kP, Constants.turret.kI, Constants.turret.kD);
 
   // SmartDashboard thread.
   Notifier shuffle = new Notifier(() -> updateShuffleboard());
 
-  /**
-   * Creates a new {@link Turret}.
-   * For use only within the {@link Turret} class.
-   */
+  /** Creates a new {@link Turret}. For use only within the {@link Turret} class. */
   private Turret() {
     CommandScheduler.getInstance().registerSubsystem(this);
 
@@ -61,12 +59,9 @@ public class Turret extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
-  /**
-  * Configures the turret motor controller.
-  */
+  /** Configures the turret motor controller. */
   private void motorInits() {
     pid.setP(Constants.turret.kP);
     pid.setI(Constants.turret.kI);
@@ -78,39 +73,32 @@ public class Turret extends SubsystemBase {
     turretMotor.setIdleMode(IdleMode.kBrake);
   }
 
-  /**
-  * Resets turret encoder position value to 0.
-  */
+  /** Resets turret encoder position value to 0. */
   public void resetEncoders() {
     turretEncoder.setPosition(0.0);
   }
 
-  /**
-   * Refreshes the data on SmartDashboard.
-   * Should be called in a {@link Notifier}.
-   */
+  /** Refreshes the data on SmartDashboard. Should be called in a {@link Notifier}. */
   private void updateShuffleboard() {
     SmartDashboard.putNumber("Turret Angle", getPosition());
   }
 
-  /**
-   * End the SmartDashboard interaction notifier.
-   */
+  /** End the SmartDashboard interaction notifier. */
   public void closeNotifier() {
     shuffle.close();
   }
 
-  /**
-   * Start the SmartDashboard interaction notifier.
-   */
+  /** Start the SmartDashboard interaction notifier. */
   public void openNotifier() {
     shuffle.startPeriodic(0.1);
   }
 
   /**
-  * Sets turret motor to given percentage [-1.0, 1.0]. Will not allow turret to spin past the software limit
-  * @param percent The goal percentage to set the turret motor to.
-  */
+   * Sets turret motor to given percentage [-1.0, 1.0]. Will not allow turret to spin past the
+   * software limit
+   *
+   * @param percent The goal percentage to set the turret motor to.
+   */
   public void set(double percent) {
     if (getPosition() < Constants.turret.MIN_ANG && percent < 0.0) turretMotor.set(0.0);
     else if (getPosition() > Constants.turret.MAX_ANG && percent > 0.0) turretMotor.set(0.0);
@@ -119,27 +107,31 @@ public class Turret extends SubsystemBase {
 
   /**
    * Turns turret to angle in degrees.
+   *
    * @param angle Angle for the turret to move to.
    */
   public void setAngle(double angle) {
-      angle /= Constants.turret.ENCODER_TO_DEGREES;
-      turretMotor.set(Robot.normalizePercentVolts(pid.calculate(turretEncoder.getPosition(), angle)));
+    angle /= Constants.turret.ENCODER_TO_DEGREES;
+    turretMotor.set(Robot.normalizePercentVolts(pid.calculate(turretEncoder.getPosition(), angle)));
   }
 
   /**
    * Method to track the limelight target
+   *
    * @param cont whether to continue tracking or stop.
    */
   public void trackTarget(boolean cont) {
     double angle = sensors.getTX();
-    double power = Robot.normalizePercentVolts(pid.calculate(angle, 0.0)) +
-      Swerve.getInstance().getChassisSpeeds().omegaRadiansPerSecond / 10.0;
-    
+    double power =
+        Robot.normalizePercentVolts(pid.calculate(angle, 0.0))
+            + Swerve.getInstance().getChassisSpeeds().omegaRadiansPerSecond / 10.0;
+
     set(cont ? power : 0.0);
   }
-  
+
   /**
    * Returns turret encoder position in degrees.
+   *
    * @return Degrees of the turret's current rotation.
    */
   public double getPosition() {
@@ -148,23 +140,25 @@ public class Turret extends SubsystemBase {
 
   /**
    * Returns turret encoder velocity in degrees per second.
+   *
    * @return Velocity of the turret in degrees per second.
    */
   public double getVelocity() {
-      return turretEncoder.getVelocity() * Constants.turret.ENCODER_TO_DEGREES / 60.0;
+    return turretEncoder.getVelocity() * Constants.turret.ENCODER_TO_DEGREES / 60.0;
   }
 
   /**
    * Returns the temperature of the turret motor.
+   *
    * @return Temperature (Celsius).
    */
   public double getTemp() {
     return turretMotor.getMotorTemperature();
   }
 
-
   /**
    * Method to determine if the turret is aimed at the limelight target.
+   *
    * @return Whether the turret is correctly aimed.
    */
   public boolean isAimed() {

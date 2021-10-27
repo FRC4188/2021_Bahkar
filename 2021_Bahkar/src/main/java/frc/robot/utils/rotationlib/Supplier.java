@@ -5,19 +5,19 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 
 public class Supplier {
 
-    private LinearInterpolation interpolation;
-    private Timer timer = new Timer();
+  private LinearInterpolation interpolation;
+  private Timer timer = new Timer();
 
-    public Supplier(LinearInterpolation interpolation) {
-        this.interpolation = interpolation;
-    }
+  public Supplier(LinearInterpolation interpolation) {
+    this.interpolation = interpolation;
+  }
 
-    public void start() {
-        timer.reset();
-        timer.start();
-    }
-    
-    public Rotation2d get() {
-        return interpolation.sample(timer.get());
-    }
+  public void start() {
+    timer.reset();
+    timer.start();
+  }
+
+  public Rotation2d get() {
+    return interpolation.sample(timer.get());
+  }
 }

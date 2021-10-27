@@ -5,16 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.auto.GeneratorRun;
 import frc.robot.commands.auto.Shoot3;
 import frc.robot.commands.auto.Steal10;
 import frc.robot.commands.auto.Trench6L;
@@ -25,13 +24,13 @@ import frc.robot.commands.climber.Climb;
 import frc.robot.commands.drive.CenterBall;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoShoot;
-import frc.robot.commands.hood.SetPosition;
 import frc.robot.commands.hopper.SpinHopper;
 import frc.robot.commands.intake.SpinIntake;
+import frc.robot.commands.music.PlaySong;
+import frc.robot.commands.music.ShuffleSong;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.sensors.ResetTranslation;
-import frc.robot.commands.turret.OppositeAim;
 import frc.robot.commands.turret.TurretAngle;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.subsystems.climber.Climber;
@@ -42,15 +41,14 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.utils.CspController;
-import frc.robot.utils.TempManager;
 import frc.robot.utils.CspController.Scaling;
+import frc.robot.utils.TempManager;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very little robot logic should
- * actually be handled in the {@link Robot} periodic methods (other than the
- * scheduler calls). Instead, the structure of the robot (including subsystems,
- * commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
 
@@ -65,11 +63,10 @@ public class RobotContainer {
   CspController pilot = new CspController(0);
   CspController copilot = new CspController(1);
 
-  SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<SequentialCommandGroup>();
+  SendableChooser<SequentialCommandGroup> autoChooser =
+      new SendableChooser<SequentialCommandGroup>();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     setDefaultCommands();
@@ -81,12 +78,15 @@ public class RobotContainer {
 
   private void setDefaultCommands() {
     // Drivetrain manual drive command.
-    RunCommand tele = new RunCommand( () -> drive.drive(
-      pilot.getY(Hand.kLeft, Scaling.CUBED),
-      pilot.getX(Hand.kLeft, Scaling.CUBED),
-      pilot.getX(Hand.kRight, Scaling.CUBED),
-      false),
-    drive);
+    RunCommand tele =
+        new RunCommand(
+            () ->
+                drive.drive(
+                    pilot.getY(Hand.kLeft, Scaling.CUBED),
+                    pilot.getX(Hand.kLeft, Scaling.CUBED),
+                    pilot.getX(Hand.kRight, Scaling.CUBED),
+                    false),
+            drive);
 
     tele.setName("Tele Drive");
 
@@ -94,80 +94,98 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by instantiating a {@link GenericHID} or one of its subclasses
-   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
 
-      // Intake commands.
-      pilot.getAButtonObj().whenPressed(new AutoIntake(true))
-        .whenReleased(new AutoIntake(false));
-      pilot.getBButtonObj().whenPressed(new SpinIntake(-0.5, true))
+    // Intake commands.
+    pilot.getAButtonObj().whenPressed(new AutoIntake(true)).whenReleased(new AutoIntake(false));
+    pilot
+        .getBButtonObj()
+        .whenPressed(new SpinIntake(-0.5, true))
         .whenReleased(new SpinIntake(0.0, false));
-  
-      //Hopper (shoot) commands.
-      pilot.getXButtonObj().whenPressed(new AutoShoot(true))
-        .whenReleased(new AutoShoot(false));
-      pilot.getYButtonObj().whenPressed(new SpinHopper(-1.0, true))
+
+    // Hopper (shoot) commands.
+    pilot.getXButtonObj().whenPressed(new AutoShoot(true)).whenReleased(new AutoShoot(false));
+    pilot
+        .getYButtonObj()
+        .whenPressed(new SpinHopper(-1.0, true))
         .whenReleased(new SpinHopper(0.0, false));
 
-      pilot.getDpadUpButtonObj().whenPressed(new TurretAngle(180.0));
-      pilot.getDpadDownButtonObj().whenPressed(new TurretAngle(0.0));
-      pilot.getDpadLeftButtonObj().whenPressed(new TurretAngle(270.0));
-      pilot.getDpadRightButtonObj().whenPressed(new TurretAngle(90.0));
-  
-      pilot.getLbButtonObj().whenPressed(new OppositeAim());
+    pilot.getDpadUpButtonObj().whenPressed(new TurretAngle(180.0));
+    pilot.getDpadDownButtonObj().whenPressed(new TurretAngle(0.0));
+    pilot.getDpadLeftButtonObj().whenPressed(new TurretAngle(270.0));
+    pilot.getDpadRightButtonObj().whenPressed(new TurretAngle(90.0));
 
-      pilot.getRbButtonObj().whenPressed(new CenterBall(
-        () -> pilot.getY(Hand.kLeft, Scaling.CUBED),
-        () -> pilot.getX(Hand.kLeft, Scaling.CUBED),
-        true
-        )).whenReleased(new CenterBall(false));
-  
-      /*
-      Copilot commands follow:
-      */
-  
-      // Manually turn the turret.
-      copilot.getDpadLeftButtonObj().whenPressed(new TurretPower(0.5, true))
+    pilot.getLbButtonObj().whenPressed(new ResetGyro());
+
+    pilot
+        .getRbButtonObj()
+        .whenPressed(
+            new CenterBall(
+                () -> pilot.getY(Hand.kLeft, Scaling.CUBED),
+                () -> pilot.getX(Hand.kLeft, Scaling.CUBED),
+                true))
+        .whenReleased(new CenterBall(false));
+
+    pilot.getBackButtonObj().toggleWhenPressed(new ShuffleSong());
+
+    /*
+    Copilot commands follow:
+    */
+
+    // Manually turn the turret.
+    copilot
+        .getDpadLeftButtonObj()
+        .whenPressed(new TurretPower(0.5, true))
         .whenReleased(new TurretPower(0.0, false));
-      copilot.getDpadRightButtonObj().whenPressed(new TurretPower(-0.5, true))
+    copilot
+        .getDpadRightButtonObj()
+        .whenPressed(new TurretPower(-0.5, true))
         .whenReleased(new TurretPower(0.0, false));
 
-      /*copilot.getDpadLeftButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(true)));
-      copilot.getDpadRightButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(false)));*/
-  
-      // Absolute referenced intake commands.
-      copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.setRaised(true)));
-      copilot.getDpadUpButtonObj().whenPressed(new InstantCommand(() -> intake.setRaised(false)));
-  
-      // Turret commands.
-      copilot.getAButtonObj().whileHeld(new RunCommand(() -> turret.trackTarget(true), turret))
+    /*copilot.getDpadLeftButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(true)));
+    copilot.getDpadRightButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(false)));*/
+
+    // Absolute referenced intake commands.
+    copilot.getDpadDownButtonObj().whenPressed(new InstantCommand(() -> intake.setRaised(true)));
+    copilot.getDpadUpButtonObj().whenPressed(new InstantCommand(() -> intake.setRaised(false)));
+
+    // Turret commands.
+    copilot
+        .getAButtonObj()
+        .whileHeld(new RunCommand(() -> turret.trackTarget(true), turret))
         .whenReleased(new InstantCommand(() -> turret.trackTarget(false), turret));
 
-      copilot.getXButtonObj().whenPressed(new InstantCommand(() -> climber.engagePneuBrake(!climber.getPneuBrake())));
+    copilot
+        .getXButtonObj()
+        .whenPressed(new InstantCommand(() -> climber.engagePneuBrake(!climber.getPneuBrake())));
 
-      // Climber commands.
-      copilot.getRbButtonObj().whenPressed(new Climb(0.5, true))
-        .whenReleased(new Climb(0.0, false));
-      copilot.getLbButtonObj().whenPressed(new Climb(-0.5, true))
-        .whenReleased(new Climb(0.0, false));
-  
-      copilot.getBButtonObj().whenPressed(new Climb(-1.0, true))
-        .whenReleased(new Climb(0.0, false));
+    // Climber commands.
+    copilot.getRbButtonObj().whenPressed(new Climb(0.5, true)).whenReleased(new Climb(0.0, false));
+    copilot.getLbButtonObj().whenPressed(new Climb(-0.5, true)).whenReleased(new Climb(0.0, false));
+
+    copilot.getBButtonObj().whenPressed(new Climb(-1.0, true)).whenReleased(new Climb(0.0, false));
 
     /* SmartDashboard Commands */
     SmartDashboard.putData("Reset Gyro", new ResetGyro());
     SmartDashboard.putData("Reset Pose", new ResetOdometry());
     SmartDashboard.putData("Reset Translation", new ResetTranslation());
-    SmartDashboard.putData("Send Shooter Velocity",
-        new InstantCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)), shooter));
-    SmartDashboard.putData("Send Shooter Power",
-        new InstantCommand(() -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Power", 0.0)), shooter));
+    SmartDashboard.putData(
+        "Send Shooter Velocity",
+        new InstantCommand(
+            () -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Velocity", 0.0)),
+            shooter));
+    SmartDashboard.putData(
+        "Send Shooter Power",
+        new InstantCommand(
+            () -> shooter.setVelocity(SmartDashboard.getNumber("Set Shooter Power", 0.0)),
+            shooter));
     /*SmartDashboard.putData("Send Hood Distance (mm)",
-        new InstantCommand(() -> hood.setPosition(SmartDashboard.getNumber("Set Hood Position (mm)", 0.0) / 100.0)));*/
+    new InstantCommand(() -> hood.setPosition(SmartDashboard.getNumber("Set Hood Position (mm)", 0.0) / 100.0)));*/
   }
 
   private void addChooser() {
@@ -178,8 +196,12 @@ public class RobotContainer {
     autoChooser.addOption("Eight-Ball Left Trench", new Trench8L());
     autoChooser.addOption("Ten-Ball Steal", new Steal10());
     autoChooser.addOption("Simply shoot 3 balls", new Shoot3());
-
-    autoChooser.addOption("Set Pose", new SequentialCommandGroup(new ResetOdometry(new Pose2d(3.95, 5.6475228849, new Rotation2d()))));
+    autoChooser.addOption("Generator", new GeneratorRun());
+    autoChooser.addOption("Play Amogus", new SequentialCommandGroup(new PlaySong("AMOGUS.chrp")));
+    autoChooser.addOption(
+        "Play Megalovenia", new SequentialCommandGroup(new PlaySong("MEGALOV.chrp")));
+    autoChooser.addOption(
+        "Play Beethoven's Fifth", new SequentialCommandGroup(new PlaySong("BFIFTH.chrp")));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }

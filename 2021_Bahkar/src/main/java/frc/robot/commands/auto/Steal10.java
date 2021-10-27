@@ -21,13 +21,11 @@ public class Steal10 extends SequentialCommandGroup {
       addCommands();
     } else {
       addCommands(
-        new ResetOdometry(Trajectories.WheelTenBall.POSE1),
-
-        new FollowTrajectory(Trajectories.WheelTenBall.TO_WHEEL, new Rotation2d()),
-        new FollowTrajectory(Trajectories.WheelTenBall.FIRST_SHOT, new Rotation2d()),
-        new FollowTrajectory(Trajectories.WheelTenBall.TURN_IN, new Rotation2d()),
-        new FollowTrajectory(Trajectories.WheelTenBall.SECOND_SHOOT, new Rotation2d())
-      );
+          new ResetOdometry(Trajectories.WheelTenBall.POSE1),
+          new FollowTrajectory(Trajectories.WheelTenBall.TO_WHEEL, new Rotation2d()),
+          new FollowTrajectory(Trajectories.WheelTenBall.FIRST_SHOT, new Rotation2d()),
+          new FollowTrajectory(Trajectories.WheelTenBall.TURN_IN, new Rotation2d()),
+          new FollowTrajectory(Trajectories.WheelTenBall.SECOND_SHOOT, new Rotation2d()));
     }
   }
 }

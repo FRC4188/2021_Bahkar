@@ -36,7 +36,9 @@ public class FollowTrajectory extends CommandBase {
     ProfiledPIDController thetaController = Constants.drive.thetaPID.thetaPID;
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    controller = new HolonomicDriveController(Constants.drive.xPID.xPID, Constants.drive.yPID.yPID, thetaController);
+    controller =
+        new HolonomicDriveController(
+            Constants.drive.xPID.xPID, Constants.drive.yPID.yPID, thetaController);
   }
 
   // Called when the command is initially scheduled.
@@ -49,7 +51,8 @@ public class FollowTrajectory extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    ChassisSpeeds speeds = controller.calculate(odometry.getPose(), trajectory.sample(timer.get()), new Rotation2d());
+    ChassisSpeeds speeds =
+        controller.calculate(odometry.getPose(), trajectory.sample(timer.get()), new Rotation2d());
     swerve.setChassisSpeeds(speeds);
     System.out.println("driving running");
   }

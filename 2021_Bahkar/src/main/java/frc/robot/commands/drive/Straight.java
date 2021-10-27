@@ -45,6 +45,7 @@ public class Straight extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.hypot(odometry.getPose().getX() - startX, odometry.getPose().getY() - startY) >= distance;
+    return Math.hypot(odometry.getPose().getX() - startX, odometry.getPose().getY() - startY)
+        >= distance;
   }
 }

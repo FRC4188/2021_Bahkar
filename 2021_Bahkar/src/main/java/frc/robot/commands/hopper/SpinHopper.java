@@ -16,9 +16,7 @@ public class SpinHopper extends CommandBase {
   double percentage;
   boolean cont;
 
-  /**
-   * Creates a new SpinHopper.
-   */
+  /** Creates a new SpinHopper. */
   public SpinHopper(double percentage, boolean cont) {
     addRequirements(hopper);
 
@@ -26,17 +24,14 @@ public class SpinHopper extends CommandBase {
     this.cont = cont;
   }
 
-  /**
-   * Creates a new SpinHopper which will run until interrupted.
-   */
+  /** Creates a new SpinHopper which will run until interrupted. */
   public SpinHopper(Hopper hopper, double percentage) {
     this(percentage, true);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

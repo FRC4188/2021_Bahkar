@@ -18,7 +18,7 @@ import frc.robot.subsystems.sensors.Limelight.LedMode;
 public class Sensors extends SubsystemBase {
   private static Sensors instance;
 
-  public synchronized static Sensors getInstance() {
+  public static synchronized Sensors getInstance() {
     if (instance == null) instance = new Sensors();
     return instance;
   }
@@ -71,15 +71,14 @@ public class Sensors extends SubsystemBase {
   }
 
   public double getDistance() {
-    return (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(getTY() + Constants.turret.MOUNTING_ANGLE));
+    return (Constants.field.GOAL_HEIGHT - Constants.turret.LIMELIGHT_HEIGHT)
+        / Math.tan(Math.toRadians(getTY() + Constants.turret.MOUNTING_ANGLE));
   }
 
   public double getFormulaRPM() {
     double dist = getDistance();
 
-    return 37.0583 * Math.pow(dist, 2) +
-      -368.372 * dist +
-      4566.37;
+    return 37.0583 * Math.pow(dist, 2) + -368.372 * dist + 4566.37;
   }
 
   public Rotation2d getRotation() {
@@ -89,7 +88,7 @@ public class Sensors extends SubsystemBase {
   public Pose2d getRobotPose() {
     try {
       return new Pose2d(limelight.getPose2d().getTranslation(), getRotation());
-    } catch(Exception e) {
+    } catch (Exception e) {
       return new Pose2d();
     }
   }

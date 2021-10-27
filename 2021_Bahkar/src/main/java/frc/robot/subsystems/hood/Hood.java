@@ -14,7 +14,7 @@ public class Hood extends SubsystemBase {
 
   private static Hood instance;
 
-  public synchronized static Hood getInstance() {
+  public static synchronized Hood getInstance() {
     if (instance == null) instance = new Hood();
     return instance;
   }
@@ -30,15 +30,15 @@ public class Hood extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   private void shuffle() {
     SmartDashboard.putBoolean("Hood Solenoid", getRaised());
   }
 
   public void setPosition(boolean position) {
-    piston.set(position);;
+    piston.set(position);
+    ;
   }
 
   public boolean getRaised() {

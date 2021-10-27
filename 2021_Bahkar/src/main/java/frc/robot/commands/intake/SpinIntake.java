@@ -15,9 +15,7 @@ public class SpinIntake extends CommandBase {
   private double power;
   private boolean cont;
 
-  /**
-   * Creates a new SpinIntake.
-   */
+  /** Creates a new SpinIntake. */
   public SpinIntake(double power, boolean cont) {
     addRequirements(intake);
 
@@ -25,17 +23,14 @@ public class SpinIntake extends CommandBase {
     this.cont = cont;
   }
 
-  /**
-   * Creates a new SpinIntake which will run until interrupted.
-   */
+  /** Creates a new SpinIntake which will run until interrupted. */
   public SpinIntake(double power) {
     this(power, true);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

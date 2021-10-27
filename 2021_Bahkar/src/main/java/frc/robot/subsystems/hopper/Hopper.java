@@ -6,19 +6,19 @@ package frc.robot.subsystems.hopper;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.MusicPlayer;
 
 public class Hopper extends SubsystemBase {
 
   private static Hopper instance;
 
-  public synchronized static Hopper getInstance() {
+  public static synchronized Hopper getInstance() {
     if (instance == null) instance = new Hopper();
     return instance;
   }
@@ -41,11 +41,12 @@ public class Hopper extends SubsystemBase {
     hopperMotor.setInverted(true);
 
     shuffle.startPeriodic(0.2);
+
+    MusicPlayer.getInstance().addMotor(hopperMotor);
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   private void updateShuffle() {
     SmartDashboard.putBoolean("Chn. 0", breaker1.get());

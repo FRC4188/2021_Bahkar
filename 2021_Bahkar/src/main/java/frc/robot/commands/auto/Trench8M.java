@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.groups.AutoIntake;
 import frc.robot.commands.groups.AutoShoot;
@@ -18,7 +17,6 @@ import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.sensors.ResetGyro;
 import frc.robot.commands.sensors.ResetOdometry;
 import frc.robot.commands.shooter.ShooterVelocity;
-import frc.robot.commands.turret.TurretAngle;
 import frc.robot.commands.turret.TurretPower;
 import frc.robot.utils.Trajectories;
 
@@ -30,39 +28,30 @@ public class Trench8M extends SequentialCommandGroup {
   /** Creates a new Trench8M. */
   public Trench8M() {
     addCommands(
-      // First reset the sensors and odometry.
-      new ResetGyro(),
-      new ResetOdometry(Trajectories.trench8M.POSE1),
+        // First reset the sensors and odometry.
+        new ResetGyro(),
+        new ResetOdometry(Trajectories.trench8M.POSE1),
 
-      // Auto aim the turret and fire.
-      new AutoShoot(true).withTimeout(5.0),
-  
-      // End the auto-aiming and shooting.
-      new AutoShoot(false),
+        // Auto aim the turret and fire.
+        new AutoShoot(true).withTimeout(5.0),
 
-      new ParallelDeadlineGroup(
-        new SequentialCommandGroup(
-          // Drive down the trench.
-          new FollowTrajectory(Trajectories.trench8M.DOWN_TRENCH, new Rotation2d()),
-          new FollowTrajectory(Trajectories.trench8M.BALL1, new Rotation2d()),
-          new FollowTrajectory(Trajectories.trench8M.BALL2, new Rotation2d())
-        ),
-        // Begin intaking balls
-        new AutoIntake(true)
-      ),
-
-      new FollowTrajectory(Trajectories.trench8M.TO_SHOOT, new Rotation2d()),
-
-      new AutoShoot(true).withTimeout(5.0),
-
-      new AutoShoot(false),
-
-      new ParallelCommandGroup(
-        new SpinIntake(0.0, false),
-        new SpinHopper(0.0, false),
-        new TurretPower(0.0),
-        new ShooterVelocity(Constants.shooter.IDLE_VEL, true)
-      )
-    );
+        // End the auto-aiming and shooting.
+        new AutoShoot(false),
+        new ParallelDeadlineGroup(
+            new SequentialCommandGroup(
+                // Drive down the trench.
+                new FollowTrajectory(Trajectories.trench8M.DOWN_TRENCH, new Rotation2d()),
+                new FollowTrajectory(Trajectories.trench8M.BALL1, new Rotation2d()),
+                new FollowTrajectory(Trajectories.trench8M.BALL2, new Rotation2d())),
+            // Begin intaking balls
+            new AutoIntake(true)),
+        new FollowTrajectory(Trajectories.trench8M.TO_SHOOT, new Rotation2d()),
+        new AutoShoot(true).withTimeout(5.0),
+        new AutoShoot(false),
+        new ParallelCommandGroup(
+            new SpinIntake(0.0, false),
+            new SpinHopper(0.0, false),
+            new TurretPower(0.0),
+            new ShooterVelocity(Constants.shooter.IDLE_VEL, true)));
   }
 }

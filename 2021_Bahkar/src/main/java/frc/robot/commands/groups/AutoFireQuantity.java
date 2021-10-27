@@ -7,7 +7,6 @@ package frc.robot.commands.groups;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.commands.hood.SetPosition;
-import frc.robot.commands.hopper.AutoMagazine;
 import frc.robot.commands.intake.SpinIntake;
 import frc.robot.commands.shooter.FormulaRPM;
 import frc.robot.commands.turret.FollowTarget;
@@ -18,12 +17,11 @@ import frc.robot.commands.turret.FollowTarget;
 public class AutoFireQuantity extends ParallelDeadlineGroup {
   /** Creates a new AutoFireQuantity. */
   public AutoFireQuantity(int shots) {
-    super(new InstantCommand());//AutoMagazine(shots));
+    super(new InstantCommand()); // AutoMagazine(shots));
     addCommands(
-      new SpinIntake(0.75, true),
-      new FollowTarget(true),
-      new FormulaRPM(true),
-      new SetPosition(true)
-    );
+        new SpinIntake(0.75, true),
+        new FollowTarget(true),
+        new FormulaRPM(true),
+        new SetPosition(true));
   }
 }
