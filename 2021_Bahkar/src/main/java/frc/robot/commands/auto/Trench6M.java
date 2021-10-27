@@ -34,18 +34,14 @@ public class Trench6M extends SequentialCommandGroup {
         // Auto aim the turret and fire.
         new AutoShoot(true).withTimeout(3.5),
         new AutoShoot(false),
-
         new ParallelDeadlineGroup(
             // Drive down the trench.
             new FollowTrajectory(Trajectories.trench6M.DOWN_TRENCH, new Rotation2d()),
             // Begin intaking balls
             new AutoIntake(true)),
-
         new FollowTrajectory(Trajectories.trench6M.TO_SHOOT, new Rotation2d()),
-
         new AutoShoot(true).withTimeout(3.5),
         new AutoShoot(false),
-
         new ParallelCommandGroup(
             new SpinIntake(0.0, false),
             new SpinHopper(0.0, false),
