@@ -178,13 +178,6 @@ public final class Constants {
       public static final TrajectoryConfig CONFIG =
           new TrajectoryConfig(MAX_VELOCITY, MAX_ACCEL)
               .addConstraint(new CentripetalAccelerationConstraint(MAX_ACCEL))
-              .addConstraint(
-                  new EllipticalRegionConstraint(
-                      new Translation2d(3.518223 * 1.74759405074, 2.317102 * 1.79571303587),
-                      0.3,
-                      0.7,
-                      Rotation2d.fromDegrees(22.341197),
-                      new MaxVelocityConstraint(BAR_VELOCITY)))
               .addConstraint(new SwerveDriveKinematicsConstraint(KINEMATICS, MAX_VELOCITY));
     }
   }

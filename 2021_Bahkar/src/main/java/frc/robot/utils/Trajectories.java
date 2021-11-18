@@ -291,5 +291,32 @@ public final class Trajectories {
                 new Pose2d(
                     3.147528 * 1.74759405074, 3.240016 * 1.79571303587, new Rotation2d(Math.PI))),
             Constants.drive.auto.CONFIG);
+
+        
+  }
+
+  public static final class TestAuto {
+      public static final Pose2d InitialPose = new Pose2d();
+
+      public static final Trajectory First = TrajectoryGenerator.generateTrajectory(
+          List.of(
+              InitialPose,
+             new Pose2d(2.0,0, new Rotation2d()) 
+             
+
+          ),
+          Constants.drive.auto.CONFIG
+          );
+      
+            public static final Trajectory Second = TrajectoryGenerator.generateTrajectory(
+                List.of(
+                   
+                   new Pose2d(2.0,0, new Rotation2d(Math.PI), 
+                   new Pose2d(0.0,0, new Rotation2d(Math.PI)) )
+                   
+      
+                ),
+                Constants.drive.auto.CONFIG
+                );
   }
 }

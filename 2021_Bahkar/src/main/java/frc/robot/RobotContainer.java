@@ -190,6 +190,7 @@ public class RobotContainer {
 
   private void addChooser() {
     autoChooser.setDefaultOption("Nothing", null);
+    autoChooser.addOption("Arha's Autonomous", new TestAuto());
     autoChooser.addOption("Six-Ball Left Trench", new Trench6L());
     autoChooser.addOption("Six-Ball Middle Trench", new Trench6M());
     autoChooser.addOption("Eight-Ball Middle Trench", new Trench8M());
